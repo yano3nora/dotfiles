@@ -1,31 +1,4 @@
 #
-# p10k
-# - https://github.com/romkatv/powerlevel10k
-# - https://zenn.dev/urakawa_jinsei/articles/dccd3dcfa0dc0e
-# - (vscode settings) "terminal.integrated.fontFamily": "MesloLGS NF",
-#
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-# oh-my-zsh plugins
-plugins=(git zsh-autosuggestions)
-
-# Path to your oh-my-zsh installation.
-export ZSH="/Users/yano3/.oh-my-zsh"
-source $ZSH/oh-my-zsh.sh
-source /Users/yano3/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/local/share/powerlevel10k/powerlevel10k.zsh-theme
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=1
-typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_EXPANSION=
-
-#
 # User configuration
 #
 export PATH=$HOME/.local/bin:$PATH
@@ -61,6 +34,33 @@ alias awsp='export AWS_PROFILE=$(aws configure list-profiles | fzf)'
 # lazyvim - https://github.com/LazyVim/LazyVim
 export EDITOR=vim
 alias vim="nvim"
+
+#
+# oh-my-zsh
+#
+plugins=(git zsh-autosuggestions)
+export ZSH="/Users/yano3/.oh-my-zsh"
+source $ZSH/oh-my-zsh.sh
+source /Users/yano3/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/local/share/powerlevel10k/powerlevel10k.zsh-theme
+
+#
+# p10k
+# - https://github.com/romkatv/powerlevel10k
+# - https://zenn.dev/urakawa_jinsei/articles/dccd3dcfa0dc0e
+# - (vscode settings) "terminal.integrated.fontFamily": "MesloLGS NF",
+#
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=1
+typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_EXPANSION=
 
 #
 # completion / suggestion
