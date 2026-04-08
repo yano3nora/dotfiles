@@ -26,7 +26,10 @@ export COMPOSE_MENU=0
 eval "$(direnv hook zsh)"
 
 # mise
-eval "$(/Users/yano3/.local/bin/mise activate zsh)"
+# eval "$(/Users/yano3/.local/bin/mise activate zsh)"
+
+# Vite+ bin (https://viteplus.dev)
+. "$HOME/.vite-plus/env"
 
 # https://zenn.dev/ryu022304/scraps/1a702c7a1edfa0
 alias awsp='export AWS_PROFILE=$(aws configure list-profiles | fzf)'
