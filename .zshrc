@@ -193,3 +193,67 @@ safezip() (
 
   echo "✅ Generated: $dest"
 )
+
+# ffmpeg で動画を手早く H.264/AAC の mp4 に再エンコードする
+#
+# 使い方:
+#   ffcomp path/to/hoge.mp4
+#   ffcomp path/to/hoge.mov
+#   ffcomp path/to/hoge.mkv
+# 出力:
+#   path/to/hoge.out.mp4
+#
+ffcomp() {
+  # 引数チェック
+  if [[ $# -ne 1 ]]; then
+    echo "使い方: ffcomp <input_video>"
+    return 1
+  fi
+
+  local input="$1"
+  local input_lc="${input:l}"
+  local stem=""
+
+  # 入力ファイル存在チェック
+  if [[ ! -f "$input" ]]; then
+    echo "ファイルが見つからない: $input"
+    return 1
+  fi
+
+  # 主要な動画コンテナを受け付ける。
+  # 出力先を常に .mp4 に寄せたいので、入力の拡張子ごとに basename を切る。
+  case "$input_lc" in
+    *.mp4)  stem="${input%.[mM][pP]4}" ;;
+    *.mov)  stem="${input%.[mM][oO][vV]}" ;;
+    *.mkv)  stem="${input%.[mM][kK][vV]}" ;;
+    *.avi)  stem="${input%.[aA][vV][iI]}" ;;
+    *.m4v)  stem="${input%.[mM]4[vV]}" ;;
+    *.webm) stem="${input%.[wW][eE][bB][mM]}" ;;
+    *.flv)  stem="${input%.[fF][lL][vV]}" ;;
+    *.wmv)  stem="${input%.[wW][mM][vV]}" ;;
+    *.mpg)  stem="${input%.[mM][pP][gG]}" ;;
+    *.mpeg) stem="${input%.[mM][pP][eE][gG]}" ;;
+    *)
+      echo "未対応の拡張子: $input"
+      echo "対応例: mp4 mov mkv avi m4v webm flv wmv mpg mpeg"
+      return 1
+      ;;
+  esac
+
+  # 出力ファイル名生成
+  local output="${stem}.out.mp4"
+
+  # 既存ファイルを潰したくないならここで止める
+  if [[ -e "$output" ]]; then
+    echo "出力先が既に存在する: $output"
+    return 1
+  fi
+
+  ffmpeg -i "$input" \
+    -c:v libx264 -crf 23 \
+    -c:a aac -b:a 96k \
+    -af "loudnorm=I=-24:TP=-3.0:LRA=11" \
+    -pix_fmt yuv420p \
+    -movflags +faststart \
+    "$output"
+}
