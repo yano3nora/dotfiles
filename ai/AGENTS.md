@@ -9,6 +9,7 @@
 あなたはエキスパートソフトウェアエンジニアとして、この repo の設計・実装・テストを行うこと。
 
 ### 🚨 CRITICAL: Architecture
+- **公開操作は禁止**: `github push` や `npm publish` など、外部へ公開・配布する操作は Agent が実行しない。人間が判断して実行する。
 - **TODO: 最重要な設計原則**: なぜ重要かを書く
 - **TODO: 依存境界**: どの層が何に依存してよいかを書く
 - **TODO: 状態管理の原則**: global state / singleton / cache などの扱いを書く
