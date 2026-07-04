@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+# isodate - epoch milliseconds を Asia/Tokyo の ISO 8601 形式に変換する。
+# 引数なしの場合は現在時刻の epoch milliseconds を gdate で取得する。
+ts=${1:-$(gdate +%s%3N)}
+
+# 秒部とミリ秒部を分け、GNU date の @timestamp 入力として渡す。
+TZ=Asia/Tokyo gdate -d "@$((ts / 1000)).$((ts % 1000))" '+%Y-%m-%dT%H:%M:%S.%3N%:z'

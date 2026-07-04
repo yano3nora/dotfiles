@@ -1,0 +1,52 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+# ffcomp - 動画を H.264/AAC の mp4 に再エンコードする。
+# 出力先は入力ファイルと同じ場所の <stem>.out.mp4。
+if [[ $# -ne 1 ]]; then
+  echo "使い方: ffcomp <input_video>" >&2
+  exit 1
+fi
+
+input="$1"
+input_lc="${input:l}"
+stem=""
+
+if [[ ! -f "$input" ]]; then
+  echo "ファイルが見つからない: $input" >&2
+  exit 1
+fi
+
+# 出力先を常に .mp4 に寄せるため、対応コンテナごとに拡張子を切り落とす。
+case "$input_lc" in
+  *.mp4)  stem="${input%.[mM][pP]4}" ;;
+  *.mov)  stem="${input%.[mM][oO][vV]}" ;;
+  *.mkv)  stem="${input%.[mM][kK][vV]}" ;;
+  *.avi)  stem="${input%.[aA][vV][iI]}" ;;
+  *.m4v)  stem="${input%.[mM]4[vV]}" ;;
+  *.webm) stem="${input%.[wW][eE][bB][mM]}" ;;
+  *.flv)  stem="${input%.[fF][lL][vV]}" ;;
+  *.wmv)  stem="${input%.[wW][mM][vV]}" ;;
+  *.mpg)  stem="${input%.[mM][pP][gG]}" ;;
+  *.mpeg) stem="${input%.[mM][pP][eE][gG]}" ;;
+  *)
+    echo "未対応の拡張子: $input" >&2
+    echo "対応例: mp4 mov mkv avi m4v webm flv wmv mpg mpeg" >&2
+    exit 1
+    ;;
+esac
+
+output="${stem}.out.mp4"
+
+if [[ -e "$output" ]]; then
+  echo "出力先が既に存在する: $output" >&2
+  exit 1
+fi
+
+ffmpeg -i "$input" \
+  -c:v libx264 -crf 23 \
+  -c:a aac -b:a 96k \
+  -af "loudnorm=I=-24:TP=-3.0:LRA=11" \
+  -pix_fmt yuv420p \
+  -movflags +faststart \
+  "$output"

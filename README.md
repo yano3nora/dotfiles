@@ -4,9 +4,25 @@
 ```sh
 $ git clone xxx
 $ cd dotfiles/
-$ mv ~/.zshrc ~/.zshrc.bak
-$ ln -s $(pwd)/.zshrc ~/
+$ ./bin/dotfiles install
 ```
+
+## dotfiles command
+`dotfiles install` は既存ファイルを上書きせず、`.bak.YYYYMMDDHHMMSS` に退避してから symlink を作成する。
+
+```sh
+$ dotfiles install # 設定を symlink して doctor も実行
+$ dotfiles link    # 設定の symlink のみ作成
+$ dotfiles doctor  # 必要なコマンドの有無を確認
+```
+
+`install` / `link` で作成する主なリンク:
+
+- `~/.config/dotfiles` -> this repository
+- `~/.zshrc` -> `.zshrc`
+- `~/.local/bin/*` -> `bin/*`
+- VSCode settings / keybindings
+- Ghostty config
 
 ## VSCode
 `settings.json` / `keybindings.json` は `~/` 直下ではなく Application Support 配下にあるため、リンク先を明示する。

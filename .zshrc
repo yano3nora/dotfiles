@@ -103,7 +103,15 @@ bindkey '^I' __tab_accept_suggest_or_complete
 #
 # functions
 #
-function mkd() { mkdir -p $@ && cd $_ && pwd }
+function mkd() {
+  if [[ $# -ne 1 ]]; then
+    echo "使い方: mkd <dir>" >&2
+    return 1
+  fi
+
+  local dir="$1"
+  mkdir -p -- "$dir" && cd -- "$dir" && pwd
+}
 
 # pd: current dir 以下からディレクトリを peco で選択して cd する
 function pd() {
@@ -154,115 +162,3 @@ function peco-history() {
 }
 zle -N peco-history
 bindkey '^R' peco-history
-
-# isodate - epoch millis から iso 日時を返す
-# brew install coreutils で gdate コマンド実行できる前提
-isodate() {
-  # 引数がなければ gdate +%s%3N で今のミリ秒を取得
-  local ts=${1:-$(gdate +%s%3N)}
-  # 秒部とミリ秒部に分割して ISO 形式でフォーマット
-  TZ=Asia/Tokyo gdate -d "@$((ts/1000)).$((ts%1000))" '+%Y-%m-%dT%H:%M:%S.%3N%:z'
-}
-
-# safezip - どの OS でも文字化けしないよう NFC / UTF-8 な zip を作成する
-# brew install convmv で convmv コマンド実行でき
-# brew install zip で zip を入れ直して PATH を通している前提
-# e.g.) $ safezip src/ [out.zip]
-export PATH="/usr/local/opt/zip/bin:$PATH"
-safezip() (
-  set -euo pipefail
-  src="${1%/}"
-  out="${2:-${src##*/}.zip}"
-  base="${src##*/}"
-  [ -e "$src" ] || { echo "❌ Not found: $src" >&2; exit 1; }
-
-  dest_dir="$(dirname -- "$out")"
-  dest_name="$(basename -- "$out")"
-  if [ "$dest_dir" = "." ]; then
-    dest="$PWD/$dest_name"
-  else
-    dest="$(cd "$dest_dir" && pwd -P)/$dest_name"
-  fi
-
-  tmp="$(mktemp -d "${TMPDIR:-/tmp}/safezip.XXXXXX")"
-  trap 'rm -rf -- "$tmp"' EXIT
-  if [ -d "$src" ]; then
-    mkdir -p "$tmp/$base" && cp -R "$src"/. "$tmp/$base"/
-  else
-    cp "$src" "$tmp/$base"
-  fi
-
-  cd "$tmp"
-  # convmv の --nfc で NFC 正規化へコンバート
-  # コンバート時にエンコーディング指定が必要なので -f utf-8 -t utf-8 をつけてる
-  convmv -r -f utf-8 -t utf-8 --notest --nfc "$base"
-  # -UN が --unicode オプション、ここで UTF-8 フラグをつけてる
-  # ついでにありがちな .DS_Store とか消したり
-  zip -r -X -UN=UTF8 "$dest" "$base" -x "*/.DS_Store" "*/__MACOSX/*"
-
-  echo "✅ Generated: $dest"
-)
-
-# ffmpeg で動画を手早く H.264/AAC の mp4 に再エンコードする
-#
-# 使い方:
-#   ffcomp path/to/hoge.mp4
-#   ffcomp path/to/hoge.mov
-#   ffcomp path/to/hoge.mkv
-# 出力:
-#   path/to/hoge.out.mp4
-#
-ffcomp() {
-  # 引数チェック
-  if [[ $# -ne 1 ]]; then
-    echo "使い方: ffcomp <input_video>"
-    return 1
-  fi
-
-  local input="$1"
-  local input_lc="${input:l}"
-  local stem=""
-
-  # 入力ファイル存在チェック
-  if [[ ! -f "$input" ]]; then
-    echo "ファイルが見つからない: $input"
-    return 1
-  fi
-
-  # 主要な動画コンテナを受け付ける。
-  # 出力先を常に .mp4 に寄せたいので、入力の拡張子ごとに basename を切る。
-  case "$input_lc" in
-    *.mp4)  stem="${input%.[mM][pP]4}" ;;
-    *.mov)  stem="${input%.[mM][oO][vV]}" ;;
-    *.mkv)  stem="${input%.[mM][kK][vV]}" ;;
-    *.avi)  stem="${input%.[aA][vV][iI]}" ;;
-    *.m4v)  stem="${input%.[mM]4[vV]}" ;;
-    *.webm) stem="${input%.[wW][eE][bB][mM]}" ;;
-    *.flv)  stem="${input%.[fF][lL][vV]}" ;;
-    *.wmv)  stem="${input%.[wW][mM][vV]}" ;;
-    *.mpg)  stem="${input%.[mM][pP][gG]}" ;;
-    *.mpeg) stem="${input%.[mM][pP][eE][gG]}" ;;
-    *)
-      echo "未対応の拡張子: $input"
-      echo "対応例: mp4 mov mkv avi m4v webm flv wmv mpg mpeg"
-      return 1
-      ;;
-  esac
-
-  # 出力ファイル名生成
-  local output="${stem}.out.mp4"
-
-  # 既存ファイルを潰したくないならここで止める
-  if [[ -e "$output" ]]; then
-    echo "出力先が既に存在する: $output"
-    return 1
-  fi
-
-  ffmpeg -i "$input" \
-    -c:v libx264 -crf 23 \
-    -c:a aac -b:a 96k \
-    -af "loudnorm=I=-24:TP=-3.0:LRA=11" \
-    -pix_fmt yuv420p \
-    -movflags +faststart \
-    "$output"
-}

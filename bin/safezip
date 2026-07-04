@@ -1,0 +1,48 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+# safezip - OS 間で文字化けしにくい NFC / UTF-8 な zip を作成する。
+# 前提: brew install convmv zip coreutils などで convmv / zip が利用できること。
+PATH="/usr/local/opt/zip/bin:$PATH"
+
+src="${1:-}"
+if [[ -z "$src" ]]; then
+  echo "使い方: safezip <src> [out.zip]" >&2
+  exit 1
+fi
+
+src="${src%/}"
+out="${2:-${src:t}.zip}"
+base="${src:t}"
+
+[[ -e "$src" ]] || { echo "❌ Not found: $src" >&2; exit 1; }
+
+dest_dir="$(dirname -- "$out")"
+dest_name="$(basename -- "$out")"
+if [[ "$dest_dir" == "." ]]; then
+  dest="$PWD/$dest_name"
+else
+  # 相対パス指定でも zip 実行時の一時ディレクトリ移動に影響されないよう絶対パスへ正規化する。
+  dest="$(cd "$dest_dir" && pwd -P)/$dest_name"
+fi
+
+tmp="$(mktemp -d "${TMPDIR:-/tmp}/safezip.XXXXXX")"
+trap 'rm -rf -- "$tmp"' EXIT
+
+if [[ -d "$src" ]]; then
+  mkdir -p "$tmp/$base"
+  cp -R "$src"/. "$tmp/$base"/
+else
+  cp "$src" "$tmp/$base"
+fi
+
+cd "$tmp"
+
+# convmv の --nfc でファイル名を NFC 正規化する。
+# -f / -t は UTF-8 同士の正規化でも convmv が変換元/先を判断するために必要。
+convmv -r -f utf-8 -t utf-8 --notest --nfc "$base"
+
+# -UN=UTF8 で zip 内の UTF-8 フラグを付与し、メタ情報や不要ファイルを極力混ぜない。
+zip -r -X -UN=UTF8 "$dest" "$base" -x "*/.DS_Store" "*/__MACOSX/*"
+
+echo "✅ Generated: $dest"

@@ -1,0 +1,153 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+# dotfiles - このリポジトリの設定ファイルをローカル環境へ安全に適用する。
+# 方針:
+# - 既存ファイルは黙って上書きせず、timestamp 付き .bak に退避する。
+# - 実体パスは ~/.config/dotfiles に集約し、各設定はそこから symlink する。
+
+DOTFILES_NAME="dotfiles"
+DOTFILES_CONFIG_LINK="$HOME/.config/$DOTFILES_NAME"
+
+# このスクリプトが symlink 経由で呼ばれても、実体の repo root を推定する。
+SCRIPT_PATH="${0:A}"
+DOTFILES_ROOT="${SCRIPT_PATH:h:h}"
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  dotfiles install    Link all dotfiles and run doctor
+  dotfiles link       Link all dotfiles only
+  dotfiles doctor     Check required commands
+  dotfiles help       Show this help
+USAGE
+}
+
+info() {
+  printf '==> %s\n' "$*"
+}
+
+warn() {
+  printf 'WARN: %s\n' "$*" >&2
+}
+
+backup_path() {
+  local path="$1"
+  printf '%s.bak.%s' "$path" "$(date +%Y%m%d%H%M%S)"
+}
+
+ensure_parent_dir() {
+  local path="$1"
+  mkdir -p "${path:h}"
+}
+
+link_path() {
+  local src="$1"
+  local dest="$2"
+
+  if [[ ! -e "$src" ]]; then
+    warn "source not found: $src"
+    return 1
+  fi
+
+  ensure_parent_dir "$dest"
+
+  # すでに期待通りの symlink なら何もしない。冪等性を保つための最重要分岐。
+  if [[ -L "$dest" && "${dest:A}" == "${src:A}" ]]; then
+    info "already linked: $dest -> $src"
+    return 0
+  fi
+
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    local backup
+    backup="$(backup_path "$dest")"
+    info "backup: $dest -> $backup"
+    mv "$dest" "$backup"
+  fi
+
+  ln -s "$src" "$dest"
+  info "linked: $dest -> $src"
+}
+
+link_bin_files() {
+  local src dest name
+  mkdir -p "$HOME/.local/bin"
+
+  for src in "$DOTFILES_ROOT"/bin/*; do
+    [[ -f "$src" && -x "$src" ]] || continue
+    name="${src:t}"
+    dest="$HOME/.local/bin/$name"
+    link_path "$src" "$dest"
+  done
+}
+
+link_all() {
+  info "dotfiles root: $DOTFILES_ROOT"
+
+  link_path "$DOTFILES_ROOT" "$DOTFILES_CONFIG_LINK"
+  link_path "$DOTFILES_ROOT/.zshrc" "$HOME/.zshrc"
+  link_path "$DOTFILES_ROOT/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+  link_path "$DOTFILES_ROOT/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
+  link_path "$DOTFILES_ROOT/ghostty/config.ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+  link_bin_files
+}
+
+doctor() {
+  local missing=0
+  local commands=(
+    zsh
+    code
+    nvim
+    trash
+    fd
+    fzf
+    peco
+    direnv
+    mise
+    gdate
+    convmv
+    zip
+    ffmpeg
+  )
+
+  info "checking commands"
+  for command_name in "${commands[@]}"; do
+    if command -v "$command_name" >/dev/null 2>&1; then
+      printf 'ok   %s\n' "$command_name"
+    else
+      printf 'miss %s\n' "$command_name"
+      missing=1
+    fi
+  done
+
+  if [[ "$missing" -ne 0 ]]; then
+    warn "some commands are missing"
+    return 1
+  fi
+
+  info "all required commands are available"
+}
+
+install() {
+  link_all
+  doctor
+}
+
+case "${1:-help}" in
+  install)
+    install
+    ;;
+  link)
+    link_all
+    ;;
+  doctor)
+    doctor
+    ;;
+  help|--help|-h)
+    usage
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac
