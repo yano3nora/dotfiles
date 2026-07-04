@@ -1,0 +1,41 @@
+# AGENTS - Development Guide
+## Overview
+- TODO: この repo は何をするものか
+- TODO: 主要な技術スタック / 実行環境
+- TODO: 最も重要な仕様・設計ドキュメント
+- TODO: 関連 repo / 移植元 / 参照実装があれば書く
+
+### 🎯 Role & Objective
+あなたはエキスパートソフトウェアエンジニアとして、この repo の設計・実装・テストを行うこと。
+
+### 🚨 CRITICAL: Architecture
+- **TODO: 最重要な設計原則**: なぜ重要かを書く
+- **TODO: 依存境界**: どの層が何に依存してよいかを書く
+- **TODO: 状態管理の原則**: global state / singleton / cache などの扱いを書く
+- **TODO: 失敗モード**: 前提にすべき失敗や edge case を書く
+- **TODO: YAGNI / 過剰設計禁止**: 広げてはいけない方向を書く
+
+### 📂 Code Organization Constraints
+- **`TODO/`**: TODO
+- **`TODO/`**: TODO
+- **`TODO/`**: TODO
+- **型 / 境界**: TODO
+
+### 🛠️ Workflow & Development Rules
+- **Testing**: タスク完了前に実行する検証を書く
+    - TODO: unit test 方針
+    - TODO: integration / e2e 方針
+    - TODO: bugfix 時の再現テスト方針
+- **Documentation**:
+    - 技術判断は `docs/ADR-XXXX-*.md` に記録する
+    - 仕様を変えたら `docs/SPEC-*.md` を更新する
+    - 作業メモが必要な場合は `docs/TASK-YYMMDD-*.md` に残す
+- **Versioning / Release**: TODO
+
+## Domains
+- `TODO`
+    - TODO: 重要なドメイン用語の説明
+- `TODO`
+    - TODO
+- `TODO`
+    - TODO

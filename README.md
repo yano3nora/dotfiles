@@ -1,4 +1,5 @@
 # dotfiles
+> https://github.com/topics/dotfiles
 
 macOS 用の個人 dotfiles。
 
@@ -12,6 +13,7 @@ macOS 用の個人 dotfiles。
 - `ghostty/` - Ghostty 設定
 - `lazygit/` - LazyGit 設定
 - `mise/` - global mise 設定
+- `ai/` - Agentic Coding 用テンプレート
 
 この dotfiles は `mise` が入っている前提。
 global CLI tool は `mise/config.toml` で管理し、project local な version は各 project の `mise.toml` に任せる。
@@ -84,3 +86,4 @@ dotfiles link
 - [`ghostty/README.md`](ghostty/README.md)
 - [`lazygit/README.md`](lazygit/README.md)
 - [`mise/README.md`](mise/README.md)
+- [`ai/README.md`](ai/README.md)
