@@ -22,3 +22,12 @@ $ ln -s "$(pwd)/vscode/settings.json" "$SETTINGS"
 
 - 配信 URL: `https://cdn.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css`
 - CSS 更新後はキャッシュを purge する: `https://purge.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css`
+
+## Ghostty
+`config.ghostty` は `~/` 直下ではなく Application Support 配下にあるため、リンク先を明示する。
+
+```sh
+$ GHOSTTY_CONFIG="$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+$ mv "$GHOSTTY_CONFIG" "$GHOSTTY_CONFIG.bak"
+$ ln -s "$(pwd)/ghostty/config.ghostty" "$GHOSTTY_CONFIG"
+```

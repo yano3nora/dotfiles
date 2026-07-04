@@ -2,10 +2,15 @@
   "[jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
+  "[markdown]": {
+    "editor.wordWrap": "off"
+  },
   "chatgpt.commentCodeLensEnabled": false,
   "chatgpt.localeOverride": "ja-JP",
   "comments.openView": "never",
   "deno.enable": false,
+  "deno.enablePaths": [],
+  "deno.lint": false,
   "diffEditor.ignoreTrimWhitespace": false,
   "docker.extension.dockerEngineAvailabilityPrompt": false,
   "editor.acceptSuggestionOnCommitCharacter": false,
@@ -116,8 +121,8 @@
     "https://schemastore.azurewebsites.net/": true,
     "https://www.schemastore.org/": true
   },
-  "markdown.preview.scrollEditorWithPreview": true,
-  "markdown.preview.scrollPreviewWithEditor": true,
+  "markdown.preview.scrollEditorWithPreview": false,
+  "markdown.preview.scrollPreviewWithEditor": false,
   "markdown.styles": [
     "https://cdn.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css"
   ],
@@ -141,7 +146,7 @@
   "terminal.integrated.confirmOnExit": "always",
   "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.fontFamily": "MesloLGS NF",
-  "terminal.integrated.fontSize": 11,
+  "terminal.integrated.fontSize": 12,
   "terminal.integrated.gpuAcceleration": "off",
   "terminal.integrated.smoothScrolling": true,
   "terminal.integrated.stickyScroll.enabled": false,
@@ -176,8 +181,10 @@
   "workbench.colorTheme": "Monokai",
   "workbench.commandPalette.history": 0,
   "workbench.editor.closeEmptyGroups": false,
+  "workbench.editor.enablePreview": false,
   "workbench.editor.focusRecentEditorAfterClose": false,
   "workbench.editor.openPositioning": "left",
+  "workbench.editor.useModal": "off",
   "workbench.editorAssociations": {
     "*.ipynb": "jupyter-notebook",
     "git-rebase-todo": "default"
@@ -188,6 +195,5 @@
   "workbench.settings.enableNaturalLanguageSearch": false,
   "workbench.startupEditor": "none",
   "workbench.statusBar.visible": true,
-  "workbench.tree.indent": 15,
-  "workbench.editor.enablePreview": false
+  "workbench.tree.indent": 15
 }
