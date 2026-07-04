@@ -9,12 +9,16 @@ $ ln -s $(pwd)/.zshrc ~/
 ```
 
 ## VSCode
-`settings.json` は `~/` 直下ではなく Application Support 配下にあるため、リンク先を明示する。
+`settings.json` / `keybindings.json` は `~/` 直下ではなく Application Support 配下にあるため、リンク先を明示する。
 
 ```sh
 $ SETTINGS="$HOME/Library/Application Support/Code/User/settings.json"
 $ mv "$SETTINGS" "$SETTINGS.bak"
 $ ln -s "$(pwd)/vscode/settings.json" "$SETTINGS"
+
+$ KEYBINDINGS="$HOME/Library/Application Support/Code/User/keybindings.json"
+$ mv "$KEYBINDINGS" "$KEYBINDINGS.bak"
+$ ln -s "$(pwd)/vscode/keybindings.json" "$KEYBINDINGS"
 ```
 
 `vscode/github-markdown.css` は Markdown プレビュー用のスタイル。

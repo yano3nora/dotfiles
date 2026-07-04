@@ -1,0 +1,447 @@
+[
+  //
+  // 矢印キー触りたくない系
+  //
+  // カーソルの上下左右を vim っぽく移動
+  {
+    "key": "cmd+j",
+    "command": "cursorDown",
+    "when": "editorFocus",
+  },
+  {
+    "key": "cmd+k",
+    "command": "cursorUp",
+    "when": "editorFocus",
+  },
+  {
+    "key": "cmd+h",
+    "command": "cursorLeft",
+    "when": "editorFocus",
+  },
+  {
+    "key": "cmd+l",
+    "command": "cursorRight",
+    "when": "editorFocus",
+  },
+  // ↑ の ctrl 版、上下はそのままで左右は単語単位の移動に、
+  {
+    "key": "ctrl+j",
+    "command": "cursorDown",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+k",
+    "command": "cursorUp",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+h",
+    "command": "cursorWordLeft",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+l",
+    "command": "cursorWordRight",
+    "when": "editorFocus",
+  },
+  // ↑ の ctrl 移動と shift を組み合わせた選択
+  {
+    "key": "ctrl+shift+j",
+    "command": "cursorDownSelect",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "cursorUpSelect",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+shift+h",
+    "command": "cursorWordLeftSelect",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "cursorWordRightSelect",
+    "when": "editorFocus",
+  },
+  // vim の上下大きく移動
+  {
+    "key": "ctrl+shift+d",
+    "command": "cursorPageDown",
+  },
+  {
+    "key": "ctrl+shift+u",
+    "command": "cursorPageUp",
+  },
+  // ctrl + cmd で大きく移動、行頭・行末・ページ上下
+  {
+    "key": "ctrl+cmd+j",
+    "command": "cursorPageDown",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+cmd+k",
+    "command": "cursorPageUp",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+cmd+h",
+    "command": "cursorLineStart",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+cmd+l",
+    "command": "cursorLineEnd",
+    "when": "editorFocus",
+  },
+  // サジェスト候補の ctrl + jk での上下移動
+  {
+    "key": "ctrl+j",
+    "command": "selectNextSuggestion",
+    "when": "suggestWidgetVisible"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "selectPrevSuggestion",
+    "when": "suggestWidgetVisible"
+  },
+  // パラメータ候補サジェストの ctrl + jk での上下移動
+  // ↑ suggest と被るので一旦消してる
+  // {
+  //   "key": "ctrl+j",
+  //   "command": "showNextParameterHint",
+  //   "when": "parameterHintsVisible"
+  // },
+  // {
+  //   "key": "ctrl+k",
+  //   "command": "showPrevParameterHint",
+  //   "when": "parameterHintsVisible"
+  // },
+  // コマンドパレット候補の ctrl + jkhl 移動
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.quickOpenSelectNext",
+    "when": "inQuickOpen"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "workbench.action.quickOpenSelectPrevious",
+    "when": "inQuickOpen"
+  },
+  // サイドバーのエクスプローラ・検索などリスト系候補の ctrl + jkhl 移動
+  // h でツリーをたたむ、l でツリーを展開
+  {
+    "key": "ctrl+j",
+    "command": "list.focusFirst",
+    "when": "!editorTextFocus && !inQuickOpen"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "list.focusDown",
+    "when": "listFocus"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "list.focusUp",
+    "when": "listFocus"
+  },
+  {
+    "key": "ctrl+h",
+    "command": "list.collapse",
+    "when": "listFocus"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "list.expand",
+    "when": "listFocus"
+  },
+  //
+  // エディタ・ターミナル操作を ctrl 起点で設定
+  //
+  // タブの新規作成 (chrome っぽく)
+  {
+    "key": "cmd+t",
+    "command": "workbench.action.files.newUntitledFile"
+  },
+  {
+    "key": "cmd+n",
+    "command": "-workbench.action.files.newUntitledFile"
+  },
+  // ターミナルの新規追加・移動・終了
+  {
+    "key": "cmd+t",
+    "command": "workbench.action.terminal.newInActiveWorkspace",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "cmd+w",
+    "command": "workbench.action.terminal.kill",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.terminal.focusNext",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "workbench.action.terminal.focusPrevious",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+[",
+    "command": "workbench.action.terminal.focusNext",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+]",
+    "command": "workbench.action.terminal.focusPrevious",
+    "when": "terminalFocus"
+  },
+  // エディタフォーカス + エディタグループの first / last 移動
+  {
+    "key": "ctrl+[",
+    "command": "workbench.action.focusFirstEditorGroup",
+    "when": "editorFocus",
+  },
+  {
+    "key": "ctrl+]",
+    "command": "workbench.action.focusLastEditorGroup",
+    "when": "editorFocus",
+  },
+  // エディタ拡大トグル
+  {
+    "key": "ctrl+shift+[",
+    "command": "workbench.action.toggleEditorWidths"
+  },
+  {
+    "key": "ctrl+shift+]",
+    "command": "workbench.action.decreaseViewWidth"
+  },
+  // ターミナルへのフォーカス + 同一 pane 内移動
+  {
+    "key": "ctrl+[BracketLeft]",
+    "command": "workbench.action.terminal.focusNextPane"
+  },
+  // ターミナルの最大化トグル
+  {
+    "key": "ctrl+shift+[BracketLeft]",
+    "command": "workbench.action.toggleMaximizedPanel",
+    "when": "terminalFocus"
+  },
+  // エディタ・ターミナル分割 (Spectacle ぽく)
+  {
+    "key": "cmd+shift+t",
+    "command": "workbench.action.splitEditor",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+t",
+    "command": "workbench.action.terminal.split",
+    "when": "terminalFocus"
+  },
+  //
+  // サイドバー展開系でよく使うやつ ctrl 起点で設定
+  // scm はもともと ctrl+shift+g なのでそのまま
+  //
+  {
+    "key": "ctrl+shift+f",
+    "command": "workbench.view.search"
+  },
+  {
+    "key": "ctrl+shift+e",
+    "command": "workbench.view.explorer"
+  },
+  {
+    "key": "ctrl+shift+x",
+    "command": "workbench.view.extensions"
+  },
+  {
+    "key": "ctrl+shift+p",
+    "command": "workbench.view.extension.project-manager"
+  },
+  //
+  // 他、コーディング中によく使うやつ ctrl 起点に設定
+  //
+  // ctrl + f で Toggle Fold (インデントされたブロックの開閉)
+  {
+    "key": "ctrl+f",
+    "command": "editor.toggleFold",
+    "when": "editorTextFocus && foldingEnabled"
+  },
+  {
+    "key": "cmd+k cmd+l",
+    "command": "-editor.toggleFold",
+    "when": "editorTextFocus && foldingEnabled"
+  },
+  // ctrl + ↑ ↓ で行移動、option は残しつつ
+  {
+    "key": "ctrl+up",
+    "command": "editor.action.moveLinesUpAction"
+  },
+  {
+    "command": "editor.action.moveLinesDownAction",
+    "key": "ctrl+down"
+  },
+  // ctrl + enter で行挿入、cmd は残しつつ
+  {
+    "key": "ctrl+enter",
+    "command": "editor.action.insertLineAfter"
+  },
+  // シンボル検索
+  {
+    "key": "ctrl+o",
+    "command": "workbench.action.showAllSymbols"
+  },
+  {
+    "key": "cmd+t",
+    "command": "-workbench.action.showAllSymbols"
+  },
+  // インクリメント
+  {
+    "key": "ctrl+shift+i",
+    "command": "extension.incrementSelection",
+    "when": "editorHasMultipleSelections"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "editor.emmet.action.incrementNumberByOne",
+  },
+  // デクリメント - decrementSelection は使用頻度ほぼないので別のにした
+  {
+    "key": "ctrl+d",
+    "command": "editor.emmet.action.decrementNumberByOne",
+  },
+  // ファイル単独実行、ビルド (code-runner)
+  {
+    "key": "ctrl+shift+b",
+    "command": "code-runner.run"
+  },
+  // markdown preview
+  {
+    "key": "shift+cmd+v",
+    "command": "-markdown.showPreview",
+    "when": "!notebookEditorFocused && editorLangId == 'markdown'"
+  },
+  {
+    "key": "ctrl+m ctrl+p",
+    "command": "markdown.showLockedPreviewToSide"
+  },
+  // solargraph.search 無効化
+  {
+    "key": "shift+cmd+r",
+    "command": "-solargraph.search"
+  },
+  {
+    "key": "ctrl+shift+alt+[Minus]",
+    "command": "-extension.profile.select"
+  },
+  // gistpad
+  {
+    "key": "ctrl+.",
+    "command": "gistpad.openGist"
+  },
+  {
+    "key": "ctrl+shift+g",
+    "command": "workbench.view.extension.gistpad"
+  },
+  // codex
+  {
+    "key": "ctrl+shift+c",
+    "command": "chatgpt.sidebarSecondaryView.open"
+  },
+  // project-manager
+  {
+    "key": "alt+cmd+p",
+    "command": "-projectManager.listProjects"
+  },
+  {
+    "key": "alt+p",
+    "command": "projectManager.listProjects"
+  },
+  {
+    "key": "alt+cmd+p",
+    "command": "projectManager.listProjectsNewWindow"
+  },
+  // zoomIn, zoomOut
+  {
+    "key": "cmd+[Semicolon]",
+    "command": "editor.action.fontZoomIn"
+  },
+  {
+    "key": "cmd+[Minus]",
+    "command": "editor.action.fontZoomOut"
+  },
+  {
+    "key": "cmd+numpad_add",
+    "command": "-workbench.action.zoomIn"
+  },
+  {
+    "key": "shift+cmd+[Semicolon]",
+    "command": "-workbench.action.zoomIn"
+  },
+  {
+    "key": "shift+cmd+[Minus]",
+    "command": "-workbench.action.zoomIn"
+  },
+  {
+    "key": "cmd+numpad_subtract",
+    "command": "-workbench.action.zoomOut"
+  },
+  {
+    "key": "cmd+[IntlRo]",
+    "command": "-workbench.action.zoomOut"
+  },
+  {
+    "key": "cmd+[Minus]",
+    "command": "-workbench.action.zoomOut"
+  },
+  // symbol rename を ctrl+r にしたい
+  {
+    "key": "ctrl+r",
+    "command": "-workbench.action.openRecent"
+  },
+  {
+    "key": "ctrl+r",
+    "command": "-workbench.action.quickOpenNavigateNextInRecentFilesPicker",
+    "when": "inQuickOpen && inRecentFilesPicker"
+  },
+  {
+    "key": "ctrl+r",
+    "command": "editor.action.rename",
+    "when": "editorHasRenameProvider && editorTextFocus && !editorReadonly"
+  },
+  // ctrl+e で peek (reference) だす
+  {
+    "key": "ctrl+e",
+    "command": "editor.action.referenceSearch.trigger"
+  },
+  {
+    "key": "ctrl+e",
+    "command": "-cursorLineEnd",
+    "when": "textInputFocus"
+  },
+  // tab で focus 切り替える mode が暴発してほしくない
+  {
+    "key": "ctrl+shift+m",
+    "command": "-editor.action.toggleTabFocusMode"
+  },
+  {
+    "key": "ctrl+w",
+    "command": "-workbench.action.switchWindow"
+  },
+  // chat 用の side bar 出てきてほしくない
+  {
+    "key": "cmd+shift+i",
+    "command": ""
+  },
+  {
+    "key": "cmd+ctrl+i",
+    "command": "",
+  },
+  {
+    "key": "alt+z",
+    "command": "-editor.action.toggleWordWrap"
+  },
+]
