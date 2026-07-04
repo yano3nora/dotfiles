@@ -13,5 +13,8 @@ alias grep='/usr/local/opt/grep/libexec/gnubin/grep'
 
 
 # lazyvim - https://github.com/LazyVim/LazyVim
-export EDITOR=vim
+# 意図: git commit など `$EDITOR` を実行するツールでも LazyVim / nvim を使う。
+# やっていること: alias は非対話コマンドから参照されないため、EDITOR 自体を nvim にする。
+export EDITOR=nvim
+export VISUAL="$EDITOR"
 alias vim="nvim"

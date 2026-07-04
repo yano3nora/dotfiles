@@ -43,6 +43,22 @@ __zsh_profile_mark "p10k-user-config"
 autoload -Uz compinit && compinit
 __zsh_profile_mark "compinit"
 
+# zle keymap
+# 意図: EDITOR=vim などに引っ張られて vi mode になり、Ctrl + 矢印などで
+# NORMAL / VISUAL 表示へ切り替わる事故を防ぐ。
+# やっていること: 明示的に emacs keymap を使い、主要 terminal の Ctrl/Option + ←/→
+# escape sequence を word 移動に割り当てる。
+bindkey -e
+bindkey '^[b' backward-word
+bindkey '^[f' forward-word
+bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word
+bindkey '^[OD' backward-word
+bindkey '^[OC' forward-word
+bindkey '^[[D' backward-char
+bindkey '^[[C' forward-char
+__zsh_profile_mark "keymap"
+
 setopt auto_menu
 setopt auto_list
 zstyle ':completion:*:default' menu select=1
