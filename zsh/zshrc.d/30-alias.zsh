@@ -8,7 +8,8 @@ alias rm="trash"
 alias reload="exec $SHELL -l"
 alias conf-zshrc='code ~/.zshrc'
 alias conf-ghostty='code "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"'
-alias conf-cmux='code ~/.config/cmux/cmux.json'
+alias conf-codex='code ~/.codex/instructions.md'
+alias conf-claude='code ~/.claude/CLAUDE.md'
 alias grep='/usr/local/opt/grep/libexec/gnubin/grep'
 
 
