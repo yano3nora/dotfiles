@@ -1,0 +1,11 @@
+# Main zsh loader for this dotfiles repository.
+# Keep this file small; put actual settings into zshrc.d/*.zsh.
+
+_dotfiles_zshrc="${${(%):-%N}:A}"
+export DOTFILES_ROOT="${_dotfiles_zshrc:h:h}"
+
+for _dotfiles_zsh_file in "$DOTFILES_ROOT"/zsh/zshrc.d/*.zsh(N); do
+  source "$_dotfiles_zsh_file"
+done
+
+unset _dotfiles_zshrc _dotfiles_zsh_file

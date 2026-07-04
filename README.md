@@ -19,10 +19,21 @@ $ dotfiles doctor  # 必要なコマンドの有無を確認
 `install` / `link` で作成する主なリンク:
 
 - `~/.config/dotfiles` -> this repository
-- `~/.zshrc` -> `.zshrc`
+- `~/.zshrc` -> `zsh/zshrc`
 - `~/.local/bin/*` -> `bin/*`
 - VSCode settings / keybindings
 - Ghostty config
+
+## Zsh
+Zsh 設定の実体は `zsh/zshrc` と `zsh/zshrc.d/*.zsh` に分割している。
+
+`zsh/zshrc.d/` の分割方針:
+
+- `00-initial.zsh` - 先頭で読み込む必要がある初期化
+- `10-tool.zsh` - PATH や外部ツールのセットアップ
+- `20-zsh.zsh` - oh-my-zsh / p10k / completion / zle など zsh 自体の設定
+- `30-alias.zsh` - alias / editor 設定
+- `40-func-*.zsh` - 関数。ファイル名で中身を想起できる単位に分ける
 
 ## VSCode
 `settings.json` / `keybindings.json` は `~/` 直下ではなく Application Support 配下にあるため、リンク先を明示する。
