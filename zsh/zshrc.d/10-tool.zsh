@@ -4,13 +4,10 @@
 # user-local commands managed by this dotfiles repository and other tools
 export PATH="$HOME/.local/bin:$PATH"
 
-# deno
-export PATH="/Users/yano3/.deno/bin:$PATH"
-
 # GNU grep
 export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
 
-# php
+# php@8.1 remains Homebrew-managed until mise php build dependencies are settled.
 export PATH="/usr/local/opt/php@8.1/bin:$PATH"
 export PATH="/usr/local/opt/php@8.1/sbin:$PATH"
 

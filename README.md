@@ -2,6 +2,8 @@
 
 Personal dotfiles for macOS.
 
+This dotfiles setup assumes `mise` is installed. Global CLI tools are managed by mise via `mise/config.toml`; project-local tool versions should live in each project's own `mise.toml`.
+
 ## Overview
 
 This repository manages:
@@ -11,6 +13,7 @@ This repository manages:
 - `vscode/` - VSCode user settings and keybindings
 - `ghostty/` - Ghostty terminal config
 - `lazygit/` - LazyGit config
+- `mise/` - global mise tool config
 
 The main entrypoint is `bin/dotfiles`.
 
@@ -20,6 +23,8 @@ The main entrypoint is `bin/dotfiles`.
 git clone xxx
 cd dotfiles
 ./bin/dotfiles link
+mise install
+dotfiles doctor
 exec $SHELL -l
 ```
 
@@ -37,10 +42,22 @@ dotfiles addbin <name>  # bin/<name> を実行可能な雛形つきで作る
 
 - `~/.config/dotfiles` -> this repository
 - `~/.zshrc` -> `zsh/zshrc`
+- `~/.config/mise/config.toml` -> `mise/config.toml`
 - `~/.local/bin/*` -> `bin/*`
 - VSCode settings / keybindings
 - Ghostty config
 - LazyGit config
+
+## Tool Management Policy
+
+This dotfiles setup uses `mise` for ordinary global CLI tools and runtimes.
+Project-local tool versions should live in each project's own `mise.toml`.
+
+Not everything should be forced into mise. Current exceptions:
+
+- `php@8.1` - kept on Homebrew. `mise install php@8.1.32` tried to build PHP from source and failed because `autoconf` was missing. PHP builds have many native dependencies, so the Homebrew PHP PATH stays until this is intentionally revisited.
+- GNU grep / zip and other macOS command replacements - kept on Homebrew + zsh PATH overrides. These are OS command replacement details, not ordinary global runtime versions.
+- `jq` / `ripgrep` - configured in mise and resolved through mise in interactive shells, but still installed by Homebrew because other Homebrew formulae depend on them. Do not force-remove them with `--ignore-dependencies`.
 
 ## Common Workflows
 
@@ -85,8 +102,8 @@ See each directory README:
 - [`vscode/README.md`](vscode/README.md)
 - [`ghostty/README.md`](ghostty/README.md)
 - [`lazygit/README.md`](lazygit/README.md)
+- [`mise/README.md`](mise/README.md)
 
 ## My Recommendation
 
-普段は `dotfiles link` と `reload` だけ覚えればよい。
-依存コマンドを増やしたときだけ `dotfiles doctor` を見る。
+普段は `dotfiles link` と `reload` を使う。global CLI tool を増やしたときは `mise/config.toml` を更新し、`mise install` と `dotfiles doctor` を実行する。
