@@ -1,21 +1,20 @@
 # dotfiles
 
-Personal dotfiles for macOS.
-
-This dotfiles setup assumes `mise` is installed. Global CLI tools are managed by mise via `mise/config.toml`; project-local tool versions should live in each project's own `mise.toml`.
+macOS 用の個人 dotfiles。
 
 ## Overview
 
-This repository manages:
+この repo では以下を管理する。
 
-- `zsh/` - zsh loader, shell setup, aliases, and shell functions
-- `bin/` - personal executable commands linked into `~/.local/bin`
-- `vscode/` - VSCode user settings and keybindings
-- `ghostty/` - Ghostty terminal config
-- `lazygit/` - LazyGit config
-- `mise/` - global mise tool config
+- `zsh/` - zsh 設定
+- `bin/` - 個人用コマンド
+- `vscode/` - VSCode 設定
+- `ghostty/` - Ghostty 設定
+- `lazygit/` - LazyGit 設定
+- `mise/` - global mise 設定
 
-The main entrypoint is `bin/dotfiles`.
+この dotfiles は `mise` が入っている前提。
+global CLI tool は `mise/config.toml` で管理し、project local な version は各 project の `mise.toml` に任せる。
 
 ## Getting Started
 
@@ -28,56 +27,40 @@ dotfiles doctor
 exec $SHELL -l
 ```
 
-`dotfiles link` creates symlinks and backs up existing files as `.bak.YYYYMMDDHHMMSS`.
+`dotfiles link` は既存ファイルを `.bak.YYYYMMDDHHMMSS` に退避してから symlink を作る。
 
-## Basic Usage
+## Commands
 
 ```sh
-dotfiles link           # managed files を symlink する
-dotfiles doctor         # 必要なコマンドの有無を確認する
+dotfiles link           # 管理対象の symlink を作る
+dotfiles doctor         # 必要なコマンドを確認する
 dotfiles addbin <name>  # bin/<name> を実行可能な雛形つきで作る
 ```
 
-`dotfiles link` が作成する主なリンク:
+`dotfiles link` が作る主なリンク:
 
 - `~/.config/dotfiles` -> this repository
 - `~/.zshrc` -> `zsh/zshrc`
 - `~/.config/mise/config.toml` -> `mise/config.toml`
 - `~/.local/bin/*` -> `bin/*`
-- VSCode settings / keybindings
-- Ghostty config
-- LazyGit config
+- VSCode / Ghostty / LazyGit 設定
 
-## Tool Management Policy
+## Tool Policy
 
-This dotfiles setup uses `mise` for ordinary global CLI tools and runtimes.
-Project-local tool versions should live in each project's own `mise.toml`.
+基本は `mise` で global CLI tool を管理する。
+ただし、PHP や macOS コマンド差し替え系のようにビルドや OS 依存が重いものは Homebrew 管理のままにする。
 
-Not everything should be forced into mise. Current exceptions:
+## Workflows
 
-- `php@8.1` - kept on Homebrew. `mise install php@8.1.32` tried to build PHP from source and failed because `autoconf` was missing. PHP builds have many native dependencies, so the Homebrew PHP PATH stays until this is intentionally revisited.
-- GNU grep / zip and other macOS command replacements - kept on Homebrew + zsh PATH overrides. These are OS command replacement details, not ordinary global runtime versions.
-- `jq` / `ripgrep` - configured in mise and resolved through mise in interactive shells, but still installed by Homebrew because other Homebrew formulae depend on them. Do not force-remove them with `--ignore-dependencies`.
+### zsh 設定を変える
 
-## Common Workflows
-
-### zsh 設定を追加・変更する
-
-`zsh/zshrc.d/*.zsh` を編集する。
-
-反映:
+`zsh/zshrc.d/*.zsh` を編集して、反映する。
 
 ```sh
 reload
 ```
 
-または:
-
-```sh
-exec $SHELL -l
-```
-
-### 新しい個人コマンドを追加する
+### 個人用コマンドを追加する
 
 ```sh
 dotfiles addbin my-command
@@ -85,17 +68,15 @@ dotfiles addbin my-command
 dotfiles link
 ```
 
-`addbin` は `chmod +x` 済みの雛形を作る。手で作った場合は自分で `chmod +x bin/<name>` する。
+手で `bin/` に追加した場合は `chmod +x bin/<name>` を忘れない。
 
-### 新しい管理対象ファイルを増やす
+### 管理対象ファイルを増やす
 
 1. repo に設定ファイルを置く
-2. `bin/dotfiles` の `link_all` に symlink 対象を追加する
+2. `bin/dotfiles` の `link_all` に symlink を追加する
 3. `dotfiles link` を実行する
 
-## Managed Areas
-
-See each directory README:
+## Details
 
 - [`bin/README.md`](bin/README.md)
 - [`zsh/README.md`](zsh/README.md)
@@ -103,7 +84,3 @@ See each directory README:
 - [`ghostty/README.md`](ghostty/README.md)
 - [`lazygit/README.md`](lazygit/README.md)
 - [`mise/README.md`](mise/README.md)
-
-## My Recommendation
-
-普段は `dotfiles link` と `reload` を使う。global CLI tool を増やしたときは `mise/config.toml` を更新し、`mise install` と `dotfiles doctor` を実行する。
