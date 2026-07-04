@@ -12,7 +12,7 @@ export PATH="/usr/local/opt/php@8.1/bin:$PATH"
 export PATH="/usr/local/opt/php@8.1/sbin:$PATH"
 
 # fd + fzf + bat
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .*'
+export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 source <(fzf --zsh)
 
@@ -23,7 +23,7 @@ export COMPOSE_MENU=0
 eval "$(direnv hook zsh)"
 
 # mise
-eval "$(/Users/yano3/.local/bin/mise activate zsh)"
+eval "$(mise activate zsh)"
 
 # Vite+ bin (https://viteplus.dev)
 . "$HOME/.vite-plus/env"

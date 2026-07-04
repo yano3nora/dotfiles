@@ -3,12 +3,12 @@
   quotepath = false
   ignorecase = false
   # https://raw.github.com/github/gitignore/cdd9e946da421758c6f42c427c7bc65c8326155d/Global/macOS.gitignore
-  excludesfile = /Users/yano3/.gitignore_global
+  excludesfile = ~/.gitignore_global
 [color]
   ui = true
 [user]
   name = yano3nora
-  email = yano3@alhino.jp
+	email = 18728262+yano3nora@users.noreply.github.com
 [init]
   defaultBranch = main
 [filter "lfs"]

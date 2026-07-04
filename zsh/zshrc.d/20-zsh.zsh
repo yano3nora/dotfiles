@@ -3,9 +3,9 @@
 
 # oh-my-zsh
 plugins=(git zsh-autosuggestions)
-export ZSH="/Users/yano3/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 source "$ZSH/oh-my-zsh.sh"
-source /Users/yano3/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source "$HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 source /usr/local/share/powerlevel10k/powerlevel10k.zsh-theme
 
 # p10k
