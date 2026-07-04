@@ -32,13 +32,13 @@ warn() {
 }
 
 backup_path() {
-  local path="$1"
-  printf '%s.bak.%s' "$path" "$(date +%Y%m%d%H%M%S)"
+  local target="$1"
+  printf '%s.bak.%s' "$target" "$(date +%Y%m%d%H%M%S)"
 }
 
 ensure_parent_dir() {
-  local path="$1"
-  mkdir -p "${path:h}"
+  local target="$1"
+  mkdir -p "${target:h}"
 }
 
 link_path() {
