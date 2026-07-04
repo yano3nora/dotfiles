@@ -26,13 +26,20 @@ reload
 
 ## Setup / Basic Usage
 
+zsh plugin は `~/.local/zsh/` 配下に置く。
+
+```txt
+~/.local/zsh/zsh-autosuggestions/
+~/.local/zsh/zsh-syntax-highlighting/
+```
+
 `zsh/zshrc` loads every `zsh/zshrc.d/*.zsh` file in filename order.
 
 Current structure:
 
 - `00-initial.zsh` - initialization that must run first
 - `10-tool.zsh` - PATH and external tool setup
-- `20-zsh.zsh` - oh-my-zsh / p10k / completion / zle setup
+- `20-zsh.zsh` - zsh-autosuggestions / syntax highlighting / p10k / completion / zle setup
 - `30-alias.zsh` - aliases and editor settings
 - `40-func-*.zsh` - shell functions, split by purpose
 
