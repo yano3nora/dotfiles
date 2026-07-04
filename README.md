@@ -1,64 +1,92 @@
-> https://github.com/topics/dotfiles
+# dotfiles
 
-# Distribution
+Personal dotfiles for macOS.
+
+## Overview
+
+This repository manages:
+
+- `zsh/` - zsh loader, shell setup, aliases, and shell functions
+- `bin/` - personal executable commands linked into `~/.local/bin`
+- `vscode/` - VSCode user settings and keybindings
+- `ghostty/` - Ghostty terminal config
+- `lazygit/` - LazyGit config
+
+The main entrypoint is `bin/dotfiles`.
+
+## Getting Started
+
 ```sh
-$ git clone xxx
-$ cd dotfiles/
-$ ./bin/dotfiles install
+git clone xxx
+cd dotfiles
+./bin/dotfiles link
+exec $SHELL -l
 ```
 
-## dotfiles command
-`dotfiles install` は既存ファイルを上書きせず、`.bak.YYYYMMDDHHMMSS` に退避してから symlink を作成する。
+`dotfiles link` creates symlinks and backs up existing files as `.bak.YYYYMMDDHHMMSS`.
+
+## Basic Usage
 
 ```sh
-$ dotfiles install # 設定を symlink して doctor も実行
-$ dotfiles link    # 設定の symlink のみ作成
-$ dotfiles doctor  # 必要なコマンドの有無を確認
+dotfiles link           # managed files を symlink する
+dotfiles doctor         # 必要なコマンドの有無を確認する
+dotfiles addbin <name>  # bin/<name> を実行可能な雛形つきで作る
 ```
 
-`install` / `link` で作成する主なリンク:
+`dotfiles link` が作成する主なリンク:
 
 - `~/.config/dotfiles` -> this repository
 - `~/.zshrc` -> `zsh/zshrc`
 - `~/.local/bin/*` -> `bin/*`
 - VSCode settings / keybindings
 - Ghostty config
+- LazyGit config
 
-## Zsh
-Zsh 設定の実体は `zsh/zshrc` と `zsh/zshrc.d/*.zsh` に分割している。
+## Common Workflows
 
-`zsh/zshrc.d/` の分割方針:
+### zsh 設定を追加・変更する
 
-- `00-initial.zsh` - 先頭で読み込む必要がある初期化
-- `10-tool.zsh` - PATH や外部ツールのセットアップ
-- `20-zsh.zsh` - oh-my-zsh / p10k / completion / zle など zsh 自体の設定
-- `30-alias.zsh` - alias / editor 設定
-- `40-func-*.zsh` - 関数。ファイル名で中身を想起できる単位に分ける
+`zsh/zshrc.d/*.zsh` を編集する。
 
-## VSCode
-`settings.json` / `keybindings.json` は `~/` 直下ではなく Application Support 配下にあるため、リンク先を明示する。
+反映:
 
 ```sh
-$ SETTINGS="$HOME/Library/Application Support/Code/User/settings.json"
-$ mv "$SETTINGS" "$SETTINGS.bak"
-$ ln -s "$(pwd)/vscode/settings.json" "$SETTINGS"
-
-$ KEYBINDINGS="$HOME/Library/Application Support/Code/User/keybindings.json"
-$ mv "$KEYBINDINGS" "$KEYBINDINGS.bak"
-$ ln -s "$(pwd)/vscode/keybindings.json" "$KEYBINDINGS"
+reload
 ```
 
-`vscode/github-markdown.css` は Markdown プレビュー用のスタイル。
-ローカル参照は webview の制約で不可なため、jsDelivr 経由で `markdown.styles` から読む。
-
-- 配信 URL: `https://cdn.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css`
-- CSS 更新後はキャッシュを purge する: `https://purge.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css`
-
-## Ghostty
-`config.ghostty` は `~/` 直下ではなく Application Support 配下にあるため、リンク先を明示する。
+または:
 
 ```sh
-$ GHOSTTY_CONFIG="$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
-$ mv "$GHOSTTY_CONFIG" "$GHOSTTY_CONFIG.bak"
-$ ln -s "$(pwd)/ghostty/config.ghostty" "$GHOSTTY_CONFIG"
+exec $SHELL -l
 ```
+
+### 新しい個人コマンドを追加する
+
+```sh
+dotfiles addbin my-command
+# bin/my-command を編集する
+dotfiles link
+```
+
+`addbin` は `chmod +x` 済みの雛形を作る。手で作った場合は自分で `chmod +x bin/<name>` する。
+
+### 新しい管理対象ファイルを増やす
+
+1. repo に設定ファイルを置く
+2. `bin/dotfiles` の `link_all` に symlink 対象を追加する
+3. `dotfiles link` を実行する
+
+## Managed Areas
+
+See each directory README:
+
+- [`bin/README.md`](bin/README.md)
+- [`zsh/README.md`](zsh/README.md)
+- [`vscode/README.md`](vscode/README.md)
+- [`ghostty/README.md`](ghostty/README.md)
+- [`lazygit/README.md`](lazygit/README.md)
+
+## My Recommendation
+
+普段は `dotfiles link` と `reload` だけ覚えればよい。
+依存コマンドを増やしたときだけ `dotfiles doctor` を見る。

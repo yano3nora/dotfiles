@@ -3,6 +3,7 @@ set -euo pipefail
 
 # dotfiles - このリポジトリの設定ファイルをローカル環境へ安全に適用する。
 # 方針:
+# - link は symlink 作成だけを行う。依存確認は doctor に分離する。
 # - 既存ファイルは黙って上書きせず、timestamp 付き .bak に退避する。
 # - 実体パスは ~/.config/dotfiles に集約し、各設定はそこから symlink する。
 
@@ -16,10 +17,10 @@ DOTFILES_ROOT="${SCRIPT_PATH:h:h}"
 usage() {
   cat <<'USAGE'
 Usage:
-  dotfiles install    Link all dotfiles and run doctor
-  dotfiles link       Link all dotfiles only
-  dotfiles doctor     Check required commands
-  dotfiles help       Show this help
+  dotfiles link           Link managed dotfiles
+  dotfiles doctor         Check required commands
+  dotfiles addbin <name>  Create an executable bin/<name> template
+  dotfiles help           Show this help
 USAGE
 }
 
@@ -89,6 +90,7 @@ link_all() {
   link_path "$DOTFILES_ROOT/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
   link_path "$DOTFILES_ROOT/vscode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
   link_path "$DOTFILES_ROOT/ghostty/config.ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+  link_path "$DOTFILES_ROOT/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
   link_bin_files
 }
 
@@ -98,6 +100,8 @@ doctor() {
     zsh
     code
     nvim
+    lazygit
+    delta
     trash
     fd
     fzf
@@ -128,20 +132,58 @@ doctor() {
   info "all required commands are available"
 }
 
-install() {
-  link_all
-  doctor
+addbin() {
+  if [[ $# -ne 1 ]]; then
+    usage >&2
+    return 1
+  fi
+
+  local name="$1"
+
+  if [[ "$name" == */* || "$name" == .* || ! "$name" =~ '^[A-Za-z0-9._-]+$' ]]; then
+    warn "invalid bin name: $name"
+    return 1
+  fi
+
+  local file="$DOTFILES_ROOT/bin/$name"
+  if [[ -e "$file" ]]; then
+    warn "already exists: $file"
+    return 1
+  fi
+
+  cat > "$file" <<EOF_BIN
+#!/usr/bin/env zsh
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  $name
+USAGE
+}
+
+main() {
+  usage
+}
+
+main "\$@"
+EOF_BIN
+
+  chmod +x "$file"
+  info "created: $file"
+  info "next: dotfiles link"
 }
 
 case "${1:-help}" in
-  install)
-    install
-    ;;
   link)
     link_all
     ;;
   doctor)
     doctor
+    ;;
+  addbin)
+    shift
+    addbin "$@"
     ;;
   help|--help|-h)
     usage

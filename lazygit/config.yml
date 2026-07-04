@@ -1,0 +1,10 @@
+os:
+  editPreset: nvim
+
+gui:
+  mouseEvents: true
+
+git:
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never --side-by-side --line-numbers
