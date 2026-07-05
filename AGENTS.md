@@ -3,7 +3,7 @@
 
 ## Overview
 - この repo は macOS 用の個人 dotfiles を管理する。
-- 主な管理対象は `zsh/`, `bin/`, `mise/`, `vscode/`, `ghostty/`, `lazygit/`, `ai/`。
+- 主な管理対象は `zsh/`, `bin/`, `git/`, `mise/`, `vscode/`, `ghostty/`, `lazygit/`, `ai/`。
 - `bin/dotfiles` が symlink 管理の入口。
 - global CLI tool は原則 `mise/config.toml` で pin する。project local な tool version は各 project の `mise.toml` に任せる。
 - Agentic Coding 用テンプレートは `ai/` に置く。他 repo の具体文脈を root docs に混ぜない。
@@ -21,6 +21,7 @@
 
 ### 📂 Code Organization Constraints
 - **`bin/`**: 個人用コマンド。新規追加は `dotfiles addbin <name>` を使う。手作業で追加した場合は `chmod +x` を忘れない。
+- **`git/`**: Git global config。`git/gitconfig` と `git/gitignore_global` を HOME 配下に symlink する。
 - **`zsh/`**: zsh 設定。`zsh/zshrc` が `zsh/zshrc.d/*.zsh` をファイル名順に読む。
 - **`mise/`**: global mise config。`mise/config.toml` を `~/.config/mise/config.toml` に symlink する。
 - **`vscode/`, `ghostty/`, `lazygit/`**: 各ツール設定。link 対象を増やす場合は `bin/dotfiles` を更新する。

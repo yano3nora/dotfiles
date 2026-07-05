@@ -8,6 +8,7 @@ macOS 用の個人 dotfiles。
 
 - `zsh/` - zsh 設定
 - `bin/` - 個人用コマンド
+- `git/` - Git global config
 - `vscode/` - VSCode 設定
 - `ghostty/` - Ghostty 設定
 - `lazygit/` - LazyGit 設定
@@ -40,6 +41,8 @@ dotfiles addbin <name>  # bin/<name> を実行可能な雛形つきで作る
 `dotfiles link` が作る主なリンク:
 
 - `~/.config/dotfiles` -> this repository
+- `~/.gitconfig` -> `git/gitconfig`
+- `~/.gitignore_global` -> `git/gitignore_global`
 - `~/.zshrc` -> `zsh/zshrc`
 - `~/.config/mise/config.toml` -> `mise/config.toml`
 - `~/.local/bin/*` -> `bin/*`
@@ -66,6 +69,7 @@ dotfiles link
 
 ## Details
 - [`bin/README.md`](bin/README.md)
+- [`git/README.md`](git/README.md)
 - [`zsh/README.md`](zsh/README.md)
 - [`vscode/README.md`](vscode/README.md)
 - [`ghostty/README.md`](ghostty/README.md)

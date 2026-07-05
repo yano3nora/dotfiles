@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+__MACOSX/
+.AppleDouble
+.LSOverride
+Icon[]
+._*
+
+# Editor / local noise
+.vscode/.browse.VC.db*
+.idea/
+
+# Logs
+*.log

@@ -86,6 +86,8 @@ link_all() {
   info "dotfiles root: $DOTFILES_ROOT"
 
   link_path "$DOTFILES_ROOT" "$DOTFILES_CONFIG_LINK"
+  link_path "$DOTFILES_ROOT/git/gitconfig" "$HOME/.gitconfig"
+  link_path "$DOTFILES_ROOT/git/gitignore_global" "$HOME/.gitignore_global"
   link_path "$DOTFILES_ROOT/zsh/zshrc" "$HOME/.zshrc"
   link_path "$DOTFILES_ROOT/mise/config.toml" "$HOME/.config/mise/config.toml"
   link_path "$DOTFILES_ROOT/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
