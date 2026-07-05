@@ -54,7 +54,8 @@ reload
 dots link           # 管理対象の symlink を作る
 dots doctor         # 必要なコマンドを確認する
 dots addbin <name>  # bin/<name> を実行可能な雛形つきで作る
-dots project [dir]  # 新規 project 用テンプレートをコピーする
+dots project [--typescript] [--react] [dir]
+                    # 新規 project 用テンプレートをコピーする
 ```
 
 ## Workflows
@@ -68,7 +69,12 @@ dots link
 ```sh
 mkdir my-project
 cd my-project
+
 dots project
+dots project --typescript
+dots project --typescript --react
+# tsc --init や Vite / Next.js など、project 固有の初期化に続く
+# package.json の依存・バージョンの最適化は手動で行う
 ```
 
 既存ファイルは上書きせず skip する。

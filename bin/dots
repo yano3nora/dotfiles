@@ -20,7 +20,8 @@ Usage:
   dots link               Link managed dotfiles
   dots doctor             Check required commands
   dots addbin <name>      Create an executable bin/<name> template
-  dots project [dir]      Create a new project template
+  dots project [--typescript] [--react] [dir]
+                          Create a new project template
   dots help               Show this help
 USAGE
 }
@@ -264,13 +265,115 @@ copy_readme_template() {
   info "created: $dest"
 }
 
+package_name_from_dir() {
+  local project_name="$1"
+  local package_name
+
+  # npm package name として最低限安全な値に寄せる。
+  # README の見出しは人間向けに元の directory 名を使うが、package.json は npm の制約が強い。
+  package_name="$(printf '%s' "$project_name" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed -E 's/[^a-z0-9._~-]+/-/g; s/^-+//; s/-+$//')"
+
+  if [[ -z "$package_name" ]]; then
+    package_name="new-project"
+  fi
+
+  printf '%s\n' "$package_name"
+}
+
+copy_package_json_template() {
+  local target_dir="$1"
+  local src="$DOTFILES_ROOT/project/typescript/package.json"
+  local dest="$target_dir/package.json"
+  local package_name
+
+  if [[ ! -e "$src" ]]; then
+    warn "template not found: $src"
+    return 1
+  fi
+
+  ensure_parent_dir "$dest"
+
+  # package.json は project 固有の依存・scripts が育ちやすいので、既存ファイルは絶対に上書きしない。
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    info "skip existing: $dest"
+    return 0
+  fi
+
+  package_name="$(package_name_from_dir "${target_dir:t}")"
+  sed "s/__PROJECT_NAME__/$package_name/g" "$src" > "$dest"
+  info "created: $dest"
+}
+
+copy_typescript_templates() {
+  local target_dir="$1"
+  local react="$2"
+
+  copy_template_file "$DOTFILES_ROOT/project/typescript/.vscode/settings.json" "$target_dir/.vscode/settings.json"
+  copy_template_file "$DOTFILES_ROOT/project/typescript/.vscode/extensions.json" "$target_dir/.vscode/extensions.json"
+  copy_template_file "$DOTFILES_ROOT/project/typescript/.oxfmtrc.json" "$target_dir/.oxfmtrc.json"
+  if [[ "$react" == "1" ]]; then
+    # --react は React project 向けの oxlint 初期値を選ぶだけに留める。
+    # tsconfig や framework 設定は Next.js / Vite / library で正解が割れるため入れない。
+    copy_template_file "$DOTFILES_ROOT/project/typescript-react/.oxlintrc.json" "$target_dir/.oxlintrc.json"
+  else
+    copy_template_file "$DOTFILES_ROOT/project/typescript/.oxlintrc.json" "$target_dir/.oxlintrc.json"
+  fi
+  copy_template_file "$DOTFILES_ROOT/project/typescript/vitest.config.ts" "$target_dir/vitest.config.ts"
+  copy_template_file "$DOTFILES_ROOT/project/typescript/.npmrc" "$target_dir/.npmrc"
+  copy_package_json_template "$target_dir"
+}
+
 project() {
-  if [[ $# -gt 1 ]]; then
+  local typescript=0
+  local react=0
+  local target="."
+  local targets=()
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --typescript)
+        typescript=1
+        ;;
+      --react)
+        react=1
+        ;;
+      --)
+        shift
+        break
+        ;;
+      -*)
+        warn "unknown option: $1"
+        usage >&2
+        return 1
+        ;;
+      *)
+        targets+=("$1")
+        ;;
+    esac
+    shift
+  done
+
+  while [[ $# -gt 0 ]]; do
+    targets+=("$1")
+    shift
+  done
+
+  if [[ "${#targets[@]}" -gt 1 ]]; then
     usage >&2
     return 1
   fi
 
-  local target="${1:-.}"
+  if [[ "$react" == "1" && "$typescript" != "1" ]]; then
+    warn "--react requires --typescript"
+    return 1
+  fi
+
+  if [[ "${#targets[@]}" -eq 1 ]]; then
+    target="${targets[1]}"
+  fi
+
   local target_dir="${target:A}"
 
   mkdir -p "$target_dir"
@@ -281,11 +384,14 @@ project() {
   copy_template_file "$DOTFILES_ROOT/project/.editorconfig" "$target_dir/.editorconfig"
   copy_template_file "$DOTFILES_ROOT/project/.gitignore" "$target_dir/.gitignore"
   copy_template_file "$DOTFILES_ROOT/project/.gitattributes" "$target_dir/.gitattributes"
-  copy_template_file "$DOTFILES_ROOT/project/.npmrc" "$target_dir/.npmrc"
   copy_readme_template "$target_dir"
   copy_template_file "$DOTFILES_ROOT/project/AGENTS.md" "$target_dir/AGENTS.md"
   copy_template_file "$DOTFILES_ROOT/project/CLAUDE.md" "$target_dir/CLAUDE.md"
   copy_template_dir_files "$DOTFILES_ROOT/project/docs" "$target_dir/docs"
+
+  if [[ "$typescript" == "1" ]]; then
+    copy_typescript_templates "$target_dir" "$react"
+  fi
 
   info "next: edit TODOs in AGENTS.md, README.md, and docs/"
 }
