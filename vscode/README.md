@@ -10,12 +10,12 @@ Managed files:
 - `keybindings.json`
 - `github-markdown.css`
 
-`dotfiles link` links settings and keybindings into VSCode's user config directory.
+`dots link` links settings and keybindings into VSCode's user config directory.
 
 ## Getting Started
 
 ```sh
-dotfiles link
+dots link
 ```
 
 ## Setup / Basic Usage
@@ -28,7 +28,7 @@ The markdown preview stylesheet is loaded through jsDelivr because local file re
 ## Important Commands
 
 ```sh
-dotfiles link
+dots link
 ```
 
 ## Trouble Shooting

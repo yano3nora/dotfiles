@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# dotfiles - このリポジトリの設定ファイルをローカル環境へ安全に適用する。
+# dots - このリポジトリの設定ファイルをローカル環境へ安全に適用する。
 # 方針:
 # - link は symlink 作成だけを行う。依存確認は doctor に分離する。
 # - 既存ファイルは黙って上書きせず、timestamp 付き .bak に退避する。
@@ -17,11 +17,11 @@ DOTFILES_ROOT="${SCRIPT_PATH:h:h}"
 usage() {
   cat <<'USAGE'
 Usage:
-  dotfiles link           Link managed dotfiles
-  dotfiles doctor         Check required commands
-  dotfiles addbin <name>  Create an executable bin/<name> template
-  dotfiles project [dir]  Create a new project template
-  dotfiles help           Show this help
+  dots link               Link managed dotfiles
+  dots doctor             Check required commands
+  dots addbin <name>      Create an executable bin/<name> template
+  dots project [dir]      Create a new project template
+  dots help               Show this help
 USAGE
 }
 
@@ -194,7 +194,7 @@ EOF_BIN
 
   chmod +x "$file"
   info "created: $file"
-  info "next: dotfiles link"
+  info "next: dots link"
 }
 
 copy_template_file() {

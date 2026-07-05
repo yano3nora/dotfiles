@@ -4,7 +4,7 @@
 
 Zsh configuration is split into a small loader and focused files under `zshrc.d/`.
 
-`dotfiles link` links:
+`dots link` links:
 
 ```txt
 ~/.zshrc -> zsh/zshrc

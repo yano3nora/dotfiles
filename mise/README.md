@@ -15,7 +15,7 @@ Project-local tool versions should be managed by each project's `mise.toml`, not
 ## Getting Started
 
 ```sh
-dotfiles link
+dots link
 mise install
 ```
 
@@ -43,9 +43,9 @@ mise use -g tool@version
 ### Add a global CLI tool
 
 1. Add a pinned version to `mise/config.toml`
-2. Run `dotfiles link`
+2. Run `dots link`
 3. Run `mise install`
-4. Run `dotfiles doctor` if the command is required by this environment
+4. Run `dots doctor` if the command is required by this environment
 
 ### Project-local tools
 

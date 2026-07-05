@@ -4,7 +4,7 @@
 
 新規 project にコピーして使う汎用テンプレート置き場。
 
-`dotfiles project [dir]` がこのディレクトリのテンプレートを対象 project にコピーする。
+`dots project [dir]` がこのディレクトリのテンプレートを対象 project にコピーする。
 `_README.md` は対象 project の `README.md` として使うテンプレート。
 コピー時に先頭タイトルだけ対象ディレクトリ名へ差し替える。
 
@@ -23,7 +23,7 @@
 ## Usage
 
 ```sh
-dotfiles project /path/to/project
+dots project /path/to/project
 ```
 
 ## Policy

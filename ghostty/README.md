@@ -8,12 +8,12 @@ Managed file:
 
 - `config.ghostty`
 
-`dotfiles link` links it into Ghostty's Application Support directory.
+`dots link` links it into Ghostty's Application Support directory.
 
 ## Getting Started
 
 ```sh
-dotfiles link
+dots link
 ```
 
 ## Setup / Basic Usage
@@ -27,7 +27,7 @@ Config path:
 ## Important Commands
 
 ```sh
-dotfiles link
+dots link
 ```
 
 ## Trouble Shooting

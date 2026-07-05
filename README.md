@@ -29,17 +29,17 @@ git clone xxx
 cd dotfiles
 
 # setup symlinks with backup
-./bin/dotfiles link
+./bin/dots link
 
 # setup tools
 mise install
-dotfiles doctor
+dots doctor
 
 # reload shell
 reload
 ```
 
-`dotfiles link` が作る主なリンク:
+`dots link` が作る主なリンク:
 
 - `~/.config/dotfiles` -> this repository
 - `git/gitconfig` -> `~/.gitconfig`
@@ -51,24 +51,24 @@ reload
 
 ## Commands
 ```sh
-dotfiles link           # 管理対象の symlink を作る
-dotfiles doctor         # 必要なコマンドを確認する
-dotfiles addbin <name>  # bin/<name> を実行可能な雛形つきで作る
-dotfiles project [dir]  # 新規 project 用テンプレートをコピーする
+dots link           # 管理対象の symlink を作る
+dots doctor         # 必要なコマンドを確認する
+dots addbin <name>  # bin/<name> を実行可能な雛形つきで作る
+dots project [dir]  # 新規 project 用テンプレートをコピーする
 ```
 
 ## Workflows
 ### 個人用コマンドを追加する
 ```sh
-dotfiles addbin my-command
-dotfiles link
+dots addbin my-command
+dots link
 ```
 
 ### 新規 project を初期化する
 ```sh
 mkdir my-project
 cd my-project
-dotfiles project
+dots project
 ```
 
 既存ファイルは上書きせず skip する。
@@ -76,8 +76,8 @@ dotfiles project
 
 ### 管理対象ファイルを増やす
 1. repo に設定ファイルを置く
-2. `bin/dotfiles` の `link_all` に symlink を追加する
-3. `dotfiles link` を実行する
+2. `bin/dots` の `link_all` に symlink を追加する
+3. `dots link` を実行する
 
 # Deployment
 release 運用はしない。

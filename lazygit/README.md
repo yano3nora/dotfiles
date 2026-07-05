@@ -8,12 +8,12 @@ Managed file:
 
 - `config.yml`
 
-`dotfiles link` links it into LazyGit's macOS Application Support config path.
+`dots link` links it into LazyGit's macOS Application Support config path.
 
 ## Getting Started
 
 ```sh
-dotfiles link
+dots link
 ```
 
 ## Setup / Basic Usage
