@@ -31,7 +31,7 @@
     - TODO: bugfix 時の再現テスト方針
 - **Documentation**:
     - 技術判断は `docs/ADR-XXXX-*.md` に記録する
-    - 仕様を変えたら `docs/SPEC-*.md` を更新する
+    - 仕様を変えたら `docs/SPEC-XXXX-*.md` を更新する
     - 作業メモが必要な場合は `docs/TASK-YYMMDD-*.md` に残す
 - **Versioning / Release**: TODO
 
