@@ -6,94 +6,94 @@
   {
     "key": "cmd+j",
     "command": "cursorDown",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "cmd+k",
     "command": "cursorUp",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "cmd+h",
     "command": "cursorLeft",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "cmd+l",
     "command": "cursorRight",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   // ↑ の ctrl 版、上下はそのままで左右は単語単位の移動に、
   {
     "key": "ctrl+j",
     "command": "cursorDown",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+k",
     "command": "cursorUp",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+h",
     "command": "cursorWordLeft",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+l",
     "command": "cursorWordRight",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   // ↑ の ctrl 移動と shift を組み合わせた選択
   {
     "key": "ctrl+shift+j",
     "command": "cursorDownSelect",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+shift+k",
     "command": "cursorUpSelect",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+shift+h",
     "command": "cursorWordLeftSelect",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+shift+l",
     "command": "cursorWordRightSelect",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   // vim の上下大きく移動
   {
     "key": "ctrl+shift+d",
-    "command": "cursorPageDown",
+    "command": "cursorPageDown"
   },
   {
     "key": "ctrl+shift+u",
-    "command": "cursorPageUp",
+    "command": "cursorPageUp"
   },
   // ctrl + cmd で大きく移動、行頭・行末・ページ上下
   {
     "key": "ctrl+cmd+j",
     "command": "cursorPageDown",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+cmd+k",
     "command": "cursorPageUp",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+cmd+h",
     "command": "cursorLineStart",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+cmd+l",
     "command": "cursorLineEnd",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   // サジェスト候補の ctrl + jk での上下移動
   {
@@ -203,12 +203,12 @@
   {
     "key": "ctrl+[",
     "command": "workbench.action.focusFirstEditorGroup",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   {
     "key": "ctrl+]",
     "command": "workbench.action.focusLastEditorGroup",
-    "when": "editorFocus",
+    "when": "editorFocus"
   },
   // エディタ拡大トグル
   {
@@ -230,12 +230,7 @@
     "command": "workbench.action.toggleMaximizedPanel",
     "when": "terminalFocus"
   },
-  // エディタ・ターミナル分割 (Spectacle ぽく)
-  {
-    "key": "cmd+shift+t",
-    "command": "workbench.action.splitEditor",
-    "when": "editorTextFocus"
-  },
+  // エディタ・ターミナル分割
   {
     "key": "cmd+shift+t",
     "command": "workbench.action.terminal.split",
@@ -306,12 +301,12 @@
   },
   {
     "key": "ctrl+i",
-    "command": "editor.emmet.action.incrementNumberByOne",
+    "command": "editor.emmet.action.incrementNumberByOne"
   },
   // デクリメント - decrementSelection は使用頻度ほぼないので別のにした
   {
     "key": "ctrl+d",
-    "command": "editor.emmet.action.decrementNumberByOne",
+    "command": "editor.emmet.action.decrementNumberByOne"
   },
   // ファイル単独実行、ビルド (code-runner)
   {
@@ -438,10 +433,10 @@
   },
   {
     "key": "cmd+ctrl+i",
-    "command": "",
+    "command": ""
   },
   {
     "key": "alt+z",
     "command": "-editor.action.toggleWordWrap"
-  },
+  }
 ]
