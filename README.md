@@ -7,6 +7,7 @@ macOS 用の個人 dotfiles。
 # Structure
 ```txt
 .
+├ ai/                  … AI coding agent 向けの個人用グローバル設定
 ├ bin/                 … 個人用コマンド / dotfiles 管理コマンド
 ├ git/                 … Git global config
 ├ ghostty/             … Ghostty 設定
@@ -48,6 +49,8 @@ reload
 - `~/.config/mise/config.toml` -> `mise/config.toml`
 - `~/.local/bin/*` -> `bin/*`
 - VSCode / Ghostty / LazyGit 設定
+- `~/.codex/instructions.md` -> `ai/instructions.md`
+- `~/.claude/CLAUDE.md` -> `ai/CLAUDE.md`
 
 ## Commands
 ```sh
@@ -90,6 +93,7 @@ release 運用はしない。
 push / publish は人間が判断して実行する。
 
 # Resources
+- [`ai/README.md`](ai/README.md)
 - [`bin/README.md`](bin/README.md)
 - [`git/README.md`](git/README.md)
 - [`zsh/README.md`](zsh/README.md)
