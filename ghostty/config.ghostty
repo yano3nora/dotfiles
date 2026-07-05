@@ -49,11 +49,12 @@ keybind = cmd+enter=unbind
 # 入力汚染抑止
 # 意図: Ghostty が Ctrl+英字/記号を CSI u / Fixterms 系シーケンスとして shell に流し、
 # `;5u` などが入力行へ出る事故を防ぐ。
-# やっていること: shell で使わない Ctrl コンボは terminal 側で握りつぶす。
+# やっていること: shell で使わない Ctrl コンボだけを terminal 側で握りつぶす。
+# 注意: ctrl+n / ctrl+p / ctrl+j は peco や Codex picker などの候補移動で使うため、
+# terminal 側では握りつぶさず、アプリケーションへ届かせる。
 # https://github.com/ghostty-org/ghostty/discussions/3498
 keybind = ctrl+i=ignore
 keybind = ctrl+m=ignore
-keybind = ctrl+n=ignore
 keybind = ctrl+minus=ignore
 keybind = ctrl+equal=ignore
 keybind = ctrl+shift+equal=ignore
