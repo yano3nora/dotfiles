@@ -19,7 +19,7 @@
 #   "mise env --json | jq -r 'keys | join(\" \")'",
 # ]
 
-# [shell_aliases]
+# [shell_alias]
 # provision = "mise run provision"
 
 # [tasks.pre-commit]
