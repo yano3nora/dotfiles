@@ -4,8 +4,8 @@ project
 # Structure
 ```
 .
-├ docs/                 … ADR / SPEC / TASK など設計・開発用のノート
-└ mise.toml             … 開発環境用ツールチェイン
+├ docs/                 … Design notes
+└ mise.toml             … Toolchain
 ```
 
 # Depends
@@ -14,8 +14,12 @@ project
 # Development
 ## Getting Started
 ```sh
-mise trust && mise install
-provision
+# Uncomment required tools/tasks in mise.toml first.
+mise install
+
+# If you enable env / hooks / tasks, trust the config explicitly.
+mise trust
+mise run provision
 
 # Dev server - http://localhost:3000
 npm start

@@ -1,15 +1,9 @@
 # https://mise.jdx.dev/
-[settings]
-experimental = true
+# Project-local tool versions and tasks.
+# Uncomment only the parts this project actually needs.
 
-[hooks]
-enter = [
-  "echo '🍳 mise enabled'",
-  # "mise env --json | jq -r 'keys | join(\" \")'" # show env list on enter directory
-]
-
-# [shell_alias]
-# provision = "mise run provision"
+# [settings]
+# experimental = true
 
 # [tools]
 # node = "24.14.1"
@@ -18,6 +12,15 @@ enter = [
 
 # [env]
 # _.file = ".env.local"
+
+# [hooks]
+# enter = [
+#   "echo '🍳 mise enabled'",
+#   "mise env --json | jq -r 'keys | join(\" \")'",
+# ]
+
+# [shell_aliases]
+# provision = "mise run provision"
 
 # [tasks.pre-commit]
 # description = "pre-commit: fix lint, format and run tests"
