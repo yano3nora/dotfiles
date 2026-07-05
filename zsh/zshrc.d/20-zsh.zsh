@@ -56,6 +56,15 @@ __zsh_profile_mark "compinit"
 # やっていること: 明示的に emacs keymap を使い、主要 terminal の Ctrl/Option + ←/→
 # escape sequence を word 移動に割り当てる。
 bindkey -e
+# 意図: 何らかの拍子に zle が vi keymap へ切り替わり、入力が vim mode っぽくなる事故を抑止する。
+# やっていること: line editor 開始時と keymap 変更時に、vi 系 keymap なら emacs keymap へ戻す。
+function __force_emacs_keymap_if_vi() {
+  if [[ "${KEYMAP:-}" == vicmd || "${KEYMAP:-}" == viins ]]; then
+    zle -K emacs
+  fi
+}
+zle -N zle-line-init __force_emacs_keymap_if_vi
+zle -N zle-keymap-select __force_emacs_keymap_if_vi
 bindkey '^[b' backward-word
 bindkey '^[f' forward-word
 bindkey '^[[1;5D' backward-word
