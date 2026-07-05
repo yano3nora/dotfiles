@@ -12,3 +12,5 @@ Icon[]
 
 # Logs
 *.log
+
+**/.claude/.cc-writes/
