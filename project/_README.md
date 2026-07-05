@@ -14,11 +14,11 @@ project
 # Development
 ## Getting Started
 ```sh
-$ mise trust && mise install
-$ provision
+mise trust && mise install
+provision
 
 # Dev server - http://localhost:3000
-$ npm start
+npm start
 ```
 
 ## Commands
