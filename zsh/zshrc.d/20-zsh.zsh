@@ -61,6 +61,9 @@ __zsh_profile_mark "keymap"
 
 setopt auto_menu
 setopt auto_list
+# 意図: Ctrl+R / peco-history で `# ...` から始まる履歴を呼び出しても、
+# `#` をコマンド名ではなくコメントとして扱わせる。
+setopt interactive_comments
 zstyle ':completion:*:default' menu select=1
 bindkey '^I' autosuggest-accept
 __zsh_profile_mark "completion-options"
