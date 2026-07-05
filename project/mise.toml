@@ -1,0 +1,34 @@
+# https://mise.jdx.dev/
+[settings]
+experimental = true
+
+[hooks]
+enter = [
+  "echo '🍳 mise enabled'",
+  # "mise env --json | jq -r 'keys | join(\" \")'" # show env list on enter directory
+]
+
+# [shell_alias]
+# provision = "mise run provision"
+
+# [tools]
+# node = "24.14.1"
+# jq = "1.7.1"
+# ripgrep = "15.1.0"
+
+# [env]
+# _.file = ".env.local"
+
+# [tasks.pre-commit]
+# description = "pre-commit: fix lint, format and run tests"
+# run = [
+#   "npm run fix",
+#   "npm test",
+# ]
+
+# [tasks.provision]
+# description = "provisioning"
+# run = [
+#   "mise generate git-pre-commit --task pre-commit --write",
+#   "npm ci",
+# ]

@@ -37,6 +37,7 @@ dotfiles link
 ## Important Commands
 
 - `dotfiles` - dotfiles management command
+    - `dotfiles project [dir]` - copy new-project templates without overwriting existing files
 - `isodate` - epoch milliseconds to ISO datetime
 - `safezip` - create NFC / UTF-8 zip archives
 - `ffcomp` - quick H.264/AAC mp4 re-encode

@@ -3,13 +3,13 @@
 
 ## Overview
 - この repo は macOS 用の個人 dotfiles を管理する。
-- 主な管理対象は `zsh/`, `bin/`, `git/`, `mise/`, `vscode/`, `ghostty/`, `lazygit/`, `ai/`。
+- 主な管理対象は `zsh/`, `bin/`, `git/`, `mise/`, `vscode/`, `ghostty/`, `lazygit/`, `project/`。
 - `bin/dotfiles` が symlink 管理の入口。
 - global CLI tool は原則 `mise/config.toml` で pin する。project local な tool version は各 project の `mise.toml` に任せる。
-- Agentic Coding 用テンプレートは `ai/` に置く。他 repo の具体文脈を root docs に混ぜない。
+- 新規 project 用テンプレートは `project/` に置く。他 repo の具体文脈を root docs に混ぜない。
 
 ### 🎯 Role & Objective
-あなたはエキスパートソフトウェアエンジニアとして、既存環境を壊さず、設定管理・CLI 管理・Agentic Coding 用テンプレートを整理すること。
+あなたはエキスパートソフトウェアエンジニアとして、既存環境を壊さず、設定管理・CLI 管理・新規 project 用テンプレートを整理すること。
 
 ### 🚨 CRITICAL: Architecture
 - **`dotfiles link` が唯一の適用入口**: 新しい管理対象ファイルを増やす場合は、repo に設定ファイルを置き、`bin/dotfiles` の `link_all` に symlink を追加する。
@@ -25,7 +25,7 @@
 - **`zsh/`**: zsh 設定。`zsh/zshrc` が `zsh/zshrc.d/*.zsh` をファイル名順に読む。
 - **`mise/`**: global mise config。`mise/config.toml` を `~/.config/mise/config.toml` に symlink する。
 - **`vscode/`, `ghostty/`, `lazygit/`**: 各ツール設定。link 対象を増やす場合は `bin/dotfiles` を更新する。
-- **`ai/`**: Agentic Coding 用テンプレート。`ai/AGENTS.md`, `ai/CLAUDE.md`, `ai/docs/*` を他 repo にコピーして書き換える前提。
+- **`project/`**: 新規 project 用テンプレート。`project/AGENTS.md`, `project/CLAUDE.md`, `project/docs/*` を他 repo にコピーして書き換える前提。
 - **root `AGENTS.md` / `CLAUDE.md`**: この dotfiles repo 自身の Agentic Coding docs。
 
 ### 🛠️ Workflow & Development Rules
@@ -40,7 +40,7 @@
 - **Documentation**:
     - root `README.md` は短い入口にする。
     - 詳細は `bin/README.md`, `zsh/README.md`, `mise/README.md` などに書く。
-    - Agentic Coding 用テンプレートを変えたら `ai/README.md` も確認する。
+    - 新規 project 用テンプレートを変えたら `project/README.md` も確認する。
 - **Safety**:
     - 実 HOME に影響する `dotfiles link`, `mise install`, `brew uninstall` は影響範囲を確認してから行う。
     - 一時 HOME で検証できる場合は先に `HOME=/private/tmp/... ./bin/dotfiles link` で確認する。
@@ -54,9 +54,11 @@
     - 必要コマンドの存在確認。mise 管理ツールは `mise which` で確認する。
 - `addbin`
     - `bin/<name>` に executable なコマンド雛形を作る補助コマンド。
+- `project`
+    - 新規 project 用テンプレートを既存ファイル非破壊でコピーする補助コマンド。
 - `mise`
     - global CLI tool / runtime の version 管理。project local version は各 project に任せる。
 - `zshrc.d`
     - zsh 設定の分割単位。`00-initial`, `10-tool`, `20-zsh`, `30-alias`, `40-func-*` の順序を維持する。
-- `ai templates`
-    - 他 repo にコピーして書き換える Agentic Coding 用ドキュメントテンプレート。
+- `project templates`
+    - 他 repo にコピーして書き換える新規 project 用テンプレート。

@@ -20,6 +20,7 @@ Usage:
   dotfiles link           Link managed dotfiles
   dotfiles doctor         Check required commands
   dotfiles addbin <name>  Create an executable bin/<name> template
+  dotfiles project [dir]  Create a new project template
   dotfiles help           Show this help
 USAGE
 }
@@ -196,6 +197,99 @@ EOF_BIN
   info "next: dotfiles link"
 }
 
+copy_template_file() {
+  local src="$1"
+  local dest="$2"
+
+  if [[ ! -e "$src" ]]; then
+    warn "template not found: $src"
+    return 1
+  fi
+
+  ensure_parent_dir "$dest"
+
+  # 新規 project への初期配置でも、既存ファイルはプロジェクト固有の真実なので上書きしない。
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    info "skip existing: $dest"
+    return 0
+  fi
+
+  cp "$src" "$dest"
+  info "created: $dest"
+}
+
+copy_template_dir_files() {
+  local src_dir="$1"
+  local dest_dir="$2"
+  local src name
+
+  if [[ ! -d "$src_dir" ]]; then
+    warn "template dir not found: $src_dir"
+    return 1
+  fi
+
+  mkdir -p "$dest_dir"
+
+  for src in "$src_dir"/*(.N); do
+    [[ -f "$src" ]] || continue
+    name="${src:t}"
+    copy_template_file "$src" "$dest_dir/$name"
+  done
+}
+
+copy_readme_template() {
+  local target_dir="$1"
+  local src="$DOTFILES_ROOT/project/_README.md"
+  local dest="$target_dir/README.md"
+  local project_name="${target_dir:t}"
+
+  if [[ ! -e "$src" ]]; then
+    warn "template not found: $src"
+    return 1
+  fi
+
+  ensure_parent_dir "$dest"
+
+  # README はテンプレートの先頭タイトルだけ対象ディレクトリ名へ差し替える。
+  # 本文は project/_README.md を編集すれば全 project 初期値に反映できる。
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    info "skip existing: $dest"
+    return 0
+  fi
+
+  {
+    printf '%s\n' "$project_name"
+    tail -n +2 "$src"
+  } > "$dest"
+  info "created: $dest"
+}
+
+project() {
+  if [[ $# -gt 1 ]]; then
+    usage >&2
+    return 1
+  fi
+
+  local target="${1:-.}"
+  local target_dir="${target:A}"
+
+  mkdir -p "$target_dir"
+  info "project root: $target_dir"
+
+  # Project templates are copied, not linked, because each project must rewrite them to its own context.
+  copy_template_file "$DOTFILES_ROOT/project/mise.toml" "$target_dir/mise.toml"
+  copy_template_file "$DOTFILES_ROOT/project/.editorconfig" "$target_dir/.editorconfig"
+  copy_template_file "$DOTFILES_ROOT/project/.gitignore" "$target_dir/.gitignore"
+  copy_template_file "$DOTFILES_ROOT/project/.gitattributes" "$target_dir/.gitattributes"
+  copy_template_file "$DOTFILES_ROOT/project/.npmrc" "$target_dir/.npmrc"
+  copy_readme_template "$target_dir"
+  copy_template_file "$DOTFILES_ROOT/project/AGENTS.md" "$target_dir/AGENTS.md"
+  copy_template_file "$DOTFILES_ROOT/project/CLAUDE.md" "$target_dir/CLAUDE.md"
+  copy_template_dir_files "$DOTFILES_ROOT/project/docs" "$target_dir/docs"
+
+  info "next: edit TODOs in AGENTS.md, README.md, and docs/"
+}
+
 case "${1:-help}" in
   link)
     link_all
@@ -206,6 +300,10 @@ case "${1:-help}" in
   addbin)
     shift
     addbin "$@"
+    ;;
+  project)
+    shift
+    project "$@"
     ;;
   help|--help|-h)
     usage
