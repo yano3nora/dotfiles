@@ -30,9 +30,10 @@
     - TODO: integration / e2e 方針
     - TODO: bugfix 時の再現テスト方針
 - **Documentation**:
-    - 技術判断は `docs/ADR-XXXX-*.md` に記録する
-    - 仕様を変えたら `docs/SPEC-XXXX-*.md` を更新する
-    - 作業メモが必要な場合は `docs/TASK-YYMMDD-*.md` に残す
+    - 技術的な意思決定や検討は `docs/ADR-XXXX-*.md` に記録する
+    - 設計・仕様の検討・決定事項は `docs/SPEC-XXXX-*.md` に記録する
+    - 原則、全開発タスクが適切な粒度で `docs/TASK-YYMMDD-*.md` に残るようにする
+    - 画像などは `docs/assets/` へ配置してリンクする
 - **Versioning / Release**: TODO
 
 ## Domains
