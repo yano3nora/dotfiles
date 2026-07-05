@@ -3,14 +3,13 @@
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[markdown]": {
-    "editor.wordWrap": "off"
+    "editor.wordWrap": "off",
+    "editor.defaultFormatter": null,
+    "editor.formatOnSave": false
   },
   "chatgpt.commentCodeLensEnabled": false,
   "chatgpt.localeOverride": "ja-JP",
   "comments.openView": "never",
-  "deno.enable": false,
-  "deno.enablePaths": [],
-  "deno.lint": false,
   "diffEditor.ignoreTrimWhitespace": false,
   "docker.extension.dockerEngineAvailabilityPrompt": false,
   "editor.acceptSuggestionOnCommitCharacter": false,
