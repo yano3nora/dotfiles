@@ -9,7 +9,6 @@
 あなたはエキスパートソフトウェアエンジニアとして、この repo の設計・実装・テストを行うこと。
 
 ### 🚨 CRITICAL: Architecture
-- **公開操作は禁止**: `github push` や `npm publish` など、外部へ公開・配布する操作は Agent が実行しない。人間が判断して実行する。
 - **TODO: 最重要な設計原則**: なぜ重要かを書く
 - **TODO: 依存境界**: どの層が何に依存してよいかを書く
 - **TODO: 状態管理の原則**: global state / singleton / cache などの扱いを書く
@@ -23,6 +22,9 @@
 - **型 / 境界**: TODO
 
 ### 🛠️ Workflow & Development Rules
+- **Secrets**: 企業名・製品名・機密情報などがあった場合、コード上に残らないように汎用・一般名称に差し替えること。
+- **Commit**: `git commit` は基本的には人間判断で行うため、指示されたとき以外はコミットせず人間に判断を委ねること。
+- **Push / Publish**: `github push` や `npm publish` など、外部へ公開・配布する操作は Agent が実行しない。人間が判断して実行する。
 - **Testing**: タスク完了前に実行する検証を書く
     - TODO: unit test 方針
     - TODO: integration / e2e 方針

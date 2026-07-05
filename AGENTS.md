@@ -12,8 +12,6 @@
 あなたはエキスパートソフトウェアエンジニアとして、既存環境を壊さず、設定管理・CLI 管理・Agentic Coding 用テンプレートを整理すること。
 
 ### 🚨 CRITICAL: Architecture
-- **公開操作は禁止**: `github push` や `npm publish` など、外部へ公開・配布する操作は Agent が実行しない。人間が判断して実行する。
-- **コミットは指示されたときだけ**: `git commit` なども基本的には人間判断で行うため、指示されたとき以外はコミットせず人間に判断を委ねること。
 - **`dotfiles link` が唯一の適用入口**: 新しい管理対象ファイルを増やす場合は、repo に設定ファイルを置き、`bin/dotfiles` の `link_all` に symlink を追加する。
 - **既存ファイルを黙って上書きしない**: `dotfiles link` は既存ファイルを `.bak.YYYYMMDDHHMMSS` に退避する設計を維持する。
 - **曖昧なコマンドを増やさない**: `install` のように責務が広い名前は禁止。`link` / `doctor` / `addbin` のように役割を分ける。
@@ -30,6 +28,9 @@
 - **root `AGENTS.md` / `CLAUDE.md`**: この dotfiles repo 自身の Agentic Coding docs。
 
 ### 🛠️ Workflow & Development Rules
+- **Secrets**: 企業名・製品名・機密情報などがあった場合、コード上に残らないように汎用・一般名称に差し替えること。
+- **Commit**: `git commit` は基本的には人間判断で行うため、指示されたとき以外はコミットせず人間に判断を委ねること。
+- **Push / Publish**: `github push` や `npm publish` など、外部へ公開・配布する操作は Agent が実行しない。人間が判断して実行する。
 - **Testing**: 変更内容に応じて以下を実行する。
     - `zsh -n bin/dotfiles`
     - `zsh -n zsh/zshrc`
