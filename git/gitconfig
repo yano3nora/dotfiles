@@ -32,7 +32,7 @@
 [push]
   default = current
 [core]
-  pager = hunk pager
+  pager = hunk pager --no-transparent-bg
 # [core]
 #    pager = delta
 # [interactive]
