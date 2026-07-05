@@ -32,13 +32,15 @@
 [push]
   default = current
 [core]
-    pager = delta
-[interactive]
-    diffFilter = delta --color-only
-[delta]
-    line-numbers = true
-    side-by-side = true
-    navigate = true  # use n and N to move between diff sections
-    dark = true      # or light = true, or omit for auto-detection
+  pager = hunk pager
+# [core]
+#    pager = delta
+# [interactive]
+#     diffFilter = delta --color-only
+# [delta]
+#     line-numbers = true
+#     side-by-side = true
+#     navigate = true  # use n and N to move between diff sections
+#     dark = true      # or light = true, or omit for auto-detection
 [merge]
     conflictStyle = zdiff3
