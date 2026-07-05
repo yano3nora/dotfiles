@@ -98,6 +98,10 @@ link_all() {
   link_path "$DOTFILES_ROOT/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
   link_path "$DOTFILES_ROOT/ai/instructions.md" "$HOME/.codex/instructions.md"
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+  link_path "$DOTFILES_ROOT/nvim/lua/config/options.lua" "$HOME/.config/nvim/lua/config/options.lua"
+  link_path "$DOTFILES_ROOT/nvim/lua/config/keymaps.lua" "$HOME/.config/nvim/lua/config/keymaps.lua"
+  link_path "$DOTFILES_ROOT/nvim/lua/config/autocmds.lua" "$HOME/.config/nvim/lua/config/autocmds.lua"
+  link_path "$DOTFILES_ROOT/nvim/lua/plugins/blink.lua" "$HOME/.config/nvim/lua/plugins/blink.lua"
   link_bin_files
 }
 

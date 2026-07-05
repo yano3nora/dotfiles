@@ -13,6 +13,7 @@ macOS 用の個人 dotfiles。
 ├ ghostty/             … Ghostty 設定
 ├ lazygit/             … LazyGit 設定
 ├ mise/                … global mise 設定
+├ nvim/                … LazyVim の個人カスタマイズ
 ├ project/             … 新規 project 用テンプレート
 ├ vscode/              … VSCode 設定
 └ zsh/                 … zsh 設定
@@ -51,6 +52,7 @@ reload
 - VSCode / Ghostty / LazyGit 設定
 - `~/.codex/instructions.md` -> `ai/instructions.md`
 - `~/.claude/CLAUDE.md` -> `ai/CLAUDE.md`
+- `~/.config/nvim/lua/config/*.lua`, `~/.config/nvim/lua/plugins/blink.lua` -> `nvim/lua/...` (LazyVim starter は別途 clone しておく)
 
 ## Commands
 ```sh
@@ -102,3 +104,4 @@ push / publish は人間が判断して実行する。
 - [`ghostty/README.md`](ghostty/README.md)
 - [`lazygit/README.md`](lazygit/README.md)
 - [`mise/README.md`](mise/README.md)
+- [`nvim/README.md`](nvim/README.md)
