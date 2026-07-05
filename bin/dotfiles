@@ -120,6 +120,7 @@ doctor() {
     jq
     rg
     deno
+    java
   )
 
   info "checking commands"

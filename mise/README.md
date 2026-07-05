@@ -70,6 +70,7 @@ Moved to mise:
 - `deno@1.40.5`
 - `jq@1.7.1`
 - `ripgrep@15.1.0`
+- `java@openjdk-25.0.2`
 
 Homebrew cleanup status:
 
