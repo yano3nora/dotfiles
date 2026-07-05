@@ -26,6 +26,7 @@
 - **Commit**: `git commit` は基本的には人間判断で行うため、指示されたとき以外はコミットせず人間に判断を委ねること。
 - **Push / Publish**: `github push` や `npm publish` など、外部へ公開・配布する操作は Agent が実行しない。人間が判断して実行する。
 - **Testing**: タスク完了前に実行する検証を書く
+    - TODO: linter, formatter 方針
     - TODO: unit test 方針
     - TODO: integration / e2e 方針
     - TODO: bugfix 時の再現テスト方針
