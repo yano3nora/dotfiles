@@ -26,6 +26,7 @@
 - **`mise/`**: global mise config。`mise/config.toml` を `~/.config/mise/config.toml` に symlink する。
 - **`vscode/`, `ghostty/`, `lazygit/`**: 各ツール設定。link 対象を増やす場合は `bin/dots` を更新する。
 - **`project/`**: 新規 project 用テンプレート。`project/AGENTS.md`, `project/CLAUDE.md`, `project/docs/*` を他 repo にコピーして書き換える前提。
+- **`docs/`**: この dotfiles repo 自身の作業記録。`TASK-YYMMDD-<filename>.md` 形式で移行・整理タスクを管理する。
 - **root `AGENTS.md` / `CLAUDE.md`**: この dotfiles repo 自身の Agentic Coding docs。
 
 ### 🛠️ Workflow & Development Rules
@@ -41,6 +42,7 @@
     - root `README.md` は短い入口にする。
     - 詳細は `bin/README.md`, `zsh/README.md`, `mise/README.md` などに書く。
     - 新規 project 用テンプレートを変えたら `project/README.md` も確認する。
+    - 空いた時間に少しずつ進める移行・整理タスクは `docs/TASK-YYMMDD-<filename>.md` に書き、`asis/tobe/todo/testcases/notes` の構成で管理する（雛形: `docs/TASK-YYMMDD-template.md`）。完了した項目はチェックを付けて残し、削除しない。
 - **Safety**:
     - 実 HOME に影響する `dots link`, `mise install`, `brew uninstall` は影響範囲を確認してから行う。
     - 一時 HOME で検証できる場合は先に `HOME=/private/tmp/... ./bin/dots link` で確認する。
