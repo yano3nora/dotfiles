@@ -73,6 +73,24 @@ bindkey '^[OD' backward-word
 bindkey '^[OC' forward-word
 bindkey '^[[D' backward-char
 bindkey '^[[C' forward-char
+
+# CSI u (fixterms) ノイズ抑止
+# 意図: Ghostty などが Ctrl+Shift+英字 等を `ESC [ <code> ; <mod> u` で送ってくると、
+# zsh は `ESC [` までしか解釈できず残り (`105;6u` など) を入力行へ挿入してしまう。
+# terminal 側 keybind で握りつぶすと nvim 等の TUI にもキーが届かなくなるため、
+# ZLE (シェルの行編集) の間だけ no-op で食わせる。
+# やっていること: printable 文字 (32-126) × 修飾キー (2=Shift .. 8=Shift+Alt+Ctrl) の
+# CSI u 全パターンを no-op widget に bind する。
+function __ignore_csi_u() { :; }
+zle -N __ignore_csi_u
+() {
+  local code mod
+  for code in {32..126}; do
+    for mod in {2..8}; do
+      bindkey "^[[${code};${mod}u" __ignore_csi_u
+    done
+  done
+}
 __zsh_profile_mark "keymap"
 
 setopt auto_menu
