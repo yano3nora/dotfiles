@@ -41,6 +41,7 @@ dots link
 - `isodate` - epoch milliseconds to ISO datetime
 - `safezip` - create NFC / UTF-8 zip archives
 - `ffcomp` - quick H.264/AAC mp4 re-encode
+- `mactune` - macOS tweaks (`duet status|off|on` to manage duetexpertd)
 
 ## Trouble Shooting
 

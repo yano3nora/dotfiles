@@ -1,0 +1,71 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+# mactune - macOS の個人用システム調整コマンド。
+# 目的: launchctl などで行った OS 調整を「確認・適用・復元できる手順」として repo に残す。
+# 背景: duetexpertd (Siri 提案などのバッチ学習 daemon) の CPU スパイクで
+#       マシンが長時間使い物にならなくなったため、無効化手順をコード化した。
+# 注意: OS アップデートで launchd の disabled 登録が戻ることがあるため、
+#       不調時はまず `mactune duet status` で現状を確認する。
+
+# duetexpertd は per-user の LaunchAgent なので gui domain (uid 付き) を対象にする。
+duet_target="gui/$(id -u)/com.apple.duetexpertd"
+duet_plist="/System/Library/LaunchAgents/com.apple.duetexpertd.plist"
+
+usage() {
+  cat >&2 <<'EOF'
+使い方: mactune <subcommand>
+
+subcommands:
+  duet status   duetexpertd の状態 (disabled 登録 / プロセス有無) を表示
+  duet off      duetexpertd を無効化して停止する (再起動後も維持)
+  duet on       duetexpertd を有効化して起動し直す
+EOF
+  exit 1
+}
+
+duet_status() {
+  if launchctl print-disabled "gui/$(id -u)" | grep -q '"com.apple.duetexpertd" => disabled'; then
+    echo "🔒 launchd: disabled 登録済み (自動起動しない)"
+  else
+    echo "🔓 launchd: enabled (OS が自動起動する)"
+  fi
+  local pids
+  # pgrep は複数 pid を改行区切りで返すため、ps -p 用にカンマ区切りへ変換する。
+  pids="$(pgrep -x duetexpertd | paste -sd, - || true)"
+  if [[ -n "$pids" ]]; then
+    echo "🟢 process: 動作中"
+    ps -o pid,%cpu,%mem,etime,comm -p "$pids"
+  else
+    echo "⚪ process: 停止中"
+  fi
+}
+
+duet_off() {
+  launchctl disable "$duet_target"
+  # 既に停止している場合 bootout は失敗するので握りつぶす。
+  launchctl bootout "$duet_target" 2>/dev/null || true
+  echo "✅ duetexpertd を無効化しました (再起動後も維持されます)"
+  duet_status
+}
+
+duet_on() {
+  launchctl enable "$duet_target"
+  # bootstrap で即時起動を試みる。失敗しても enable 済みなので再ログインで復帰する。
+  launchctl bootstrap "gui/$(id -u)" "$duet_plist" 2>/dev/null \
+    || echo "ℹ️ 即時起動できませんでした。再ログイン後に OS が起動します。"
+  echo "✅ duetexpertd を有効化しました"
+  duet_status
+}
+
+case "${1:-}" in
+  duet)
+    case "${2:-}" in
+      status) duet_status ;;
+      off)    duet_off ;;
+      on)     duet_on ;;
+      *)      usage ;;
+    esac
+    ;;
+  *) usage ;;
+esac
