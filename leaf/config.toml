@@ -1,0 +1,21 @@
+# leaf configuration managed by dotfiles.
+# Linked to: ~/.config/leaf/config.toml
+
+# Color theme.
+# Built-in themes: arctic, forest, ocean, solarized-dark
+# Relative paths are resolved from this config file's directory.
+theme = "ocean"
+
+# Default editor for Ctrl+E.
+# {$line} and {$path} are expanded by leaf to the current source position.
+editor = 'nvim +{$line} {$path}'
+
+# Automatically reload when the opened file changes.
+# Only applies when opening a file, not stdin.
+watch = true
+
+# Extra file types shown in the file picker.
+# extras = ["txt", "csv", "rs", "java", "json", "yaml"]
+
+# Show line numbers inside fenced code blocks.
+# code-line-numbers = true

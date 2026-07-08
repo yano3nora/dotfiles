@@ -2,7 +2,7 @@
 
 ## Overview
 
-Global CLI tool versions are managed by mise.
+Global CLI tools and selected runtime versions are managed by mise.
 
 This dotfiles repository manages the global mise config:
 
@@ -27,7 +27,11 @@ Global tools are defined in:
 mise/config.toml
 ```
 
-Do not use `latest` for tool versions. Pin explicit versions to keep the environment reproducible.
+Version policy:
+
+- Daily utility CLIs such as `jq`, `ripgrep`, `hunk`, `gitleaks`, and `leaf` may use `latest`.
+- Runtimes and project-impacting tools such as Node, Python, Java, and deploy/vendor CLIs should use explicit versions when compatibility matters.
+- Project-specific versions belong in each project's `mise.toml`, not this global config.
 
 ## Important Commands
 
@@ -42,7 +46,9 @@ mise use -g tool@version
 
 ### Add a global CLI tool
 
-1. Add a pinned version to `mise/config.toml`
+1. Add the tool to `mise/config.toml`
+    - use `latest` for low-risk daily utilities
+    - use an explicit version for runtimes or deploy/project-impacting CLIs
 2. Run `dots link`
 3. Run `mise install`
 4. Run `dots doctor` if the command is required by this environment
@@ -68,8 +74,8 @@ Then check whether old PATH entries remain in `zsh/zshrc.d/10-tool.zsh`.
 Moved to mise:
 
 - `deno@1.40.5`
-- `jq@1.7.1`
-- `ripgrep@15.1.0`
+- `jq` (`latest`)
+- `ripgrep` (`latest`)
 - `java@openjdk-25.0.2`
 
 Homebrew cleanup status:
@@ -79,4 +85,4 @@ Homebrew cleanup status:
 
 ## My Recommendation
 
-Use this README for mise-specific commands and migration notes. See the root README for the overall dotfiles tool-management policy and exceptions.
+Keep the policy lightweight. Over-pinning every small CLI creates busywork without much benefit; pin only where compatibility or deployment behavior can actually hurt you.

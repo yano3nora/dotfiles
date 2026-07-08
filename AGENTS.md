@@ -5,7 +5,7 @@
 - この repo は macOS 用の個人 dotfiles を管理する。
 - 主な管理対象は `zsh/`, `bin/`, `git/`, `mise/`, `vscode/`, `ghostty/`, `lazygit/`, `project/`。
 - `bin/dots` が symlink 管理の入口。
-- global CLI tool は原則 `mise/config.toml` で pin する。project local な tool version は各 project の `mise.toml` に任せる。
+- global CLI tool は `mise/config.toml` で入口を揃える。ただし `jq` などの日常CLIは `latest` 許容、Node や deploy 系など project 影響が大きいものだけ version 管理を重視する。
 - 新規 project 用テンプレートは `project/` に置く。他 repo の具体文脈を root docs に混ぜない。
 
 ### 🎯 Role & Objective
@@ -15,7 +15,7 @@
 - **`dots link` が唯一の適用入口**: 新しい管理対象ファイルを増やす場合は、repo に設定ファイルを置き、`bin/dots` の `link_all` に symlink を追加する。
 - **既存ファイルを黙って上書きしない**: `dots link` は既存ファイルを `.bak.YYYYMMDDHHMMSS` に退避する設計を維持する。
 - **曖昧なコマンドを増やさない**: `install` のように責務が広い名前は禁止。`link` / `doctor` / `addbin` のように役割を分ける。
-- **global CLI tool は mise に寄せる**: `mise/config.toml` では explicit version を pin し、`latest` は使わない。
+- **global CLI tool は性質で扱いを分ける**: `jq` / `ripgrep` / `hunk` などの日常CLIは `latest` を許容する。Node や deploy 系 CLI（例: Copilot / Firebase など）、互換性が成果物や運用に影響するものは explicit version を検討する。
 - **例外を無理に mise 化しない**: PHP や macOS コマンド差し替え系のようにビルドや OS 依存が重いものは Homebrew 管理を許容する。
 - **root README は短い入口に保つ**: 詳細は各ディレクトリの `README.md` に逃がす。
 
@@ -59,7 +59,7 @@
 - `project`
     - 新規 project 用テンプレートを既存ファイル非破壊でコピーする補助コマンド。
 - `mise`
-    - global CLI tool / runtime の version 管理。project local version は各 project に任せる。
+    - global CLI tool / runtime の入口管理。日常CLIは最新版追従を許容し、project 影響が大きい runtime / deploy CLI は version 管理する。project local version は各 project に任せる。
 - `zshrc.d`
     - zsh 設定の分割単位。`00-initial`, `10-tool`, `20-zsh`, `30-alias`, `40-func-*` の順序を維持する。
 - `project templates`
