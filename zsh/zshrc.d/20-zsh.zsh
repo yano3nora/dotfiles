@@ -68,11 +68,30 @@ zle -N zle-keymap-select __force_emacs_keymap_if_vi
 bindkey '^[b' backward-word
 bindkey '^[f' forward-word
 bindkey '^[[1;5D' backward-word
-bindkey '^[[1;5C' forward-word
 bindkey '^[OD' backward-word
 bindkey '^[OC' forward-word
 bindkey '^[[D' backward-char
 bindkey '^[[C' forward-char
+
+# 意図: `autosuggest-accept-word` という名前で、suggestion を扱いやすい単位で部分採用する。
+# やっていること: suggestion が path っぽい場合は次の `/` まで採用し、それ以外は
+# zsh-autosuggestions の partial accept 対象である `forward-word` に委譲する。
+# 例: `~/Downloads/hoge.txt` は `~/` -> `Downloads/` -> `hoge.txt` の単位で採用する。
+function autosuggest-accept-word() {
+  if [[ -n "$POSTDISPLAY" && "$POSTDISPLAY" == */* ]]; then
+    local accept="${POSTDISPLAY%%/*}/"
+
+    BUFFER+="$accept"
+    POSTDISPLAY="${POSTDISPLAY#$accept}"
+    CURSOR=${#BUFFER}
+    zle -R
+    return
+  fi
+
+  zle forward-word
+}
+zle -N autosuggest-accept-word
+bindkey '^[[1;5C' autosuggest-accept-word
 
 # CSI u (fixterms) ノイズ抑止
 # 意図: Ghostty などが Ctrl+Shift+英字 等を `ESC [ <code> ; <mod> u` で送ってくると、
