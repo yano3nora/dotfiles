@@ -5,7 +5,10 @@ gui:
   mouseEvents: true
 
 git:
+  autoFetch: false
+  fetchAll: false
   pagers:
-    - colorArg: always
-      # pager: delta --dark --paging=never --side-by-side --line-numbers
-      pager: hunk pager --transparent-bg
+    - pager: hunk pager --transparent-bg
+
+refresher:
+  refreshInterval: 30

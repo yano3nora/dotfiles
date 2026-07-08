@@ -27,7 +27,7 @@ Config path:
 Current config uses:
 
 - `nvim` as editor preset
-- `delta` as git pager
+- `hunk` as git pager
 
 ## Important Commands
 
