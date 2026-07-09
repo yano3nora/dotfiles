@@ -3,7 +3,7 @@
 # Uncomment only the parts this project actually needs.
 
 # [settings]
-# experimental = true
+# experimental = true # required by [shell_alias]
 
 # [tools]
 # node = "24.14.1"
@@ -12,12 +12,6 @@
 
 # [env]
 # _.file = ".env.local"
-
-# [hooks]
-# enter = [
-#   "echo '🍳 mise enabled'",
-#   "mise env --json | jq -r 'keys | join(\" \")'",
-# ]
 
 # [shell_alias]
 # provision = "mise run provision"

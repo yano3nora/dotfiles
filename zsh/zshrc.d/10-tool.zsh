@@ -20,6 +20,10 @@ source <(fzf --zsh)
 export COMPOSE_MENU=0
 
 # direnv
+# 意図: direnv の `direnv: loading ...` ログは初回 precmd で出力されるため、
+# p10k instant prompt (00-initial.zsh) に console 出力として検知され WARNING になる。
+# ログ自体にほぼ情報量がないので空 format で常時黙らせる。
+export DIRENV_LOG_FORMAT=""
 eval "$(direnv hook zsh)"
 
 # mise

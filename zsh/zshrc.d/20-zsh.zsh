@@ -25,13 +25,7 @@ __zsh_profile_mark "autosuggestions"
 source "$HOME/.local/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 __zsh_profile_mark "syntax-highlighting"
 
-# Powerlevel10k instant prompt.
-# Delayed intentionally so project enter hooks can print before instant prompt starts.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-__zsh_profile_mark "p10k-instant-prompt"
-
+# Powerlevel10k theme (instant prompt は 00-initial.zsh で先行読み込み済み)
 source /usr/local/share/powerlevel10k/powerlevel10k.zsh-theme
 __zsh_profile_mark "p10k-theme"
 
