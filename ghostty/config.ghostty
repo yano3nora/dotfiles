@@ -45,3 +45,18 @@ keybind = ctrl+cmd+]=resize_split:down,40
 
 # フルスクリーン抑止
 keybind = cmd+enter=unbind
+
+# undo/redo を coda へ透過 (代償: Ghostty のタブ閉じ取り消しを失う)
+keybind = super+z=unbind
+keybind = super+shift+z=unbind
+
+# cmd+↑/↓ を coda へ透過 (代償: shell での jump_to_prompt を失う)
+keybind = super+arrow_up=unbind
+keybind = super+arrow_down=unbind
+keybind = super+shift+arrow_up=unbind
+keybind = super+shift+arrow_down=unbind
+
+# ctrl + h 抑止 + coda へ届かせる
+# cmd+h: ignore では届かないので、kitty protocol のエンコード
+# (h=codepoint 104, modifier 9 = 1+super) を text: で直接送りつける
+keybind = super+h=text:\x1b[104;9u
