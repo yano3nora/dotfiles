@@ -13,7 +13,9 @@ export PATH="/usr/local/opt/php@8.1/sbin:$PATH"
 
 # fd + fzf + bat
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# Ctrl-T は候補を path 昇順に固定し、入力中も fzf の relevance 順へ並べ替えない。
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND | sort"
+export FZF_CTRL_T_OPTS='--no-sort'
 source <(fzf --zsh)
 
 # https://github.com/docker/for-win/issues/14021
