@@ -9,6 +9,7 @@ macOS 用の個人 dotfiles。
 .
 ├ ai/                  … AI coding agent 向けの個人用グローバル設定
 ├ bin/                 … 個人用コマンド / dotfiles 管理コマンド
+├ coda/                … Coda 設定
 ├ git/                 … Git global config
 ├ ghostty/             … Ghostty 設定
 ├ lazygit/             … LazyGit 設定
@@ -49,6 +50,8 @@ reload
 - `git/gitignore_global` -> `~/.gitignore_global`
 - `~/.zshrc` -> `zsh/zshrc`
 - `~/.config/mise/config.toml` -> `mise/config.toml`
+- `~/.config/coda/config.toml` -> `coda/config.toml`
+- `~/.config/coda/bindings.json` -> `coda/bindings.json`
 - `~/.local/bin/*` -> `bin/*`
 - VSCode / Ghostty / LazyGit / leaf 設定
 - `~/.codex/instructions.md` -> `ai/instructions.md`
@@ -98,6 +101,7 @@ push / publish は人間が判断して実行する。
 # Resources
 - [`ai/README.md`](ai/README.md)
 - [`bin/README.md`](bin/README.md)
+- [`coda/README.md`](coda/README.md)
 - [`git/README.md`](git/README.md)
 - [`zsh/README.md`](zsh/README.md)
 - [`project/README.md`](project/README.md)

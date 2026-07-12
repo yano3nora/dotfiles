@@ -1,0 +1,5 @@
+[appearance]
+theme = "dark"
+
+[keymap]
+ctrl_c = "quit"
