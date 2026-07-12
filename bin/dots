@@ -120,8 +120,8 @@ doctor() {
     trash
     fd
     fzf
+    bat
     php
-    peco
     direnv
     mise
     gdate
