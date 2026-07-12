@@ -21,7 +21,7 @@
   "editor.experimental.asyncTokenization": true,
   "editor.fastScrollSensitivity": 0,
   "editor.foldingStrategy": "indentation",
-  "editor.fontSize": 11,
+  "editor.fontSize": 12,
   "editor.formatOnPaste": true,
   "editor.inlineSuggest.enabled": true,
   "editor.lightbulb.enabled": "off",
