@@ -7,9 +7,10 @@ deno = "1.40.5"
 java = "openjdk-25.0.2"
 aws-cli = { version = "latest", symlink_bins = "true" }
 hunk = "latest"
-"github:yano3nora/gistan" = "0.5.0"
+"github:yano3nora/gistan" = "0.6.0"
 gitleaks = "latest"
 "github:RivoLink/leaf" = "latest"
+goreleaser = "latest"
 # php@8.1 is still managed by Homebrew for now. mise php requires build dependencies such as autoconf.
 
 [settings]
