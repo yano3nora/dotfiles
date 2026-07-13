@@ -34,6 +34,7 @@
     - 技術的な意思決定や検討は `docs/ADR-XXXX-*.md` に記録し、大きな変更の前には既存 ADR を確認する
     - 設計・仕様の検討・決定事項は `docs/SPEC-XXXX-*.md` に記録する
     - 原則、全開発タスクが適切な粒度で `docs/TASK-YYMMDD-*.md` に残るようにする
+    - 未着手・保留・トリガー待ちのタスクは `docs/BACKLOG.md` に一元管理し、着手時に TASK として切り出す
     - 画像などは `docs/assets/` へ配置してリンクする
 - **Versioning / Release**: TODO
 

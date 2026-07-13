@@ -18,7 +18,7 @@ TypeScript project では `--typescript`、React project では `--typescript --
 - `_README.md` - project README の雛形
 - `AGENTS.md` - agent 向け開発ガイド雛形
 - `CLAUDE.md` - Claude Code 向け補足雛形
-- `docs/` - ADR / SPEC / TASK の雛形
+- `docs/` - ADR / SPEC / TASK の雛形と BACKLOG (未解決タスクの一元管理)
 - `typescript/` - TypeScript project 向けの VS Code / oxc / Vitest / npm 雛形
 - `typescript-react/` - React project 向けの oxlint 雛形
 
