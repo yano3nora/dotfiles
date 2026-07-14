@@ -18,4 +18,4 @@ watch = true
 # extras = ["txt", "csv", "rs", "java", "json", "yaml"]
 
 # Show line numbers inside fenced code blocks.
-# code-line-numbers = true
+code-line-numbers = false
