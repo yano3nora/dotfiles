@@ -25,6 +25,9 @@ export FZF_CTRL_T_OPTS="--exact --no-sort --cycle --preview 'bat --color=always 
 export FZF_CTRL_R_OPTS='--cycle --reverse'
 source <(fzf --zsh)
 
+# https://github.com/aws/aws-sam-cli/issues/4329#issuecomment-1642388141
+export DOCKER_HOST="unix://$HOME/.docker/run/docker.sock"
+
 # https://github.com/docker/for-win/issues/14021
 export COMPOSE_MENU=0
 
