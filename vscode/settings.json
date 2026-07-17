@@ -65,6 +65,7 @@
   },
   "extensions.ignoreRecommendations": true,
   "files.associations": {
+    "*.toml": "ini",
     ".env*": "dotenv",
     "*.jslib": "javascript",
     "*.jspre": "javascript",
