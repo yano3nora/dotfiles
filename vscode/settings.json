@@ -196,5 +196,6 @@
   "workbench.settings.enableNaturalLanguageSearch": false,
   "workbench.startupEditor": "none",
   "workbench.statusBar.visible": true,
-  "workbench.tree.indent": 15
+  "workbench.tree.indent": 15,
+  "chat.disableAIFeatures": true
 }
