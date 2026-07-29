@@ -26,7 +26,7 @@ Config path:
 
 Current config uses:
 
-- `nvim` as editor preset
+- `coda` as editor (custom `os.edit`, vim-compatible `+N` line jump)
 - `hunk` as git pager
 
 ## Important Commands

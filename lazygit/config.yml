@@ -1,5 +1,10 @@
 os:
-  editPreset: nvim
+  # coda 0.4.0+ は vim 互換の `+N` 行ジャンプに対応。`--` 以降は常に path 扱い。
+  # editInTerminal: true で lazygit を suspend して TUI editor に切り替える。
+  edit: 'coda -- {{filename}}'
+  editAtLine: 'coda +{{line}} -- {{filename}}'
+  editAtLineAndWait: 'coda +{{line}} -- {{filename}}'
+  editInTerminal: true
 
 gui:
   mouseEvents: true
@@ -11,4 +16,4 @@ git:
     - pager: hunk pager --transparent-bg
 
 refresher:
-  refreshInterval: 30
+  refreshInterval: 10

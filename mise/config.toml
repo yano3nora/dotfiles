@@ -11,7 +11,7 @@ hunk = "latest"
 gitleaks = "latest"
 "github:RivoLink/leaf" = "latest"
 goreleaser = "latest"
-"github:yano3nora/coda" = "0.3.0"
+"github:yano3nora/coda" = "0.4.0"
 aws-sam-cli = { version = "1.163.0", symlink_bins = "true" }
 yq = "latest"
 "github:yano3nora/excel2json" = "latest"

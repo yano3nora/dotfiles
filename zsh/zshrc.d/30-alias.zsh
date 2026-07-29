@@ -8,9 +8,9 @@ alias rm="trash"
 alias reload="exec $SHELL -l"
 alias grep='/usr/local/opt/grep/libexec/gnubin/grep'
 
-# lazyvim - https://github.com/LazyVim/LazyVim
-# 意図: git commit など `$EDITOR` を実行するツールでも LazyVim / nvim を使う。
-# やっていること: alias は非対話コマンドから参照されないため、EDITOR 自体を nvim にする。
-export EDITOR=nvim
+# coda - https://github.com/yano3nora/coda
+# 意図: git commit など `$EDITOR` を実行するツールでも coda を使う。
+# やっていること: alias は非対話コマンドから参照されないため、EDITOR 自体を coda にする。
+export EDITOR=coda
 export VISUAL="$EDITOR"
 alias vim="nvim"
