@@ -10,10 +10,8 @@ gui:
   mouseEvents: true
 
 git:
+  autoRefresh: false # 試しに
   autoFetch: false
   fetchAll: false
   pagers:
     - pager: hunk pager --transparent-bg
-
-refresher:
-  refreshInterval: 10
