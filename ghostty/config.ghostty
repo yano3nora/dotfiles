@@ -9,7 +9,7 @@ font-thicken = true
 
 # 背景透過
 background-opacity = 0.85
-background-blur-radius = 20
+background-blur = false
 
 # 非アクティブペインを暗く
 unfocused-split-opacity = 0.9
