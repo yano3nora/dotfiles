@@ -3,9 +3,9 @@
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[markdown]": {
-    "editor.wordWrap": "off",
     "editor.defaultFormatter": null,
-    "editor.formatOnSave": false
+    "editor.formatOnSave": false,
+    "editor.wordWrap": "off"
   },
   "chatgpt.commentCodeLensEnabled": false,
   "chatgpt.localeOverride": "ja-JP",
@@ -65,11 +65,11 @@
   },
   "extensions.ignoreRecommendations": true,
   "files.associations": {
-    "*.toml": "ini",
     ".env*": "dotenv",
     "*.jslib": "javascript",
     "*.jspre": "javascript",
-    "*.ks": "kagex"
+    "*.ks": "kagex",
+    "*.toml": "ini"
   },
   "files.eol": "\n",
   // https://github.com/microsoft/vscode/issues/62725
@@ -98,6 +98,7 @@
     "plaintext": false,
     "scminput": false
   },
+  "gitlens.currentLine.uncommittedChangesFormat": "",
   "gitlens.launchpad.indicator.enabled": false,
   "gitlens.menus": {
     "editorGroup": false,
@@ -154,7 +155,7 @@
   "todo-tree.highlights.enabled": true,
   // https://github.com/Gruntfuggly/todo-tree/issues/255
   "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])",
-  "todo-tree.ripgrep.ripgrep": "/Applications/Visual Studio Code.app/Contents/Resources/app/node_modules/@vscode/ripgrep-universal/bin/darwin-x64/rg",
+  // "todo-tree.ripgrep.ripgrep": "/Applications/Visual Studio Code.app/Contents/Resources/app/node_modules/@vscode/ripgrep-universal/bin/darwin-x64/rg",
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
   "window.titleBarStyle": "native",
