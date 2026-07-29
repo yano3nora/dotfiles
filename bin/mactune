@@ -11,6 +11,7 @@ set -euo pipefail
 # duetexpertd は per-user の LaunchAgent なので gui domain (uid 付き) を対象にする。
 duet_target="gui/$(id -u)/com.apple.duetexpertd"
 duet_plist="/System/Library/LaunchAgents/com.apple.duetexpertd.plist"
+typeset -a chrome_cache_targets
 
 usage() {
   cat >&2 <<'EOF'
@@ -20,8 +21,176 @@ subcommands:
   duet status   duetexpertd の状態 (disabled 登録 / プロセス有無) を表示
   duet off      duetexpertd を無効化して停止する (再起動後も維持)
   duet on       duetexpertd を有効化して起動し直す
+  ui status     描画に関係する主要プロセスの負荷を表示
+  ui refresh    アプリを閉じず、macOS の自動復帰する UI プロセスだけ再起動
+  chrome-cache status
+                Chrome の削除可能なキャッシュ容量を表示
+  chrome-cache clear [--all] [--yes]
+                Chrome の通常/GPU キャッシュを削除
+                --all: Service Worker キャッシュも削除（オフラインデータに注意）
+                --yes: 確認を省略
 EOF
   exit 1
+}
+
+ui_status() {
+  local names="WindowServer|ghostty|Dock|SystemUIServer|ControlCenter|NotificationCenter"
+  local pids
+  # pgrep のプロセス名はアプリの表示名と異なる場合があるため、対象を正規表現でまとめる。
+  pids="$(pgrep -x "$names" | paste -sd, - || true)"
+
+  if [[ -z "$pids" ]]; then
+    echo "⚪ 対象の UI プロセスは見つかりませんでした"
+    return
+  fi
+
+  echo "🖥️ UI process status"
+  ps -o pid,%cpu,%mem,rss,etime,comm -p "$pids"
+  echo "ℹ️ RSS は KiB。WindowServer は停止するとログアウト相当になるため refresh 対象外です。"
+}
+
+ui_refresh() {
+  local process
+  local targets=(Dock SystemUIServer ControlCenter NotificationCenter)
+
+  echo "🔄 macOS の UI プロセスを再起動します（Dock・メニューバーが一時的に消えます）"
+  for process in "${targets[@]}"; do
+    # これらは launchd が自動復帰させる per-user プロセス。未起動なら何もしない。
+    killall "$process" 2>/dev/null || true
+  done
+
+  sleep 1
+  echo "✅ UI プロセスの再起動を要求しました"
+  ui_status
+}
+
+chrome_cache_collect_targets() {
+  local include_site_cache="${1:-false}"
+  local cache_root="$HOME/Library/Caches/Google/Chrome"
+  local data_root="$HOME/Library/Application Support/Google/Chrome"
+  local profile cache_dir
+
+  chrome_cache_targets=()
+
+  # HTTP キャッシュ本体。Chrome が次回起動時に必要なディレクトリを再生成する。
+  [[ -e "$cache_root" ]] && chrome_cache_targets+=("$cache_root")
+
+  # GPU/Metal シェーダーキャッシュはログイン情報や閲覧データを含まない。
+  for profile in \
+    "$data_root/GrShaderCache" \
+    "$data_root/GraphiteDawnCache" \
+    "$data_root/ShaderCache"; do
+    [[ -e "$profile" ]] && chrome_cache_targets+=("$profile")
+  done
+
+  # Profile 名はユーザーが変更できるため、Chrome が使うディレクトリ形式で探索する。
+  for profile in \
+    "$data_root"/Default(N/) \
+    "$data_root"/Profile\ *(N/) \
+    "$data_root"/Guest\ Profile(N/) \
+    "$data_root"/System\ Profile(N/); do
+    for cache_dir in \
+      "$profile/GPUCache" \
+      "$profile/DawnCache" \
+      "$profile/DawnGraphiteCache" \
+      "$profile/DawnWebGPUCache"; do
+      [[ -e "$cache_dir" ]] && chrome_cache_targets+=("$cache_dir")
+    done
+
+    # CacheStorage には Google Docs などのオフラインデータが入る場合があるため、
+    # 通常の clear では削除せず、利用者が --all を明示したときだけ対象にする。
+    if [[ "$include_site_cache" == true && -e "$profile/Service Worker/CacheStorage" ]]; then
+      chrome_cache_targets+=("$profile/Service Worker/CacheStorage")
+    fi
+  done
+}
+
+chrome_cache_print_targets() {
+  local total_kib=0
+  local target size_kib
+
+  if (( ${#chrome_cache_targets[@]} == 0 )); then
+    echo "⚪ 削除対象の Chrome キャッシュはありません"
+    return
+  fi
+
+  for target in "${chrome_cache_targets[@]}"; do
+    size_kib="$(du -sk "$target" 2>/dev/null | awk '{print $1}')"
+    size_kib="${size_kib:-0}"
+    (( total_kib += size_kib ))
+    du -sh "$target" 2>/dev/null || true
+  done
+
+  awk -v kib="$total_kib" 'BEGIN { printf "合計: %.2f GiB\n", kib / 1024 / 1024 }'
+}
+
+chrome_cache_status() {
+  local include_site_cache="${1:-false}"
+  chrome_cache_collect_targets "$include_site_cache"
+  echo "🧹 Chrome cache status"
+  chrome_cache_print_targets
+
+  if [[ "$include_site_cache" != true ]]; then
+    echo "ℹ️ Service Worker キャッシュは含めていません。含める場合は: mactune chrome-cache status --all"
+  fi
+}
+
+chrome_cache_assert_stopped() {
+  local pgrep_status
+
+  if pgrep -f 'Google Chrome.app/Contents/' >/dev/null 2>&1; then
+    echo "❌ Chrome が起動中です。作業を保存して ⌘Q で完全終了してください。" >&2
+    return 1
+  else
+    pgrep_status=$?
+    # pgrep は「対象なし」なら 1、プロセス一覧の取得失敗などは 2 以上を返す。
+    if (( pgrep_status != 1 )); then
+      echo "❌ Chrome の起動状態を確認できないため、安全のため中断します。" >&2
+      return 1
+    fi
+  fi
+}
+
+chrome_cache_clear() {
+  local include_site_cache=false
+  local skip_confirmation=false
+  local option reply target
+
+  for option in "$@"; do
+    case "$option" in
+      --all) include_site_cache=true ;;
+      --yes) skip_confirmation=true ;;
+      *) echo "❌ 不明なオプション: $option" >&2; usage ;;
+    esac
+  done
+
+  chrome_cache_assert_stopped
+  chrome_cache_collect_targets "$include_site_cache"
+  chrome_cache_print_targets
+
+  if (( ${#chrome_cache_targets[@]} == 0 )); then
+    return
+  fi
+
+  if [[ "$include_site_cache" == true ]]; then
+    echo "⚠️ Service Worker キャッシュも削除します。未同期のオフラインデータがないことを確認してください。"
+  fi
+
+  if [[ "$skip_confirmation" != true ]]; then
+    if [[ ! -t 0 ]]; then
+      echo "❌ 対話入力できません。確認済みなら --yes を付けてください。" >&2
+      return 1
+    fi
+    read -r "reply?削除しますか？ [y/N] "
+    [[ "$reply" == [yY] ]] || { echo "中止しました"; return; }
+  fi
+
+  for target in "${chrome_cache_targets[@]}"; do
+    # 対象は上で組み立てた既知のキャッシュパスだけ。rm の alias を避けて直接実行する。
+    command rm -rf "$target"
+  done
+
+  echo "✅ Chrome キャッシュを削除しました"
 }
 
 duet_status() {
@@ -65,6 +234,26 @@ case "${1:-}" in
       off)    duet_off ;;
       on)     duet_on ;;
       *)      usage ;;
+    esac
+    ;;
+  ui)
+    case "${2:-}" in
+      status)  ui_status ;;
+      refresh) ui_refresh ;;
+      *)       usage ;;
+    esac
+    ;;
+  chrome-cache)
+    case "${2:-}" in
+      status)
+        case "${3:-}" in
+          "")    chrome_cache_status false ;;
+          --all) chrome_cache_status true ;;
+          *)     usage ;;
+        esac
+        ;;
+      clear) chrome_cache_clear "${@:3}" ;;
+      *)     usage ;;
     esac
     ;;
   *) usage ;;

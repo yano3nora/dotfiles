@@ -20,7 +20,7 @@ Usage:
   dots link               Link managed dotfiles
   dots doctor             Check required commands
   dots addbin <name>      Create an executable bin/<name> template
-  dots project [--typescript] [--react] [dir]
+  dots project [--typescript [--react] | --deno] [dir]
                           Create a new project template
   dots help               Show this help
 USAGE
@@ -315,6 +315,42 @@ copy_package_json_template() {
   info "created: $dest"
 }
 
+# __PROJECT_NAME__ placeholder を対象ディレクトリ名 (正規化済み) へ差し替えてコピーする。
+# deno.json の binary 名や release script の project 名など、名前依存のテンプレート用
+copy_named_template() {
+  local src="$1"
+  local dest="$2"
+  local project_name="$3"
+
+  if [[ ! -e "$src" ]]; then
+    warn "template not found: $src"
+    return 1
+  fi
+
+  ensure_parent_dir "$dest"
+
+  if [[ -e "$dest" || -L "$dest" ]]; then
+    info "skip existing: $dest"
+    return 0
+  fi
+
+  sed "s/__PROJECT_NAME__/$project_name/g" "$src" > "$dest"
+  info "created: $dest"
+}
+
+copy_deno_templates() {
+  local target_dir="$1"
+  local project_name
+  project_name="$(package_name_from_dir "${target_dir:t}")"
+
+  copy_template_file "$DOTFILES_ROOT/project/deno/.vscode/settings.json" "$target_dir/.vscode/settings.json"
+  copy_template_file "$DOTFILES_ROOT/project/deno/.vscode/extensions.json" "$target_dir/.vscode/extensions.json"
+  copy_named_template "$DOTFILES_ROOT/project/deno/deno.json" "$target_dir/deno.json" "$project_name"
+  # goreleaser + release.ts の release 雛形。binary 配布しない project は削除してよい
+  copy_named_template "$DOTFILES_ROOT/project/deno/.goreleaser.yaml" "$target_dir/.goreleaser.yaml" "$project_name"
+  copy_named_template "$DOTFILES_ROOT/project/deno/scripts/release.ts" "$target_dir/scripts/release.ts" "$project_name"
+}
+
 copy_typescript_templates() {
   local target_dir="$1"
   local react="$2"
@@ -337,6 +373,7 @@ copy_typescript_templates() {
 project() {
   local typescript=0
   local react=0
+  local deno=0
   local target="."
   local targets=()
 
@@ -347,6 +384,9 @@ project() {
         ;;
       --react)
         react=1
+        ;;
+      --deno)
+        deno=1
         ;;
       --)
         shift
@@ -379,6 +419,11 @@ project() {
     return 1
   fi
 
+  if [[ "$deno" == "1" && "$typescript" == "1" ]]; then
+    warn "--deno and --typescript are mutually exclusive"
+    return 1
+  fi
+
   if [[ "${#targets[@]}" -eq 1 ]]; then
     target="${targets[1]}"
   fi
@@ -389,7 +434,12 @@ project() {
   info "project root: $target_dir"
 
   # Project templates are copied, not linked, because each project must rewrite them to its own context.
-  copy_template_file "$DOTFILES_ROOT/project/mise.toml" "$target_dir/mise.toml"
+  # mise.toml は runtime ごとに tools / tasks の正解が違うため、deno は専用の雛形を使う。
+  if [[ "$deno" == "1" ]]; then
+    copy_template_file "$DOTFILES_ROOT/project/deno/mise.toml" "$target_dir/mise.toml"
+  else
+    copy_template_file "$DOTFILES_ROOT/project/mise.toml" "$target_dir/mise.toml"
+  fi
   copy_template_file "$DOTFILES_ROOT/project/.editorconfig" "$target_dir/.editorconfig"
   copy_template_file "$DOTFILES_ROOT/project/.gitignore" "$target_dir/.gitignore"
   copy_template_file "$DOTFILES_ROOT/project/.gitattributes" "$target_dir/.gitattributes"
@@ -400,6 +450,10 @@ project() {
 
   if [[ "$typescript" == "1" ]]; then
     copy_typescript_templates "$target_dir" "$react"
+  fi
+
+  if [[ "$deno" == "1" ]]; then
+    copy_deno_templates "$target_dir"
   fi
 
   info "next: edit TODOs in AGENTS.md, README.md, and docs/"
