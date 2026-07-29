@@ -1,0 +1,18 @@
+{
+  "tasks": {
+    "test": "deno check . && deno lint && deno fmt --check && deno test",
+    "fix": "deno lint --fix && deno fmt",
+    "compile": "deno compile --allow-env --allow-read --allow-write --allow-run --output dist/__PROJECT_NAME__ src/main.ts"
+  },
+  "fmt": {
+    "lineWidth": 80,
+    "semiColons": false,
+    "singleQuote": true,
+    "exclude": ["**/*.md"]
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  }
+}

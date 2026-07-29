@@ -1,0 +1,30 @@
+# https://mise.jdx.dev/
+# Project-local tool versions and tasks.
+
+[tools]
+deno = "2.9.1"
+goreleaser = "2"
+
+# [env]
+# _.file = ".env.local"
+
+[tasks.pre-commit]
+description = "pre-commit: fix lint, format and run tests"
+run = [
+  "deno task fix",
+  "deno task test",
+]
+
+[tasks.provision]
+description = "provisioning"
+run = [
+  "mise generate git-pre-commit --task pre-commit --write",
+]
+
+[tasks."release:prepare"]
+description = "Bump VERSION, run checks/tests, and dry-run the goreleaser pipeline (no publish)"
+run = "deno run --allow-read --allow-write --allow-run --allow-env scripts/release.ts prepare"
+
+[tasks."release:publish"]
+description = "Push the tagged commit and create the GitHub Release via goreleaser (human-only)"
+run = "deno run --allow-read --allow-write --allow-run --allow-env scripts/release.ts publish"
