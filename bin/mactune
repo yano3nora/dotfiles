@@ -13,16 +13,38 @@ duet_target="gui/$(id -u)/com.apple.duetexpertd"
 duet_plist="/System/Library/LaunchAgents/com.apple.duetexpertd.plist"
 typeset -a chrome_cache_targets
 
+# triage の結果を貯めるログ。重い瞬間の記録を蓄積して後からパターンを探す。
+triage_log="$HOME/.local/state/mactune/triage.log"
+
+# VSCode が自動再起動できる language server 系プロセスだけを対象にする。
+# extension host (Code Helper (Plugin)) 本体を殺すと全拡張が落ちるため対象外。
+vscode_lsp_pattern='Visual Studio Code\.app/.*(tsserver|typingsInstaller|eslintServer)\.js'
+
 usage() {
   cat >&2 <<'EOF'
 使い方: mactune <subcommand>
 
 subcommands:
+  triage        重くなった瞬間の証拠を一括採取 (熱制限/kernel_task/メモリ/CPU上位)
+                結果は ~/.local/state/mactune/triage.log にも追記する
+  refresh       chrome refresh + vscode refresh + ui refresh をまとめて実行
   duet status   duetexpertd の状態 (disabled 登録 / プロセス有無) を表示
   duet off      duetexpertd を無効化して停止する (再起動後も維持)
   duet on       duetexpertd を有効化して起動し直す
   ui status     描画に関係する主要プロセスの負荷を表示
   ui refresh    アプリを閉じず、macOS の自動復帰する UI プロセスだけ再起動
+  vscode status VSCode の tsserver / eslintServer の負荷を表示
+  vscode refresh [--hard]
+                tsserver / eslintServer を kill する (VSCode が自動再起動)
+                --hard: extension host ごと kill して全拡張をリセット
+  display status
+                外部ディスプレイの解像度と HiDPI 状態を表示 (BetterDisplay CLI)
+  display perf  HiDPI を切ってネイティブ 1:1 に落とす (画面共有・重い作業用)
+  display quality
+                いつもの HiDPI 表示に戻す
+  chrome status Chrome Helper (GPU/Renderer など) の負荷上位を表示
+  chrome refresh
+                Chrome の GPU プロセスだけ kill する (タブ保持のまま自動再起動)
   chrome-cache status
                 Chrome の削除可能なキャッシュ容量を表示
   chrome-cache clear [--all] [--yes]
@@ -62,6 +84,218 @@ ui_refresh() {
   sleep 1
   echo "✅ UI プロセスの再起動を要求しました"
   ui_status
+}
+
+triage_report() {
+  echo "📸 mactune triage - $(date '+%Y-%m-%d %H:%M:%S')"
+
+  echo
+  echo "🌡️ Thermal throttling"
+  # Intel Mac は CPU 温度が低くても電力制限 (PL1/PL2) や VRM 温度で制限がかかる。
+  # CPU_Speed_Limit が 100 未満ならスロットリング確定。センサー温度より信頼できる。
+  pmset -g therm 2>/dev/null | grep -E 'CPU_(Speed|Scheduler)_Limit|CPU_Available_CPUs' \
+    || echo "⚪ 熱制限の情報を取得できませんでした"
+
+  echo
+  echo "🧊 kernel_task (pid 0)"
+  # Intel Mac は熱がこもると kernel_task が意図的に CPU を占有して冷却する。
+  # ここが数百 % なら体感の重さは熱由来で確定。
+  # pid 0 は ps から見えないため top を使う。CPU% は 1 サンプル目が常に 0 になるので 2 回採って最後を使う。
+  top -l 2 -s 1 -stats pid,cpu,command 2>/dev/null | grep -i 'kernel_task' | tail -1 \
+    || echo "⚪ kernel_task の情報を取得できませんでした"
+
+  echo
+  echo "🧠 Memory / Swap"
+  # 証拠採取コマンドなので、一部の取得失敗で全体を止めない。
+  sysctl -n vm.swapusage 2>/dev/null || echo "⚪ swap 情報を取得できませんでした"
+  memory_pressure -Q 2>/dev/null || true
+
+  echo
+  echo "🔥 CPU top 10"
+  ps -Aro pid,%cpu,%mem,etime,comm | head -11 || true
+
+  echo
+  echo "🖥️ WindowServer (全ディスプレイ描画の合成担当。外部ディスプレイ・画面共有で増える)"
+  ps -axo pid,%cpu,%mem,etime,comm | grep -E '[W]indowServer' || true
+}
+
+triage() {
+  mkdir -p "${triage_log:h}"
+  triage_report | tee -a "$triage_log"
+  echo
+  echo "ℹ️ 結果は $triage_log にも追記しました。重い瞬間ごとに実行して記録を貯めてください。"
+}
+
+vscode_status() {
+  local pids
+  # 他ユーザーのプロセスを巻き込まないよう、自分の uid に限定する。
+  pids="$(pgrep -u "$(id -u)" -f "$vscode_lsp_pattern" | paste -sd, - || true)"
+
+  if [[ -z "$pids" ]]; then
+    echo "⚪ tsserver / eslintServer は動作していません"
+    return
+  fi
+
+  echo "🧩 VSCode language server status"
+  # command 列は node の引数で長大になるため、実体の .js 名だけ抜き出して表示する。
+  # pgrep 後にプロセスが終了していると ps が非ゼロになるため、失敗しても続行する。
+  ps -o pid=,%cpu=,%mem=,etime= -o command= -p "$pids" | awk '{
+    name = "?"
+    for (i = 5; i <= NF; i++) if ($i ~ /\.js$/) { n = split($i, parts, "/"); name = parts[n]; break }
+    printf "%8s %6s%% %6s%% %12s  %s\n", $1, $2, $3, $4, name
+  }' || true
+}
+
+vscode_refresh() {
+  if ! pgrep -u "$(id -u)" -f "$vscode_lsp_pattern" >/dev/null 2>&1; then
+    echo "⚪ tsserver / eslintServer は動作していません"
+    return
+  fi
+
+  echo "🔄 tsserver / eslintServer を kill します (VSCode が自動で立ち上げ直します)"
+  if pkill -u "$(id -u)" -f "$vscode_lsp_pattern"; then
+    echo "✅ kill しました。復帰しない場合は VSCode で「TypeScript: Restart TS Server」を実行してください。"
+  else
+    echo "❌ kill できませんでした (すでに終了したか、権限がありません)" >&2
+    return 1
+  fi
+}
+
+vscode_refresh_hard() {
+  local -a lsp_pids ext_pids
+  local pid ppid parent_cmd
+
+  # extension host は ptyHost や fileWatcher と同じ NodeService utility として動くため、
+  # コマンドライン引数では区別できない。language server (tsserver 等) の親 pid から逆引きする。
+  lsp_pids=($(pgrep -u "$(id -u)" -f "$vscode_lsp_pattern" || true))
+  if (( ${#lsp_pids[@]} == 0 )); then
+    echo "⚪ language server が動いておらず extension host を特定できません。" >&2
+    echo "   VSCode のコマンドパレットで「Developer: Restart Extension Host」を実行してください。" >&2
+    return 1
+  fi
+
+  ext_pids=()
+  for pid in "${lsp_pids[@]}"; do
+    ppid="$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ')"
+    [[ -n "$ppid" ]] || continue
+    # typingsInstaller のように親が tsserver 自身のものは除外し、重複も避ける。
+    [[ " ${lsp_pids[*]} " == *" $ppid "* ]] && continue
+    [[ " ${ext_pids[*]} " == *" $ppid "* ]] && continue
+    # 誤爆防止: 親が本当に VSCode の extension host プロセスであることを確認してから対象にする。
+    parent_cmd="$(ps -o command= -p "$ppid" 2>/dev/null || true)"
+    [[ "$parent_cmd" == *"Code Helper (Plugin)"* ]] && ext_pids+=("$ppid")
+  done
+
+  if (( ${#ext_pids[@]} == 0 )); then
+    echo "❌ extension host を特定できませんでした。" >&2
+    return 1
+  fi
+
+  echo "🔄 extension host (pid: ${ext_pids[*]}) を kill します"
+  echo "   全拡張が再起動します。デバッグセッションや Remote 接続は切断されます。"
+  kill "${ext_pids[@]}" 2>/dev/null || true
+  echo "✅ kill しました。VSCode が自動で extension host を立ち上げ直します。"
+  echo "ℹ️ 短時間に連続実行すると VSCode が自動復帰を諦めて手動再起動待ちになるので注意してください。"
+}
+
+chrome_status() {
+  local pids
+  pids="$(pgrep -u "$(id -u)" -f 'Chrome Helper' | paste -sd, - || true)"
+
+  if [[ -z "$pids" ]]; then
+    echo "⚪ Chrome Helper プロセスは動作していません"
+    return
+  fi
+
+  echo "🌐 Chrome Helper status (CPU 上位 10)"
+  # Helper の役割は表示名でなく --type= (gpu-process/renderer/utility) が正確なので、そちらを抜き出す。
+  # head が先に閉じると sort が SIGPIPE で非ゼロ終了するため、pipefail でも落ちないよう握りつぶす。
+  ps -o pid=,%cpu=,%mem=,etime= -o command= -p "$pids" | sort -k2,2 -nr | head -10 | awk '{
+    type = "?"
+    if (match($0, /--type=[a-z-]+/)) type = substr($0, RSTART + 7, RLENGTH - 7)
+    printf "%8s %6s%% %6s%% %12s  %s\n", $1, $2, $3, $4, type
+  }' || true
+  echo "ℹ️ Renderer はタブ本体なので kill しません。重いタブは Chrome のメニュー「ウィンドウ > タスクマネージャ」で特定してください。"
+}
+
+# GPU プロセスは表示名が "(GPU)" 付きとは限らないため、--type=gpu-process で特定する。
+chrome_gpu_pattern='Google Chrome Helper.*--type=gpu-process'
+
+# BetterDisplay CLI で操作する外部ディスプレイの設定。モニタ買い替え時はここを更新する。
+# HiDPI (looks like 2064x1161) は 4128x2322 の仮想描画になり iGPU 負荷が約 2.6 倍のため、
+# 画面共有などの重い場面だけ perf (ネイティブ 1:1) に落とし、普段は quality に戻す運用。
+bd_cli="/Applications/BetterDisplay.app/Contents/MacOS/BetterDisplay"
+bd_display_name="JN-39V165WQHD"
+bd_perf_res="2560x1440"     # パネルネイティブ 1:1 (HiDPI off)
+bd_quality_res="2048x1152"  # 普段の HiDPI looks-like (mactune display status の実測値)
+
+chrome_refresh() {
+  if ! pgrep -u "$(id -u)" -f "$chrome_gpu_pattern" >/dev/null 2>&1; then
+    echo "⚪ Chrome の GPU プロセスは動作していません"
+    return
+  fi
+
+  echo "🔄 Chrome の GPU プロセスを kill します (タブは保持、一瞬描画が乱れます)"
+  # GPU プロセスは Chrome 本体が即座に自動再起動する。描画系の暴走リセットに有効。
+  if pkill -u "$(id -u)" -f "$chrome_gpu_pattern"; then
+    echo "✅ kill しました。Chrome ごと再起動したい場合はアドレスバーで chrome://restart (タブ復元付き)。"
+  else
+    echo "❌ kill できませんでした (すでに終了したか、権限がありません)" >&2
+    return 1
+  fi
+}
+
+bd_assert_cli() {
+  if [[ ! -x "$bd_cli" ]]; then
+    echo "❌ BetterDisplay が見つかりません: $bd_cli" >&2
+    return 1
+  fi
+}
+
+# BetterDisplay CLI はアプリ側の統合機能がオフだとタイムアウトするため、失敗時に案内を出す。
+bd_run() {
+  local output
+  if ! output="$("$bd_cli" "$@" 2>&1)" || [[ "$output" == Failed* ]]; then
+    echo "❌ BetterDisplay CLI に接続できませんでした: $output" >&2
+    echo "   BetterDisplay の Settings > Application > Integration で CLI を有効にしてください。" >&2
+    return 1
+  fi
+  echo "$output"
+}
+
+display_status() {
+  local res hidpi
+  bd_assert_cli || return 1
+  # echo "x: $(bd_run ...)" の形だと bd_run の失敗が echo に吸われて検知できないため、先に取得する。
+  res="$(bd_run get --namelike="$bd_display_name" --resolution)" || return 1
+  hidpi="$(bd_run get --namelike="$bd_display_name" --hiDPI)" || return 1
+  echo "🖥️ Display status ($bd_display_name)"
+  echo "resolution: $res"
+  echo "hiDPI: $hidpi"
+  echo "ℹ️ perf = ${bd_perf_res} 1:1 / quality = HiDPI ${bd_quality_res} (仮想解像度はその 2 倍)"
+}
+
+display_perf() {
+  bd_assert_cli || return 1
+  echo "🔋 描画負荷優先モードに切り替えます (HiDPI off / ${bd_perf_res} 1:1)"
+  bd_run set --namelike="$bd_display_name" --hiDPI=off --resolution="$bd_perf_res" || return 1
+  echo "✅ 切り替えました。画面共有・重い作業が終わったら: mactune display quality"
+}
+
+display_quality() {
+  bd_assert_cli || return 1
+  echo "✨ 画質優先モードに切り替えます (HiDPI on / looks like ${bd_quality_res})"
+  bd_run set --namelike="$bd_display_name" --hiDPI=on --resolution="$bd_quality_res" || return 1
+  echo "✅ 切り替えました。"
+}
+
+refresh_all() {
+  # どれか 1 つが失敗しても残りの refresh は続行する。
+  chrome_refresh || true
+  echo
+  vscode_refresh || true
+  echo
+  ui_refresh
 }
 
 chrome_cache_collect_targets() {
@@ -228,6 +462,36 @@ duet_on() {
 }
 
 case "${1:-}" in
+  triage)  triage ;;
+  refresh) refresh_all ;;
+  vscode)
+    case "${2:-}" in
+      status) vscode_status ;;
+      refresh)
+        case "${3:-}" in
+          "")     vscode_refresh ;;
+          --hard) vscode_refresh_hard ;;
+          *)      usage ;;
+        esac
+        ;;
+      *) usage ;;
+    esac
+    ;;
+  chrome)
+    case "${2:-}" in
+      status)  chrome_status ;;
+      refresh) chrome_refresh ;;
+      *)       usage ;;
+    esac
+    ;;
+  display)
+    case "${2:-}" in
+      status)  display_status ;;
+      perf)    display_perf ;;
+      quality) display_quality ;;
+      *)       usage ;;
+    esac
+    ;;
   duet)
     case "${2:-}" in
       status) duet_status ;;
