@@ -182,10 +182,27 @@ async function assertTagAtHead(tag: string): Promise<void> {
   }
 }
 
+// compile 成功だけでは npm 依存 asset の VFS 埋め込み漏れなど実行時の不具合を
+// 検出できないため、host 向けバイナリを実際に実行して動作確認する
+async function smokeTestCompiledBinary(version: string): Promise<void> {
+  await run('deno', ['task', 'compile'], { stream: true })
+  const binary = `dist/${PROJECT_NAME}`
+  try {
+    const versionOut = (await run(binary, ['--version'])).trim()
+    if (versionOut !== `${PROJECT_NAME} ${version}`) {
+      throw new Error(`Compiled binary version mismatch: got "${versionOut}".`)
+    }
+    // TODO: project 固有の入出力があれば stdin -> stdout のスモークテストを足す
+  } finally {
+    await Deno.remove(binary)
+  }
+}
+
 async function prepare(version: string): Promise<void> {
   await bumpVersion(version)
   await assertCliVersion(version)
   await run('deno', ['task', 'test'], { stream: true })
+  await smokeTestCompiledBinary(version)
 
   // publish で失敗しうるビルド〜archive〜checksum をここで全部失敗させておく。
   // --snapshot は tag 不要・publish なしで全工程を回すドライラン
@@ -219,13 +236,14 @@ async function publish(
 
   // goreleaser は GITHUB_TOKEN を要求する。gh の認証を使い回して token 管理を増やさない。
   // push 後に認証失敗すると remote だけ進んだ半端な状態になるため、token は push より先に確保する
-  const token = Deno.env.get('GITHUB_TOKEN') ??
+  // ?? だと空文字の GITHUB_TOKEN でフォールバックできないため || で判定する
+  const token = Deno.env.get('GITHUB_TOKEN')?.trim() ||
     (await run('gh', ['auth', 'token'], { quiet: true })).trim()
 
   // goreleaser は push を行わず GitHub API しか叩かないため、
-  // Release が正しいコミットを指すように commit と tag を先に remote へ揃える
-  await run('git', ['push', 'origin', 'HEAD'])
-  await run('git', ['push', 'origin', tag])
+  // Release が正しいコミットを指すように commit と tag を先に remote へ揃える。
+  // --atomic で branch だけ進んで tag が落ちる半端な状態を防ぐ
+  await run('git', ['push', '--atomic', 'origin', 'HEAD', tag])
 
   await run('goreleaser', ['release', '--clean'], {
     env: { GITHUB_TOKEN: token },

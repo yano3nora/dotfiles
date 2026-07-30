@@ -8,7 +8,7 @@
     "lineWidth": 80,
     "semiColons": false,
     "singleQuote": true,
-    "exclude": ["**/*.md"]
+    "exclude": ["**/*.md", "dist/"]
   },
   "lint": {
     "rules": {
