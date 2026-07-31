@@ -7,6 +7,7 @@ alias ls="ls -a -G"
 alias rm="trash"
 alias reload="exec $SHELL -l"
 alias grep='/usr/local/opt/grep/libexec/gnubin/grep'
+alias chrome='open -a "Google Chrome"'
 
 # coda - https://github.com/yano3nora/coda
 # 意図: git commit など `$EDITOR` を実行するツールでも coda を使う。
