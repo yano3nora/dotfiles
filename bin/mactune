@@ -253,14 +253,24 @@ bd_assert_cli() {
 }
 
 # BetterDisplay CLI はアプリ側の統合機能がオフだとタイムアウトするため、失敗時に案内を出す。
+# なお現在値と同じ設定への set も "Failed." (exit 1) を返すため、接続断と決めつけず生の出力を見せる。
 bd_run() {
   local output
   if ! output="$("$bd_cli" "$@" 2>&1)" || [[ "$output" == Failed* ]]; then
-    echo "❌ BetterDisplay CLI に接続できませんでした: $output" >&2
-    echo "   BetterDisplay の Settings > Application > Integration で CLI を有効にしてください。" >&2
+    echo "❌ BetterDisplay CLI の実行に失敗しました: $output" >&2
+    echo "   応答がない場合は Settings > Application > Integration で CLI を有効にしてください。" >&2
     return 1
   fi
   echo "$output"
+}
+
+# 現在の "resolution,hiDPI" を返す。set 系の冪等チェック用。
+# 複数値の同時 get (--resolution --hiDPI) は返却順が不定のため、1 値ずつ取得して自前で結合する。
+bd_current_state() {
+  local res hidpi
+  res="$(bd_run get --namelike="$bd_display_name" --resolution)" || return 1
+  hidpi="$(bd_run get --namelike="$bd_display_name" --hiDPI)" || return 1
+  echo "${res},${hidpi}"
 }
 
 display_status() {
@@ -276,14 +286,26 @@ display_status() {
 }
 
 display_perf() {
+  local cur
   bd_assert_cli || return 1
+  cur="$(bd_current_state)" || return 1
+  if [[ "$cur" == "${bd_perf_res},off" ]]; then
+    echo "⚪ すでに描画負荷優先モードです (${bd_perf_res} 1:1)"
+    return
+  fi
   echo "🔋 描画負荷優先モードに切り替えます (HiDPI off / ${bd_perf_res} 1:1)"
   bd_run set --namelike="$bd_display_name" --hiDPI=off --resolution="$bd_perf_res" || return 1
   echo "✅ 切り替えました。画面共有・重い作業が終わったら: mactune display quality"
 }
 
 display_quality() {
+  local cur
   bd_assert_cli || return 1
+  cur="$(bd_current_state)" || return 1
+  if [[ "$cur" == "${bd_quality_res},on" ]]; then
+    echo "⚪ すでに画質優先モードです (HiDPI ${bd_quality_res})"
+    return
+  fi
   echo "✨ 画質優先モードに切り替えます (HiDPI on / looks like ${bd_quality_res})"
   bd_run set --namelike="$bd_display_name" --hiDPI=on --resolution="$bd_quality_res" || return 1
   echo "✅ 切り替えました。"
