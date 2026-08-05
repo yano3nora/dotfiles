@@ -19,6 +19,7 @@ yq = "latest"
 powershell-core = "latest"
 "github:yano3nora/rubylize" = "0.2.0"
 "github:yano3nora/jsonalize" = "0.1.0"
+marp-cli = "latest"
 # php@8.1 is still managed by Homebrew for now. mise php requires build dependencies such as autoconf.
 
 [settings]
