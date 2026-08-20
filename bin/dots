@@ -101,6 +101,7 @@ link_all() {
   link_path "$DOTFILES_ROOT/leaf/config.toml" "$HOME/.config/leaf/config.toml"
   link_path "$DOTFILES_ROOT/ai/instructions.md" "$HOME/.codex/instructions.md"
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+  link_path "$DOTFILES_ROOT/ai/skills/chrome-connect" "$HOME/.claude/skills/chrome-connect"
   link_path "$DOTFILES_ROOT/nvim/lua/config/options.lua" "$HOME/.config/nvim/lua/config/options.lua"
   link_path "$DOTFILES_ROOT/nvim/lua/config/keymaps.lua" "$HOME/.config/nvim/lua/config/keymaps.lua"
   link_path "$DOTFILES_ROOT/nvim/lua/config/autocmds.lua" "$HOME/.config/nvim/lua/config/autocmds.lua"
