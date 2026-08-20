@@ -26,4 +26,5 @@
 - 作業時には、調査・設計・タスク化を必ず行い、作業完了後は Codex へレビューを依頼すること
 - 大規模かつ複雑な作業の場合は、先に設計・タスクファイルのレビューを Codex に依頼する
 - Codex を呼ぶときは毎回新規起動せず、タスクごとに thread_id を保持して codex exec resume <thread_id> で同じセッションを継続して
+- テストが意図的に console.error / console.log などを発生させる場合、console の spy などでログを stdout / stderr に垂れ流さないようにする
 
