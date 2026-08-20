@@ -7,8 +7,7 @@
     "editor.formatOnSave": false,
     "editor.wordWrap": "off"
   },
-  "chatgpt.commentCodeLensEnabled": false,
-  "chatgpt.localeOverride": "ja-JP",
+  "chat.disableAIFeatures": true,
   "comments.openView": "never",
   "diffEditor.ignoreTrimWhitespace": false,
   "docker.extension.dockerEngineAvailabilityPrompt": false,
@@ -36,7 +35,6 @@
   "editor.renderControlCharacters": true,
   "editor.renderWhitespace": "all",
   "editor.rulers": [
-    72,
     80
   ],
   "editor.stablePeek": false,
@@ -92,12 +90,6 @@
   "git.blame.editorDecoration.enabled": false,
   // https://github.com/microsoft/vscode/issues/240181
   "git.blame.statusBarItem.enabled": true,
-  "github.copilot.enable": {
-    "*": false,
-    "markdown": false,
-    "plaintext": false,
-    "scminput": false
-  },
   "gitlens.currentLine.uncommittedChangesFormat": "",
   "gitlens.launchpad.indicator.enabled": false,
   "gitlens.menus": {
@@ -113,7 +105,6 @@
   "js/ts.updateImportsOnFileMove.enabled": "always",
   "js/ts.updateImportsOnPaste.enabled": false,
   "json.schemaDownload.enable": true,
-  // "workbench.tree.expandMode": "doubleClick",
   "json.schemaDownload.trustedDomains": {
     "https://biomejs.dev": true,
     "https://json-schema.org/": true,
@@ -151,33 +142,12 @@
   "terminal.integrated.gpuAcceleration": "off",
   "terminal.integrated.smoothScrolling": true,
   "terminal.integrated.stickyScroll.enabled": false,
-  "todo-tree.filtering.useBuiltInExcludes": "file and search excludes",
-  "todo-tree.highlights.enabled": true,
-  // https://github.com/Gruntfuggly/todo-tree/issues/255
-  "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])",
-  // "todo-tree.ripgrep.ripgrep": "/Applications/Visual Studio Code.app/Contents/Resources/app/node_modules/@vscode/ripgrep-universal/bin/darwin-x64/rg",
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
   "window.titleBarStyle": "native",
   "workbench.activityBar.location": "hidden",
   "workbench.colorCustomizations": {
-    // For local markdown, documents.
-    "[Github Light Theme - Gray]": {
-      "terminal.ansiBlack": "#383838",
-      "terminal.background": "#383838",
-      "terminal.foreground": "#ccc"
-    },
-    // For main development.
-    "[Monokai]": {
-      "terminal.ansiBlack": "#191919",
-      "terminal.background": "#191919"
-    },
-    // For local snippets, and gist.
-    "[Solarized Dark]": {
-      "terminal.ansiBlack": "#1c1c1c",
-      "terminal.background": "#1c1c1c"
-    },
-    "terminal.selectionBackground": "#ff8e7f6e"
+    "terminal.background": "#111111"
   },
   "workbench.colorTheme": "Monokai",
   "workbench.commandPalette.history": 0,
@@ -196,6 +166,5 @@
   "workbench.settings.enableNaturalLanguageSearch": false,
   "workbench.startupEditor": "none",
   "workbench.statusBar.visible": true,
-  "workbench.tree.indent": 15,
-  "chat.disableAIFeatures": true
+  "workbench.tree.indent": 15
 }
