@@ -1,153 +1,66 @@
 {
-  "[jsonc]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": null,
-    "editor.formatOnSave": false,
-    "editor.wordWrap": "off"
-  },
   "chat.disableAIFeatures": true,
   "comments.openView": "never",
   "diffEditor.ignoreTrimWhitespace": false,
-  "docker.extension.dockerEngineAvailabilityPrompt": false,
   "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.acceptSuggestionOnEnter": "off",
   "editor.accessibilitySupport": "off",
   "editor.bracketPairColorization.enabled": false,
   "editor.definitionLinkOpensInPeek": true,
   "editor.dragAndDrop": false,
-  "editor.experimental.asyncTokenization": true,
-  "editor.fastScrollSensitivity": 0,
-  "editor.foldingStrategy": "indentation",
   "editor.fontSize": 12,
   "editor.formatOnPaste": true,
-  "editor.inlineSuggest.enabled": true,
+  "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
   "editor.links": false,
   "editor.minimap.maxColumn": 32,
   "editor.multiCursorModifier": "ctrlCmd",
-  "editor.quickSuggestions": {
-    "comments": "off",
-    "other": "on", // 重すぎるなら off に
-    "strings": "off"
-  },
   "editor.renderControlCharacters": true,
   "editor.renderWhitespace": "all",
-  "editor.rulers": [
-    80
-  ],
-  "editor.stablePeek": false,
+  "editor.rulers": [80],
   "editor.stickyScroll.enabled": false,
   "editor.suggest.insertMode": "replace",
-  "editor.suggestSelection": "first",
   "editor.tabCompletion": "on",
   "editor.tabSize": 2,
   "editor.unicodeHighlight.ambiguousCharacters": false,
   "editor.unicodeHighlight.nonBasicASCII": false,
-  "editor.wordWrap": "off",
-  "emmet.excludeLanguages": [],
-  "emmet.includeLanguages": {
-    "erb": "html"
-  },
-  "emmet.showExpandedAbbreviation": "inMarkupAndStylesheetFilesOnly",
-  "emmet.triggerExpansionOnTab": true,
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
-  // https://github.com/yoavbls/pretty-ts-errors/issues/36
-  "extensions.experimental.affinity": {
-    "yoavbls.pretty-ts-errors": 1
-  },
-  "extensions.ignoreRecommendations": true,
   "files.associations": {
-    ".env*": "dotenv",
-    "*.jslib": "javascript",
-    "*.jspre": "javascript",
-    "*.ks": "kagex",
-    "*.toml": "ini"
+    "*.toml": "ini",
   },
   "files.eol": "\n",
-  // https://github.com/microsoft/vscode/issues/62725
   "files.watcherExclude": {
-    "*.log": true,
-    // default
-    "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true,
-    "**/.hg/store/**": true,
-    // custom
     "**/.next/**": true,
-    "**/.parcel-cache/**": true,
-    "**/.venv/**": true,
-    "**/build/**": true,
     "**/dist/**": true,
-    "**/node_modules/*/**": true,
-    "**/vendor/**": true
+    "**/build/**": true,
   },
-  "git.autofetch": false,
-  "git.blame.editorDecoration.enabled": false,
-  // https://github.com/microsoft/vscode/issues/240181
-  "git.blame.statusBarItem.enabled": true,
-  "gitlens.currentLine.uncommittedChangesFormat": "",
   "gitlens.launchpad.indicator.enabled": false,
-  "gitlens.menus": {
-    "editorGroup": false,
-    "editorTab": false
-  },
   "js/ts.format.semicolons": "remove",
   "js/ts.preferences.importModuleSpecifier": "non-relative",
   "js/ts.preferences.quoteStyle": "single",
-  "js/ts.tsdk.path": "node_modules/typescript/lib",
-  // REVIEW https://github.com/microsoft/TypeScript/issues/36358
-  "js/ts.tsserver.automaticTypeAcquisition.enabled": true,
   "js/ts.updateImportsOnFileMove.enabled": "always",
   "js/ts.updateImportsOnPaste.enabled": false,
-  "json.schemaDownload.enable": true,
-  "json.schemaDownload.trustedDomains": {
-    "https://biomejs.dev": true,
-    "https://json-schema.org/": true,
-    "https://json.schemastore.org/": true,
-    "https://raw.githubusercontent.com/": true,
-    "https://schemastore.azurewebsites.net/": true,
-    "https://www.schemastore.org/": true
-  },
-  "markdown.preview.scrollEditorWithPreview": false,
-  "markdown.preview.scrollPreviewWithEditor": false,
+  "markdown.preview.scrollEditorWithPreview": true,
+  "markdown.preview.scrollPreviewWithEditor": true,
   "markdown.styles": [
-    "https://cdn.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css"
+    "https://cdn.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css",
   ],
-  "notebook.cellToolbarLocation": {
-    "default": "right",
-    "jupyter-notebook": "left"
-  },
-  "php.validate.executablePath": "/usr/local/opt/php@8.1/bin/php",
-  "projectManager.git.baseFolders": [
-    "~/git"
-  ],
-  "python.analysis.autoImportCompletions": false,
+  "projectManager.git.baseFolders": ["~/git"],
   "python.languageServer": "Pylance",
   "python.terminal.activateEnvironment": false,
   "search.quickOpen.includeHistory": false,
-  "search.useGlobalIgnoreFiles": false,
-  "search.useIgnoreFiles": true,
-  "security.workspace.trust.untrustedFiles": "open",
   "telemetry.telemetryLevel": "off",
   "terminal.integrated.allowChords": false,
   "terminal.integrated.confirmOnExit": "always",
   "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.fontFamily": "MesloLGS NF",
   "terminal.integrated.fontSize": 12,
-  "terminal.integrated.gpuAcceleration": "off",
-  "terminal.integrated.smoothScrolling": true,
   "terminal.integrated.stickyScroll.enabled": false,
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
   "window.titleBarStyle": "native",
   "workbench.activityBar.location": "hidden",
   "workbench.colorCustomizations": {
-    "terminal.background": "#111111"
+    "terminal.background": "#111111",
   },
   "workbench.colorTheme": "Monokai",
   "workbench.commandPalette.history": 0,
@@ -156,15 +69,10 @@
   "workbench.editor.focusRecentEditorAfterClose": false,
   "workbench.editor.openPositioning": "left",
   "workbench.editor.useModal": "off",
-  "workbench.editorAssociations": {
-    "*.ipynb": "jupyter-notebook",
-    "git-rebase-todo": "default"
-  },
-  "workbench.enableExperiments": false,
   "workbench.layoutControl.enabled": false,
   "workbench.secondarySideBar.defaultVisibility": "hidden",
   "workbench.settings.enableNaturalLanguageSearch": false,
   "workbench.startupEditor": "none",
   "workbench.statusBar.visible": true,
-  "workbench.tree.indent": 15
+  "workbench.tree.indent": 15,
 }
