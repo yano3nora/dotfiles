@@ -2,4 +2,5 @@
 // `command` uses Coda's internal action name, not a VS Code command ID.
 [
   // { "key": "ctrl+j", "command": "cursor.down", "when": "editorFocus" }
+  { "key": "ctrl+f", "command": "search.open" },
 ]
