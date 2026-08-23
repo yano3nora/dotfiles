@@ -85,6 +85,23 @@ autoConnect の設定手順 (Chrome 144+ が必要):
 
 この repo では plugin 内蔵の server (autoConnect なし) と同名の二重定義になる (`/mcp` で確認できる)。重複が邪魔なら `claude plugin disable chrome-devtools-mcp --scope local` で repo 単位で plugin を切れるが、その repo では skills も無効になる (MCP server だけを個別に切る手段はない)。
 
+## Claude Code MCP Servers
+
+### figma (使うときだけ on)
+
+公式 Figma MCP server。常設すると `@` 補完に Figma リソースが並んで邪魔なので、普段は未登録にしておき、デザイン参照タスクのときだけ user scope に追加して終わったら削除する運用。
+
+```sh
+# on
+claude mcp add --transport http figma https://mcp.figma.com/mcp -s user
+
+# off
+claude mcp remove figma -s user
+```
+
+- **off は Claude Code のセッションを全部閉じてから実行すること**。起動中のセッションが `~/.claude.json` へ自身の設定状態を書き戻すため、起動したまま remove しても即復活する
+- 登録したまま project 単位で切りたい場合は `/mcp` からサーバを選んで disable もできる (CLI にはトグルコマンドなし)
+
 ## Trouble Shooting
 
 反映されない場合は symlink を確認する:
