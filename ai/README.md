@@ -6,8 +6,7 @@ AI coding agent 向けの個人用グローバル設定を管理する。
 
 Managed files:
 
-- `instructions.md` -> `~/.codex/instructions.md` (Codex)
-- `CLAUDE.md` -> `~/.claude/CLAUDE.md` (Claude Code)
+- `CLAUDE.md` -> `~/.claude/CLAUDE.md` (Claude Code) / `~/.codex/instructions.md` (Codex)
 
 project 固有の `AGENTS.md` / `CLAUDE.md` は `project/` テンプレートの管轄で、ここでは扱わない。
 

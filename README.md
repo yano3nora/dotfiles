@@ -54,7 +54,7 @@ reload
 - `~/.config/coda/bindings.json` -> `coda/bindings.json`
 - `~/.local/bin/*` -> `bin/*`
 - VSCode / Ghostty / LazyGit / leaf 設定
-- `~/.codex/instructions.md` -> `ai/instructions.md`
+- `~/.codex/instructions.md` -> `ai/CLAUDE.md`
 - `~/.claude/CLAUDE.md` -> `ai/CLAUDE.md`
 - `~/.config/nvim/lua/config/*.lua`, `~/.config/nvim/lua/plugins/blink.lua` -> `nvim/lua/...` (LazyVim starter は別途 clone しておく)
 
