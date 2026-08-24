@@ -21,6 +21,18 @@ dots link
 個人の口調・アドバイザーとしての姿勢・成果物出力ルールなど、ツール横断で効かせたい指示をここに書く。
 Agent 固有の設定形式や機能差はそれぞれのファイルに閉じる。
 
+## Codex CLI
+
+`~/.codex/config.toml` は project path、trust、plugin 状態などを Codex 自身が書き戻すため、repo 管理しない。次の設定だけ手動で維持する:
+
+```toml
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+```
+
 ## Claude Code Plugins
 
 導入済み plugin の記録。settings 自体 (`~/.claude/settings.json`) は機微情報が乗りやすいため symlink 管理せず、ここに導入手順と使い方を残して別環境で再現する。
