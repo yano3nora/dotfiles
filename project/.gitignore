@@ -5,7 +5,10 @@
 
 
 ### CUSTOM ###
-.envrc
+**/.claude/settings.local.json
+**/.claude/*.local.md
+**/.claude/.cc-writes/
+**/AGENTS.override.md
 
 
 ### Windows ###
