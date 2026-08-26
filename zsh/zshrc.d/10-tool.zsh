@@ -12,7 +12,8 @@ export PATH="/usr/local/opt/php@8.1/bin:$PATH"
 export PATH="/usr/local/opt/php@8.1/sbin:$PATH"
 
 # fd + fzf + bat
-export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
+# --hidden: fd は標準で dotfile を除外するため明示する。.git 配下だけはノイズなので除外を維持。
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git --strip-cwd-prefix'
 # Ctrl-T は候補を path 昇順に固定し、入力中も fzf の relevance 順へ並べ替えない。
 # --exact: fuzzy だと 1 文字ずつ飛び飛びマッチの候補がノイズになるため substring マッチにする（peco の IgnoreCase filter 相当）。
 # --cycle: 先頭で ctrl-p すると末尾へループする（末尾の候補へ一発で飛ぶ用途）。
