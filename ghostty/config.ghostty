@@ -60,3 +60,7 @@ keybind = super+shift+arrow_down=unbind
 # cmd+h: ignore では届かないので、kitty protocol のエンコード
 # (h=codepoint 104, modifier 9 = 1+super) を text: で直接送りつける
 keybind = super+h=text:\x1b[104;9u
+
+# cmd + a を coda へ届かせる
+keybind = super+a=unbind
+

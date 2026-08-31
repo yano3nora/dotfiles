@@ -1,5 +1,17 @@
 [appearance]
-theme = "dark"
+theme = "dark"                # "dark" | "light"
+
+[editor]
+wrap = false                  # visual line wrap at startup (toggle with alt+z)
+render_whitespace = true      # show tab/space markers (toggle with view.toggleWhitespace)
+indent_style = "space"        # "space" | "tab"; what Tab / edit.indent inserts
+indent_width = 2              # spaces per indent level, 1-16
 
 [keymap]
-ctrl_c = "quit"
+sequence_timeout_ms = 800     # wait time for key sequences
+palette_key = "ctrl+space"    # convenience key for the palette (F1 always works)
+ctrl_c = "quit"               # set to "quit" to exit with Ctrl+C (with unsaved-changes prompt)
+
+[terminal]
+capability_warning = true     # legacy terminal warning at startup
+
