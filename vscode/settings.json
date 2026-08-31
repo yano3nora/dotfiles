@@ -26,6 +26,7 @@
   "editor.unicodeHighlight.nonBasicASCII": false,
   "files.associations": {
     "*.toml": "ini",
+    "*.mdx": "markdown",
   },
   "files.eol": "\n",
   "files.watcherExclude": {
