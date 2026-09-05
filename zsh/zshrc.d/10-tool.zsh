@@ -4,6 +4,10 @@
 # user-local commands managed by this dotfiles repository and other tools
 export PATH="$HOME/.local/bin:$PATH"
 
+# mise
+# fzf / direnv など mise 管理のコマンドをこのファイル内で呼ぶため、他ツールの初期化より先に PATH を通す。
+eval "$(mise activate zsh)"
+
 # GNU grep
 export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
 
@@ -38,9 +42,6 @@ export COMPOSE_MENU=0
 # ログ自体にほぼ情報量がないので空 format で常時黙らせる。
 export DIRENV_LOG_FORMAT=""
 eval "$(direnv hook zsh)"
-
-# mise
-eval "$(mise activate zsh)"
 
 # Vite+ bin (https://viteplus.dev)
 . "$HOME/.vite-plus/env"

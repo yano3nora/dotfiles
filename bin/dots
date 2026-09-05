@@ -121,14 +121,8 @@ doctor() {
     zsh
     code
     nvim
-    lazygit
-    delta
     trash
-    fd
-    fzf
-    bat
     php
-    direnv
     mise
     gdate
     convmv
@@ -140,6 +134,11 @@ doctor() {
     rg
     deno
     java
+    bat
+    direnv
+    fd
+    fzf
+    lazygit
   )
 
   info "checking commands"

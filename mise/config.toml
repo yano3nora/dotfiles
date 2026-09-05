@@ -23,6 +23,18 @@ marp-cli = "latest"
 # Provides both `chrome-devtools` (CLI, used by the Claude Code plugin's cli skill) and `chrome-devtools-mcp` bins.
 # Note: MCP server via plugin / .mcp.json resolves the package with npx on its own — this install is for the CLI.
 "npm:chrome-devtools-mcp" = "latest"
+gh = "latest"
+bat = "latest"
+direnv = "latest"
+# aqua の fd は darwin/amd64 未対応のため、GitHub Release から直接取る ubi を使う。
+"ubi:sharkdp/fd" = "latest"
+fzf = "latest"
+lazygit = "latest"
+peco = "latest"
+fastfetch = "latest"
+yazi = "latest"
+uv = "latest"
+"pipx:pdm" = "latest"
 # php@8.1 is still managed by Homebrew for now. mise php requires build dependencies such as autoconf.
 
 [settings]

@@ -71,17 +71,19 @@ Then check whether old PATH entries remain in `zsh/zshrc.d/10-tool.zsh`.
 
 ## Homebrew migration status
 
+Homebrew on Intel macOS 26 no longer ships bottles, so `brew upgrade` builds every formula (and its toolchain, e.g. Go) from source. Daily CLIs are moved to mise whenever a prebuilt binary is available.
+
 Moved to mise:
 
-- `deno@1.40.5`
-- `jq` (`latest`)
-- `ripgrep` (`latest`)
-- `java@openjdk-25.0.2`
+- runtimes: `deno`, `java`, `node`, `python`, `uv`
+- daily CLIs: `jq`, `ripgrep`, `gh`, `bat`, `direnv`, `fd` (`ubi`), `fzf`, `lazygit`, `peco`, `fastfetch`, `yazi`, `gitleaks`, `aws-cli`
+- python tools: `pdm` (`pipx` backend via `uv`)
 
-Homebrew cleanup status:
+Kept in Homebrew (no prebuilt binary for darwin/amd64, or OS/build dependent):
 
-- `deno` was uninstalled from Homebrew.
-- `jq` and `ripgrep` are still installed by Homebrew because Homebrew refused to remove them as dependencies of other installed formulae (`codex` / `ijq`). The interactive shell still resolves them through mise, so this is acceptable for now.
+- `btop` (no macOS release asset), `php@8.1`, `grep`, `coreutils` (mise `coreutils` is uutils and not GNU compatible), `imagemagick`, `ffmpeg`, `neovim`, `macvim`, `powerlevel10k`, `trash`, `wget`, `zip`, `rustup`
+
+Rule: when adding a tool, decide mise or Homebrew and uninstall the other. Do not keep both.
 
 ## My Recommendation
 
