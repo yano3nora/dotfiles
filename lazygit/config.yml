@@ -8,8 +8,12 @@ os:
 gui:
   mouseEvents: true
 git:
-  autoRefresh: false # 試しに
-  autoFetch: false
+  # まず default (全部 true) で負荷を見る。重ければ以下を解除して止める。
+  # autoDetectExternalChanges は 2 秒間隔の ref ポーリングなので autoRefresh と一緒に止めること。
+  # autoFetch を止めると branches パネルの PR checks 表示が手動 fetch 時しか更新されなくなる。
+  # autoRefresh: false
+  # autoFetch: false
+  # autoDetectExternalChanges: false
   fetchAll: false
   diffRenderers:
     - command: hunk pager --transparent-bg

@@ -27,7 +27,7 @@ Config path:
 Current config uses:
 
 - `coda` as editor (custom `os.edit`, vim-compatible `+N` line jump)
-- `hunk` as git pager
+- `hunk` as diff renderer (`git.diffRenderers`)
 
 ## Important Commands
 
@@ -43,10 +43,11 @@ Confirm the symlink:
 readlink "$HOME/Library/Application Support/lazygit/config.yml"
 ```
 
-If diff rendering does not work, check `delta`:
+If diff rendering does not work, check `hunk`:
 
 ```sh
-which delta
+which hunk
+hunk pager --help
 ```
 
 ## My Recommendation
