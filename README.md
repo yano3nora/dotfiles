@@ -95,6 +95,23 @@ dots project --typescript --react
 2. `bin/dots` の `link_all` に symlink を追加する
 3. `dots link` を実行する
 
+# MacBook Tuning
+symlink やコマンドで管理できない、手で 1 回だけ流す macOS 側の設定。
+新しい Mac に移るときはここを上から順に適用する。
+項目ごとに「目的 / コマンド / 戻し方 / 適用日」を書く。
+
+## 新テキストカーソル機能 (CursorUIViewService) の無効化
+- 目的: macOS 26 でカーソル横の Caps Lock / 入力モード表示を担う `CursorUIViewService` が不可視 window を破棄せず溜め続け、数日で WindowServer が CPU 100% になる Apple 側バグの回避 (経緯は [`docs/TASK-260908-cursoruiviewservice-leak.md`](docs/TASK-260908-cursoruiviewservice-leak.md))
+- 代償: Caps Lock / 入力モードの吹き出し表示が出なくなる
+- コマンド (要再起動):
+    ```sh
+    sudo mkdir -p /Library/Preferences/FeatureFlags/Domain
+    sudo defaults write /Library/Preferences/FeatureFlags/Domain/UIKit.plist redesigned_text_cursor -dict-add Enabled -bool NO
+    ```
+- 戻し方: 同じコマンドを `-bool YES` で実行して再起動
+- 確認: `ps -A | grep CursorUIViewService` に何も出なければ効いている
+- 適用日: 2026-09-08 (macOS 26.5.2)
+
 # Deployment
 release 運用はしない。
 push / publish は人間が判断して実行する。
