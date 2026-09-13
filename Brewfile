@@ -9,8 +9,6 @@ brew "trash"       # 30-alias.zsh の rm
 brew "zip"         # bin/safezip
 brew "convmv"      # bin/safezip
 brew "ffmpeg"      # bin/ffcomp
-brew "imagemagick"
-brew "ghostscript"
 brew "exiftool"
 brew "wget"
 brew "btop"
@@ -45,8 +43,3 @@ cask "figma"
 cask "firefox"
 cask "obs"
 cask "keycastr"
-cask "wezterm"
-cask "cmux"
-cask "wave"
-cask "devtoys"
-cask "orca"
