@@ -46,7 +46,7 @@
   "markdown.preview.scrollEditorWithPreview": true,
   "markdown.preview.scrollPreviewWithEditor": true,
   "markdown.styles": [
-    "https://cdn.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css",
+    "https://cdn.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css"
   ],
   "projectManager.git.baseFolders": [
     "~/git"
@@ -65,7 +65,6 @@
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
   "window.titleBarStyle": "native",
-  "workbench.activityBar.location": "hidden",
   "workbench.colorCustomizations": {
     "terminal.background": "#111111"
   },
@@ -81,5 +80,9 @@
   "workbench.settings.enableNaturalLanguageSearch": false,
   "workbench.startupEditor": "none",
   "workbench.statusBar.visible": true,
-  "workbench.tree.indent": 15
+  "workbench.tree.indent": 15,
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "workbench.activityBar.location": "hidden"
 }

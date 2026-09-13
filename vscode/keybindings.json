@@ -1,3 +1,4 @@
+// commajsonc
 [
   //
   // 矢印キー触りたくない系
@@ -241,6 +242,10 @@
   // scm はもともと ctrl+shift+g なのでそのまま
   //
   {
+    "key": "cmd+shift+f",
+    "command": "workbench.view.search",
+  },
+  {
     "key": "ctrl+shift+f",
     "command": "workbench.view.search",
   },
@@ -251,10 +256,6 @@
   {
     "key": "ctrl+shift+x",
     "command": "workbench.view.extensions",
-  },
-  {
-    "key": "ctrl+shift+p",
-    "command": "workbench.view.extension.project-manager",
   },
   //
   // 他、コーディング中によく使うやつ ctrl 起点に設定
@@ -308,10 +309,10 @@
     "key": "ctrl+d",
     "command": "editor.emmet.action.decrementNumberByOne",
   },
-  // ファイル単独実行、ビルド (code-runner)
+  // 右側の side bar
   {
-    "key": "ctrl+shift+b",
-    "command": "code-runner.run",
+    "key": "cmd+shift+b",
+    "command": "workbench.action.toggleAuxiliaryBar",
   },
   // markdown preview
   {
@@ -322,29 +323,6 @@
   {
     "key": "ctrl+m ctrl+p",
     "command": "markdown.showLockedPreviewToSide",
-  },
-  // solargraph.search 無効化
-  {
-    "key": "shift+cmd+r",
-    "command": "-solargraph.search",
-  },
-  {
-    "key": "ctrl+shift+alt+[Minus]",
-    "command": "-extension.profile.select",
-  },
-  // gistpad
-  {
-    "key": "ctrl+.",
-    "command": "gistpad.openGist",
-  },
-  {
-    "key": "ctrl+shift+g",
-    "command": "workbench.view.extension.gistpad",
-  },
-  // codex
-  {
-    "key": "ctrl+shift+c",
-    "command": "chatgpt.sidebarSecondaryView.open",
   },
   // project-manager
   {
