@@ -49,15 +49,15 @@
 
 ### Phase 0: 現 Mac での退避 (移設前にやる)
 
-- [ ] macOS 設定を plist / テキストで export して repo か外部ストレージへ退避する
-    - `defaults export com.apple.symbolichotkeys ~/backup/symbolichotkeys.plist` (repo の `macos/` に入れる候補)
+- [x] macOS 設定を plist / テキストで export して `~/backup/mac-migration-260913/` に退避した (2026-09-13。外部ストレージへのコピーは人間判断)
+    - `macos/symbolichotkeys.plist` は repo に取り込み済み
     - `defaults read NSGlobalDomain`, `com.apple.dock`, `com.apple.finder`, `com.apple.AppleMultitouchTrackpad`, `com.apple.WindowManager`, `com.apple.menuextra.clock`, `com.apple.controlcenter`, `com.apple.screencapture`, `com.apple.universalaccess`, `com.apple.HIToolbox` を text 保存
     - `launchctl print-disabled gui/$(id -u)` を text 保存
     - `~/.mac-tuning-backups/` を丸ごと退避
-- [ ] アプリ / CLI の一覧を export する
-    - `brew bundle dump --file=~/backup/Brewfile` (formula / cask / tap を一括。ここから repo の `Brewfile` を作る)
+- [x] アプリ / CLI の一覧を `~/backup/mac-migration-260913/` に export した
+    - `Brewfile.full` (brew bundle dump の生データ)。repo の `Brewfile` は取捨選択済み
     - `ls /Applications` を text 保存
-    - `code --list-extensions > ~/backup/vscode-extensions.txt` (repo の `vscode/extensions.txt` の元)
+    - `vscode/extensions.txt` は repo に取り込み済み
     - `mise list` を text 保存 (config 外の firebase / rust / zig / 複数 node は project local に寄せる)
 - [ ] アプリ個別設定を export する
     - Raycast: Settings → Advanced → Export Settings & Data (`.rayconfig`、パスワード付き暗号化)。拡張 (7 個) / hotkey / snippet / quicklink を含む。token を含みうるので repo には置かず 1Password か外部ストレージへ
@@ -72,11 +72,11 @@
     - `~/.npmrc` (npm token)、`~/.netrc` (Heroku)、`~/.config/gh`、`~/.github-label-setup-token`
     - `~/.docker/config.json`、`~/.vpn`、`~/.claude.json` / `~/.claude/settings.json`、`~/.codex/auth.json` / `config.toml`
     - token 類は「コピー」ではなく「再発行」を基本にし、旧機の token は移設後に revoke する
-- [ ] フォントの棚卸し。`~/Library/Fonts` から実際に使うものだけ選ぶ
+- [x] フォントの棚卸し。必須 3 種は Brewfile の cask に入れた。候補は必要になったら追加する (`fonts.txt` に一覧あり)
     - 必須: MesloLGS NF (VSCode terminal / p10k)、JetBrains Mono Nerd Font (Ghostty)、BIZ UDGothic (Ghostty)。いずれも cask にあるので Brewfile へ
     - 候補: IBM Plex Sans JP, Noto Sans JP, M PLUS 1 Code
     - メイリオ (`meiryo.ttc`) は MS Office 由来なので手動コピーしない
-- [ ] `/etc/hosts` の project 固有エントリを控える (新 Mac では必要な project だけ再登録する)
+- [x] `/etc/hosts` の project 固有エントリを `~/backup/mac-migration-260913/etc-hosts.txt` に控えた (外部に置かない)
 
 ### Phase 1: dotfiles の再整理 (現 Mac で先に直し、Intel でも動くことを確認する)
 
@@ -96,7 +96,7 @@
 - [x] `ai/README.md` の Codex 設定例を実際の `~/.codex/config.toml` に合わせて更新
 - [x] AGENTS.md に Brewfile / macos / prefix 禁止ルールを追記
 - [x] 現行 Intel 機で検証: `zsh -n` 全件 ok、temp HOME で `dots link` 25 link (nvim 0)、実 HOME で `dots link` 冪等、新 shell 起動エラー 0、`dots doctor` all ok、p10k / autosuggestions / highlighting 読み込み確認
-- [ ] 現行機の後始末 (人間判断): `brew uninstall powerlevel10k`、`command rm -rf ~/.local/zsh`、`~/.zshenv` の cargo / Vite+ 行削除 (重複 source は無害なので急がない)、`~/.local/bin/mactune` の dangling symlink 削除
+- [x] 現行機の後始末: `brew uninstall powerlevel10k`、`~/.local/zsh` 削除、`~/.local/bin/mactune` の dangling symlink 削除 (2026-09-13、削除後も shell 起動エラー 0)。`~/.zshenv` の cargo / Vite+ 行は非対話 shell の PATH に影響しうるので残す
 - [x] Codex レビュー (指摘 2 件: `spans-displays` と `ShowDate` の説明文の誤り → 修正済み)
 - [ ] commit (人間判断)
 
