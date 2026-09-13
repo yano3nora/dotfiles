@@ -59,14 +59,14 @@
     - `ls /Applications` を text 保存
     - `vscode/extensions.txt` は repo に取り込み済み
     - `mise list` を text 保存 (config 外の firebase / rust / zig / 複数 node は project local に寄せる)
-- [ ] アプリ個別設定を export する
+- [x] アプリ個別設定を export する (M1 への import まで完了 → Phase 5)
     - Raycast: Settings → Advanced → Export Settings & Data (`.rayconfig`、パスワード付き暗号化)。拡張 (7 個) / hotkey / snippet / quicklink を含む。token を含みうるので repo には置かず 1Password か外部ストレージへ
     - Rectangle: Settings → Export Config (JSON)
     - BetterDisplay: ライセンス + Settings Export
     - Clipy: `~/Library/Application Support/Clipy`
     - Google 日本語入力: ユーザー辞書を export (`~/Library/Application Support/Google/JapaneseInput/` は DB 形式なのでツールから出す)
     - Ghostty / lazygit / VSCode / leaf / coda は dotfiles 管理済みなので不要
-- [ ] 秘密情報の移行方針を決める (repo には絶対に乗せない)
+- [x] 秘密情報の移行方針を決める (repo には絶対に乗せない) → 「コピーせず再発行」で運用中 (進捗は Phase 6)
     - `~/.ssh`: RSA 鍵はコピーせず ed25519 で新規発行し GitHub 等へ登録する (現行は `id_rsa` のみ、`config` は空)
     - `~/.aws` (config / credentials / amplify / login), `~/.aws-sam`, `~/.awsp`
     - `~/.npmrc` (npm token)、`~/.netrc` (Heroku)、`~/.config/gh`、`~/.github-label-setup-token`
@@ -88,6 +88,11 @@
 - [x] **nvim を廃棄** (`nvim/` 削除、`bin/dots` の link 4 行と doctor の `nvim` 削除、`alias vim=nvim` 削除、README 更新)
 - [x] **mactune を廃棄** (`bin/mactune` 削除、`bin/README.md` 更新)。duetexpertd / CursorUIViewService の知見は `macos/README.md` の「症状が出たら適用するもの」に移した
 - [ ] `mise/config.toml` の `ubi:sharkdp/fd` を `fd = "latest"` に戻せるか M1 で確認する (Intel は ubi のままなら分岐が要るので、Intel 退役まで触らない)
+- [x] M1 疎通後の追加整理 (2026-09-14):
+    - `brew "trash"` を Brewfile から削除 (macOS 26 が `/usr/bin/trash` を標準搭載し、formula は未リンクの死に依存になっていた。`alias rm=trash` は OS 標準で動く)
+    - Docker Desktop が `~/.zshrc` (symlink 経由で repo の `zsh/zshrc`) へ追記した補完設定を、絶対パス排除のため `$HOME` ベースで `10-tool.zsh` へ移設
+    - `00-initial.zsh` に `typeset -gU path fpath` を追加 (FPATH は export されるため、brew shellenv の再実行やネスト shell で fpath が重複していた)
+    - M1 の `~/.zprofile` にあった重複 `brew shellenv` を削除 (repo の `10-tool.zsh` に一本化)
 - [x] `mise/README.md` の Homebrew migration status を Brewfile 前提で書き直し、「prefix を zsh に書かない」ルールを追記
 - [x] `git/gitconfig` の git-lfs filter を削除 (未インストール・未使用)
 - [x] **`Brewfile` を repo に追加** (formula 10 個 + 設定管理アプリ / フォント / 日常アプリの cask)。cask 名は `brew info --cask` で全件確認済み
@@ -102,36 +107,40 @@
 
 ### Phase 2: 新 Mac の基盤
 
-- [ ] macOS 初期設定 (Apple ID、FileVault、Touch ID、ローカルアカウント名を `yano3` に揃える。HOME パスが変わると `.zprofile` / Codex `config.toml` の絶対パスが壊れる)
-- [ ] Xcode Command Line Tools: `xcode-select --install`
-- [ ] Rosetta 2: `softwareupdate --install-rosetta --agree-to-license` (Intel 専用アプリ / x86 の npm native module 用)
-- [ ] Homebrew (`/opt/homebrew`) を入れる
-- [ ] mise を入れる (`curl https://mise.run | sh` → `~/.local/bin/mise`)
-- [ ] 1Password を入れて、SSH 鍵 / token / Raycast export の受け渡し経路を先に確保する
-- [ ] Git 用の ed25519 鍵を作成し GitHub に登録する
-- [ ] dotfiles を clone する: `git clone --recurse-submodules git@github.com:yano3nora/dotfiles.git ~/git/yano3nora/dotfiles`
+- [x] macOS 初期設定 (Apple ID、FileVault、Touch ID)。ローカルアカウント名は `yano3` に揃えず `y3n` にした → HOME 絶対パスを含むもの (`~/.claude/settings.json`, `.zprofile`, Codex `config.toml` の trust) はコピーせず新パスで書き直す
+- [x] Xcode Command Line Tools: `xcode-select --install`
+- [x] Rosetta 2: `softwareupdate --install-rosetta --agree-to-license` (Intel 専用アプリ / x86 の npm native module 用)
+- [x] Homebrew (`/opt/homebrew`) を入れる
+- [x] mise を入れる (`curl https://mise.run | sh` → `~/.local/bin/mise`)
+- [x] 1Password を入れて、SSH 鍵 / token / Raycast export の受け渡し経路を先に確保する
+- [x] Git 用の ed25519 鍵を作成し GitHub に登録する (`~/.ssh/id_ed25519`、`ssh -T` 認証 ok)
+- [x] dotfiles を clone する: `git clone --recurse-submodules git@github.com:yano3nora/dotfiles.git ~/git/yano3nora/dotfiles` (submodule 3 つとも取得済み)
 
 ### Phase 3: 開発環境 (dotfiles 適用)
 
-- [ ] `brew bundle --file=Brewfile` (アプリと font を先に入れる。設定 dir の親は `dots link` が作るので順序は厳密でなくてよい)
-- [ ] `HOME=/private/tmp/dots-test ./bin/dots link` で dry run してから `./bin/dots link` を実行する
-- [ ] `mise install` → `mise doctor`
-- [ ] `dots doctor` が all ok になるまで欠けを埋める (convmv / zip / ffmpeg / trash は Brewfile、code は cask)
-- [ ] 新 shell を開き、p10k が `~/.cache/gitstatus/` に arm64 の gitstatusd を取得することを確認する
+- [x] `brew bundle --file=Brewfile` (2026-09-14 全 cask + mas 4 アプリまで導入完了。pkg 系 cask は sudo が要るので TTY のあるターミナルから流すこと)
+    - 途中で cask 名の追従あり: `docker` → `docker-desktop` (改名)、`font-meslo-lg-nerd-font` → `font-meslo-for-powerlevel10k` (settings.json の "MesloLGS NF" と一致するのは後者。別ファミリー名で terminal font が崩れた)
+- [x] `HOME=/private/tmp/dots-test ./bin/dots link` で dry run してから `./bin/dots link` を実行する (実 HOME で冪等確認済み)
+- [x] `mise install` → `mise doctor` (No problems found)
+- [x] `dots doctor` が all ok になるまで欠けを埋める (2026-09-14 all ok。trash は macOS 標準 `/usr/bin/trash` で充足)
+- [x] 新 shell を開き、p10k が `~/.cache/gitstatus/` に arm64 の gitstatusd を取得することを確認する (`gitstatusd-darwin-arm64` あり)
 - [ ] Docker Desktop を起動して `~/.docker/run/docker.sock` ができることを確認する (`10-tool.zsh` の `DOCKER_HOST`)。VM のメモリ割当は現行の 2GB / 1CPU を上限の目安にする (M1 16GB では増やしすぎない)
-- [ ] VSCode: `dots link` 済みの settings / keybindings に加え `vscode/extensions.txt` から拡張を入れる
-- [ ] Claude Code: native install (`~/.local/bin/claude`) → `ai/README.md` の plugin 手順 (ponytail / chrome-devtools-mcp の local marketplace) を再現する。`~/.claude/settings.json` は旧機から手動で持ってくる
-- [ ] Codex CLI: `brew install --cask codex` → `ai/README.md` の `config.toml` 手動項目を設定する
+- [x] VSCode: `dots link` 済みの settings / keybindings に加え `vscode/extensions.txt` から拡張を入れる (2026-09-14 全 33 個 + pack 依存 1 個)
+- [x] Claude Code: brew で導入 (`/opt/homebrew/bin/claude`。予定は native install だったが brew に変更、cask の更新遅延が気になったら native へ移行) → `ai/README.md` の plugin 手順 (chrome-devtools-mcp の local marketplace) を再現した。ponytail は使わなくなったので導入せず、`ai/README.md` からも削除 (2026-09-13)
+    - `~/.claude/settings.json` は旧機のものから orca hooks / statusLine と `autoMode.environment` (旧 project の機密混じり stale データ) を除外し、絶対パスを新 HOME に直してマージした
+- [x] Codex CLI: `brew install --cask codex` → `codex login` → `ai/README.md` の `config.toml` 手動項目を設定した (trust 設定は旧機のパス前提なのでコピーせず新規)
 - [ ] Vite+ (`~/.vite-plus`)、rustup (`~/.cargo`)、uv / pdm は必要になった時点で入れる (先回りしない)
 - [ ] `~/git` は何も持ち越さない。必要になった repo をその都度 clone する
 - [ ] 持ち込まないもの: `~/.anyenv`, `~/.nodenv`, `~/.rbenv`, `~/.oh-my-zsh`, `~/.conda` / Anaconda, `~/.laradock`, `~/.serverless`, `~/.composer`, `~/.gem`, `~/.mono` / `.dotnet` / `.nuget`, `~/.vagrant.d`, `~/.config/nvim`
 
 ### Phase 4: macOS 設定 (`macos/README.md` を上から流す)
 
+方針変更 (2026-09-13): M1 では一括適用をやめた。GUI で一通り手動設定済みだったため、`defaults` の流し込みは省略し、必要になった項目だけ `macos/README.md` から個別に適用する (memo はリファレンスとして維持)。適用済みは Spotlight 停止のみ。
+
 - [ ] キーボードショートカット: `defaults import com.apple.symbolichotkeys macos/symbolichotkeys.plist` → ログアウト。効かない場合は「システム設定 → キーボード → キーボードショートカット」で手動確認
-- [ ] Caps Lock → 右 Command: 内蔵キーボードの product ID が M1 で変わるので、システム設定 → キーボード → 修飾キー で手動再設定 (`defaults` では持ち越せない)
-- [ ] 入力ソース: Google 日本語入力 (ローマ字) + Kotoeri を並べ、ユーザー辞書を import する
-- [ ] Spotlight 停止: `sudo mdutil -a -i off` + Spotlight 系 LaunchAgent の disable (corespotlightd / corespotlightservice / managedcorespotlightd / spotlightknowledged{,.updater,.importer} / metadata.md{write,bulkimport,flagwriter}) → 再起動。Raycast を cmd+space に割り当てる
+- [x] Caps Lock → 右 Command: 内蔵キーボードの product ID が M1 で変わるので、システム設定 → キーボード → 修飾キー で手動再設定 (`defaults` では持ち越せない)
+- [x] 入力ソース: Google 日本語入力 (ローマ字) + Kotoeri を並べ、ユーザー辞書を import する
+- [x] Spotlight 停止: `sudo mdutil -a -i off` + Spotlight 系 LaunchAgent の disable (corespotlightd / corespotlightservice / managedcorespotlightd / spotlightknowledged{,.updater,.importer} / metadata.md{write,bulkimport,flagwriter}) → 再起動。Raycast の hotkey は M1 では ctrl+¥ 運用に変更 (2026-09-13 M1 適用。Siri 系 agent は GUI off のみで launchctl disable は未適用)
 - [ ] Siri 停止: システム設定で Siri off + `Siri.agent` / `siriactionsd` / `siriknowledged` / `siriinferenced` / `sirittsd` を disable
 - [ ] その他 disable: `FolderActionsDispatcher`, `ScriptMenuApp`, `ManagedClientAgent.enrollagent`, `appleseed.seedusaged.postinstall`
 - [ ] duetexpertd / CursorUIViewService: **適用しない**。M1 で WindowServer や CPU の異常が出た時だけ README のメモを見て適用する
@@ -150,38 +159,40 @@
 
 ### Phase 5: アプリ設定の import
 
-- [ ] Raycast: 初回起動 → Settings → Advanced → Import で `.rayconfig` を読む → cmd+space の hotkey と拡張が戻っていることを確認
-- [ ] Rectangle / BetterDisplay / Clipy に Phase 0 の export を import する
-- [ ] Google 日本語入力にユーザー辞書を import する
-- [ ] cask 化できない / ストア経由のものは必要になった時点で入れる: Kindle, LINE, Keynote / Numbers / Pages, Klack, RunCatNeo, ImageOptim, Lepton, LadioCast, Elgato Wave Link, voicepeak, Easy CSV Editor, Vivaldi, Microsoft Office / Teams, Webex, zoom, ovice, AWS VPN Client, eTax, Audacity
+- [x] Raycast: 設定を手動で再現 (hotkey は cmd+space ではなく ctrl+¥ に変更)
+- [x] Rectangle / BetterDisplay / Clipy に Phase 0 の export を import する
+- [x] Google 日本語入力にユーザー辞書を import する
+- [ ] cask 化できない / ストア経由のものは必要になった時点で入れる: LINE, Keynote / Numbers / Pages, Lepton, LadioCast, Elgato Wave Link, voicepeak, Vivaldi, Webex, ovice, AWS VPN Client, eTax, Audacity
+    - 普段使い分は Brewfile へ移した (2026-09-14): ImageOptim / Microsoft Office / Teams / zoom は cask、Kindle / Klack / Easy CSV Editor / RunCat Neo は App Store 専売なので mas エントリ (要 App Store サインイン)
+    - mas CLI は mise ではなく brew 管理 (OS 依存ルール)。mise 側の mas と機能しない `[bootstrap.packages]` 行は削除した
 - [ ] 持ち込まないもの: VirtualBox / Vagrant (使っていない)、Macs Fan Control (M1 で不要)、Authy Desktop (開発終了、TOTP は 1Password へ)、Anaconda、Adobe XD (終了)、GitHub Desktop (lazygit で足りる)、Unity / Visual Studio / Steam / Battle.net / Minecraft (必要な時に)
 
 ### Phase 6: 検証と撤収
 
 - [ ] 下記 testcases を Intel / M1 の両方で通す (Intel は Phase 1 直後、M1 は Phase 5 まで終わってから)
-- [ ] 旧 Mac で発行していた token (npm / GitHub / gh / Heroku / AWS) を M1 で再発行できたら revoke する
+- [ ] 旧 Mac で発行していた token (npm / GitHub / gh / Heroku / AWS) を M1 で再発行できたら revoke する (2026-09-14 時点: 一部再発行済み、revoke は未実施)
 - [ ] `~/.mac-tuning-backups/` の内容が `macos/README.md` で再現できていることを確認する
 - [ ] Intel を手放す時は、`~/git` の未 push ブランチ・`~/Downloads`・`~/.ssh` の残骸が無いか最終確認する
 - [ ] この docs の完了項目にチェックを付け、`macos/README.md` に「M1 で検証済み」の適用日を書く
 
 ## testcases
 
-- [ ] (M1) `uname -m` が `arm64`、`file "$(mise which jq)"` が arm64 バイナリを指す (Rosetta 経由で動いていない)
-- [x] (Intel) / [ ] (M1) `zsh -n bin/dots` / `zsh -n zsh/zshrc` / `for f in zsh/zshrc.d/*.zsh; do zsh -n "$f" || break; done` が通る
+- [x] (M1) `uname -m` が `arm64`、`file "$(mise which jq)"` が arm64 バイナリを指す (Rosetta 経由で動いていない) (2026-09-14)
+- [x] (Intel) / [x] (M1) `zsh -n bin/dots` / `zsh -n zsh/zshrc` / `for f in zsh/zshrc.d/*.zsh; do zsh -n "$f" || break; done` が通る (M1: 2026-09-14)
 - [x] (Intel) 新しい shell を開いてエラー / p10k instant prompt の WARNING が出ない。プロンプトが p10k で描画される
-- [ ] (M1) 同上。`echo $HOMEBREW_PREFIX` が `/opt/homebrew`、`which trash` が `/opt/homebrew/bin/trash`
-- [x] (Intel) / [ ] (M1) `HOME=/private/tmp/dots-test ./bin/dots link` が全 link を作成し、実 HOME でも `already linked` で冪等になる
-- [x] (Intel) / [ ] (M1) `dots doctor` が all ok
-- [ ] (両方) `mise doctor` に問題なし。`which node jq rg fd fzf gh bat direnv lazygit coda leaf` が全部 `~/.local/share/mise/` 配下
-- [ ] (M1) `ssh -T git@github.com` が通り、`git commit` の author が想定通り
-- [ ] (M1) `docker ps` が動く (`DOCKER_HOST` の socket path が正しい)
-- [ ] (M1) Ghostty で JetBrains Mono + BIZ UDGothic が表示される。VSCode terminal で MesloLGS NF のアイコンが崩れない
-- [ ] (M1) VSCode の settings / keybindings が symlink で、拡張が `vscode/extensions.txt` と一致する
-- [ ] (M1) cmd+space で Spotlight ではなく Raycast が開く。`mdutil -s /` が `Indexing disabled`
-- [ ] (M1) `launchctl print-disabled gui/$(id -u)` に Phase 4 の項目が並ぶ
-- [ ] (M1) Caps Lock が右 Command として動く (Google 日本語入力の英数 / かな切替が現行通り)
-- [ ] (M1) `defaults read com.apple.dock autohide` など Phase 4 の代表値が現行と一致する
-- [ ] (M1) `claude` / `codex` が起動し、`~/.claude/CLAUDE.md` / `~/.codex/instructions.md` が repo の `ai/CLAUDE.md` を指す
+- [x] (M1) 同上。`echo $HOMEBREW_PREFIX` が `/opt/homebrew`、`which trash` が `/usr/bin/trash` (macOS 26 標準。brew の trash formula は削除した)
+- [x] (Intel) / [x] (M1) `HOME=/private/tmp/dots-test ./bin/dots link` が全 link を作成し、実 HOME でも `already linked` で冪等になる (M1 は実 HOME の冪等のみ確認)
+- [x] (Intel) / [x] (M1) `dots doctor` が all ok
+- [x] (両方) `mise doctor` に問題なし。`which node jq rg fd fzf gh bat direnv lazygit coda leaf` が全部 `~/.local/share/mise/` 配下 (M1: 11/11 確認)
+- [x] (M1) `ssh -T git@github.com` が通り、`git commit` の author が想定通り (Hi yano3nora / noreply メール確認)
+- [ ] (M1) `docker ps` が動く (`DOCKER_HOST` の socket path が正しい)。Docker Desktop 導入済みだが起動確認が未実施
+- [x] (M1) Ghostty で JetBrains Mono + BIZ UDGothic が表示される。VSCode terminal で MesloLGS NF のアイコンが崩れない (font-meslo-for-powerlevel10k へ差し替えて解消)
+- [x] (M1) VSCode の settings / keybindings が symlink で、拡張が `vscode/extensions.txt` と一致する (2026-09-14。vite-plus-extension-pack が連れてきた vitest.explorer を txt に追記して 34 個で同期)
+- [x] (M1) Raycast は ctrl+¥ で開く運用に変更 (cmd+space は使わない)。`mdutil -s /` は `Spotlight server is disabled.` (index どころか mds ごと停止)
+- [x] (M1) `launchctl print-disabled gui/$(id -u)` に Spotlight 系 9 項目が並ぶ (方針変更により Siri 系ほかは未適用のまま)
+- [x] (M1) Caps Lock が右 Command として動く (Google 日本語入力の英数 / かな切替が現行通り)
+- [x] (M1) ~~`defaults read com.apple.dock autohide` など Phase 4 の代表値が現行と一致する~~ 方針変更 (GUI 手動設定) により検証しない
+- [x] (M1) `claude` / `codex` が起動し、`~/.claude/CLAUDE.md` / `~/.codex/instructions.md` が repo の `ai/CLAUDE.md` を指す (2026-09-13 確認)
 
 ## notes
 
@@ -192,6 +203,7 @@
     - p10k は継続。plugin 込みで git submodule 化する
     - Raycast の export は人間が GUI から出して 1Password 等に置く
     - nvim / LazyVim は廃棄 (coda を使う。vim を使うなら plain vim)
+    - Claude Code plugin の ponytail は使わなくなったので廃止。M1 には導入しない (2026-09-13)
     - mactune は廃棄。知見は README のメモに残す
     - Docker Desktop は維持
     - Vagrant / VirtualBox 依存 project は無視

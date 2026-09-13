@@ -35,6 +35,10 @@ source <(fzf --zsh)
 # https://github.com/aws/aws-sam-cli/issues/4329#issuecomment-1642388141
 export DOCKER_HOST="unix://$HOME/.docker/run/docker.sock"
 
+# Docker Desktop が ~/.zshrc 末尾へ追記してくる CLI 補完を repo 管理に置き換えたもの。
+# 20-zsh.zsh の compinit より前に fpath へ足す必要がある (再追記されたら消してよい)。
+[ -d "$HOME/.docker/completions" ] && fpath=("$HOME/.docker/completions" $fpath)
+
 # https://github.com/docker/for-win/issues/14021
 export COMPOSE_MENU=0
 

@@ -39,22 +39,6 @@ personality = "pragmatic"
 
 導入済み plugin の記録。settings 自体 (`~/.claude/settings.json`) は機微情報が乗りやすいため symlink 管理せず、ここに導入手順と使い方を残して別環境で再現する。
 
-### ponytail (試用中)
-
-over-engineering 抑止の skill 集。YAGNI 徹底・標準ライブラリ優先・最小差分を強制することで、Agent が生成しがちな過剰な抽象化・不要な依存を削る。合わなければ削除する前提で試用中。
-
-```sh
-claude plugin marketplace add DietrichGebert/ponytail
-claude plugin install ponytail@ponytail
-```
-
-代表的な使い方:
-
-- `/ponytail [lite|full|ultra|off]` — 最小実装モードの強度切替。以降のコーディング作業全般に効く
-- `/ponytail-review` — diff を over-engineering 観点のみでレビュー (正しさは見ない。/code-review と併用)
-- `/ponytail-audit` — repo 全体の bloat 棚卸し。削除・簡素化候補のランク付きレポート
-- `/ponytail-debt` — `ponytail:` コメントで残した意図的ショートカットの台帳化
-
 ### chrome-devtools-mcp (試用中)
 
 Chrome を DevTools protocol 経由で Claude Code から操作・デバッグする MCP server + skills (a11y-debugging, memory-leak-debugging, debug-optimize-lcp など)。ブラウザ実機での動作確認・性能調査を Agent に任せられるのが嬉しさ。

@@ -8,7 +8,7 @@
   "editor.bracketPairColorization.enabled": false,
   "editor.definitionLinkOpensInPeek": true,
   "editor.dragAndDrop": false,
-  "editor.fontSize": 12,
+  "editor.fontSize": 13,
   "editor.formatOnPaste": true,
   "editor.inlineSuggest.enabled": false,
   "editor.lightbulb.enabled": "off",
@@ -17,7 +17,9 @@
   "editor.multiCursorModifier": "ctrlCmd",
   "editor.renderControlCharacters": true,
   "editor.renderWhitespace": "all",
-  "editor.rulers": [80],
+  "editor.rulers": [
+    80
+  ],
   "editor.stickyScroll.enabled": false,
   "editor.suggest.insertMode": "replace",
   "editor.tabCompletion": "on",
@@ -26,13 +28,13 @@
   "editor.unicodeHighlight.nonBasicASCII": false,
   "files.associations": {
     "*.mdx": "markdown",
-    "*.toml": "ini",
+    "*.toml": "ini"
   },
   "files.eol": "\n",
   "files.watcherExclude": {
     "**/.next/**": true,
     "**/build/**": true,
-    "**/dist/**": true,
+    "**/dist/**": true
   },
   "gitlens.launchpad.indicator.enabled": false,
   "js/ts.format.semicolons": "remove",
@@ -46,7 +48,9 @@
   "markdown.styles": [
     "https://cdn.jsdelivr.net/gh/yano3nora/dotfiles@main/vscode/github-markdown.css",
   ],
-  "projectManager.git.baseFolders": ["~/git"],
+  "projectManager.git.baseFolders": [
+    "~/git"
+  ],
   "python.languageServer": "Pylance",
   "python.terminal.activateEnvironment": false,
   "search.quickOpen.includeHistory": false,
@@ -55,14 +59,15 @@
   "terminal.integrated.confirmOnExit": "always",
   "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.fontFamily": "MesloLGS NF",
-  "terminal.integrated.fontSize": 12,
+  "terminal.integrated.fontSize": 13,
+  "terminal.integrated.initialHint": false,
   "terminal.integrated.stickyScroll.enabled": false,
   "window.commandCenter": false,
   "window.newWindowDimensions": "inherit",
   "window.titleBarStyle": "native",
   "workbench.activityBar.location": "hidden",
   "workbench.colorCustomizations": {
-    "terminal.background": "#111111",
+    "terminal.background": "#111111"
   },
   "workbench.colorTheme": "Monokai",
   "workbench.commandPalette.history": 0,
@@ -76,5 +81,5 @@
   "workbench.settings.enableNaturalLanguageSearch": false,
   "workbench.startupEditor": "none",
   "workbench.statusBar.visible": true,
-  "workbench.tree.indent": 15,
+  "workbench.tree.indent": 15
 }

@@ -26,6 +26,7 @@ shardulm94.trailing-spaces
 sleistner.vscode-fileutils
 typescriptteam.native-preview
 tyriar.sort-lines
+vitest.explorer
 voidzero.vite-plus-extension-pack
 vsls-contrib.gistfs
 xdebug.php-debug
