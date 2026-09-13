@@ -3,7 +3,7 @@
 
 ## Overview
 - この repo は macOS 用の個人 dotfiles を管理する。
-- 主な管理対象は `zsh/`, `bin/`, `git/`, `mise/`, `vscode/`, `ghostty/`, `lazygit/`, `project/`。
+- 主な管理対象は `zsh/`, `bin/`, `git/`, `mise/`, `Brewfile`, `macos/`, `vscode/`, `ghostty/`, `lazygit/`, `project/`。
 - `bin/dots` が symlink 管理の入口。
 - global CLI tool は `mise/config.toml` で入口を揃える。ただし `jq` などの日常CLIは `latest` 許容、Node や deploy 系など project 影響が大きいものだけ version 管理を重視する。
 - 新規 project 用テンプレートは `project/` に置く。他 repo の具体文脈を root docs に混ぜない。
@@ -16,15 +16,18 @@
 - **既存ファイルを黙って上書きしない**: `dots link` は既存ファイルを `.bak.YYYYMMDDHHMMSS` に退避する設計を維持する。
 - **曖昧なコマンドを増やさない**: `install` のように責務が広い名前は禁止。`link` / `doctor` / `addbin` のように役割を分ける。
 - **global CLI tool は性質で扱いを分ける**: `jq` / `ripgrep` / `hunk` などの日常CLIは `latest` を許容する。Node や deploy 系 CLI（例: Copilot / Firebase など）、互換性が成果物や運用に影響するものは explicit version を検討する。
-- **例外を無理に mise 化しない**: PHP や macOS コマンド差し替え系のようにビルドや OS 依存が重いものは Homebrew 管理を許容する。
+- **例外を無理に mise 化しない**: ffmpeg や trash のようにビルドや OS 依存が重いものは Homebrew 管理を許容し、`Brewfile` に書く。GUI アプリとフォントも `Brewfile` (cask) に集約する。
+- **Homebrew の prefix を zsh 設定に書かない**: Intel (`/usr/local`) と Apple Silicon (`/opt/homebrew`) を同じ dotfiles で使うため、`$HOMEBREW_PREFIX/opt/...` のような path 依存を `zsh/` に持ち込まない。brew 由来のコマンドは PATH 経由で呼ぶ。
+- **macOS 側の設定は script ではなくメモ**: `macos/README.md` に「目的 / コマンド / 戻し方 / 適用日」で書き、コピペで流せる粒度に保つ。完全復元 script は作らない。
 - **root README は短い入口に保つ**: 詳細は各ディレクトリの `README.md` に逃がす。
 
 ### 📂 Code Organization Constraints
 - **`bin/`**: 個人用コマンド。新規追加は `dots addbin <name>` を使う。手作業で追加した場合は `chmod +x` を忘れない。
 - **`git/`**: Git global config。`git/gitconfig` と `git/gitignore_global` を HOME 配下に symlink する。
-- **`zsh/`**: zsh 設定。`zsh/zshrc` が `zsh/zshrc.d/*.zsh` をファイル名順に読む。
+- **`zsh/`**: zsh 設定。`zsh/zshrc` が `zsh/zshrc.d/*.zsh` をファイル名順に読む。plugin (p10k など) は `zsh/plugins/` の git submodule、p10k の設定は `zsh/p10k.zsh`。
 - **`mise/`**: global mise config。`mise/config.toml` を `~/.config/mise/config.toml` に symlink する。
-- **`vscode/`, `ghostty/`, `lazygit/`**: 各ツール設定。link 対象を増やす場合は `bin/dots` を更新する。
+- **`vscode/`, `ghostty/`, `lazygit/`**: 各ツール設定。link 対象を増やす場合は `bin/dots` を更新する。VSCode 拡張は `vscode/extensions.txt`。
+- **`macos/`**: macOS 側の設定メモとショートカットの plist。
 - **`project/`**: 新規 project 用テンプレート。`project/AGENTS.md`, `project/CLAUDE.md`, `project/docs/*` を他 repo にコピーして書き換える前提。
 - **`docs/`**: この dotfiles repo 自身の作業記録。`TASK-YYMMDD-<filename>.md` 形式で移行・整理タスクを管理する。
 - **root `AGENTS.md` / `CLAUDE.md`**: この dotfiles repo 自身の Agentic Coding docs。
@@ -62,5 +65,7 @@
     - global CLI tool / runtime の入口管理。日常CLIは最新版追従を許容し、project 影響が大きい runtime / deploy CLI は version 管理する。project local version は各 project に任せる。
 - `zshrc.d`
     - zsh 設定の分割単位。`00-initial`, `10-tool`, `20-zsh`, `30-alias`, `40-func-*` の順序を維持する。
+- `macos`
+    - `defaults` / `launchctl` などコマンドで流せる macOS 設定のメモ。新 Mac ではここを上から適用する。
 - `project templates`
     - 他 repo にコピーして書き換える新規 project 用テンプレート。

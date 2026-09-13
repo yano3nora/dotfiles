@@ -15,24 +15,26 @@ else
   function __zsh_profile_mark() { :; }
 fi
 
-# zsh-autosuggestions
-# oh-my-zsh は使わず、必要な plugin だけを直接読み込む。
+# zsh plugins
+# oh-my-zsh や plugin manager は使わず、repo の git submodule (zsh/plugins/) を直接読み込む。
+# 純粋な zsh script なので Intel / Apple Silicon で path が変わらず、brew や手 clone も不要。
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_USE_ASYNC=true
-source "$HOME/.local/zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "$DOTFILES_ROOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
 __zsh_profile_mark "autosuggestions"
 
-source "$HOME/.local/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "$DOTFILES_ROOT/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 __zsh_profile_mark "syntax-highlighting"
 
 # Powerlevel10k theme (instant prompt は 00-initial.zsh で先行読み込み済み)
-source /usr/local/share/powerlevel10k/powerlevel10k.zsh-theme
+source "$DOTFILES_ROOT/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme"
 __zsh_profile_mark "p10k-theme"
 
 # p10k
 # - https://github.com/romkatv/powerlevel10k
 # - https://zenn.dev/urakawa_jinsei/articles/dccd3dcfa0dc0e
 # - (vscode settings) "terminal.integrated.fontFamily": "MesloLGS NF",
+# ~/.p10k.zsh は dots link で zsh/p10k.zsh へ symlink される (`p10k configure` の書き込みも repo に入る)
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=1
 typeset -g POWERLEVEL9K_VCS_VISUAL_IDENTIFIER_EXPANSION=
@@ -90,7 +92,7 @@ bindkey '^[[1;5C' autosuggest-accept-word
 # CSI u (fixterms) ノイズ抑止
 # 意図: Ghostty などが Ctrl+Shift+英字 等を `ESC [ <code> ; <mod> u` で送ってくると、
 # zsh は `ESC [` までしか解釈できず残り (`105;6u` など) を入力行へ挿入してしまう。
-# terminal 側 keybind で握りつぶすと nvim 等の TUI にもキーが届かなくなるため、
+# terminal 側 keybind で握りつぶすと lazygit 等の TUI にもキーが届かなくなるため、
 # ZLE (シェルの行編集) の間だけ no-op で食わせる。
 # やっていること: printable 文字 (32-126) × 修飾キー (2=Shift .. 8=Shift+Alt+Ctrl) の
 # CSI u 全パターンを no-op widget に bind する。

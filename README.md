@@ -9,28 +9,34 @@ macOS 用の個人 dotfiles。
 .
 ├ ai/                  … AI coding agent 向けの個人用グローバル設定
 ├ bin/                 … 個人用コマンド / dotfiles 管理コマンド
+├ Brewfile             … Homebrew の入口 (GUI アプリ / フォント / build 依存の重い CLI)
 ├ coda/                … Coda 設定
 ├ git/                 … Git global config
 ├ ghostty/             … Ghostty 設定
 ├ lazygit/             … LazyGit 設定
 ├ leaf/                … leaf 設定
+├ macos/               … macOS 側の設定メモ (defaults / launchctl / ショートカット)
 ├ mise/                … global mise 設定
-├ nvim/                … LazyVim の個人カスタマイズ
 ├ project/             … 新規 project 用テンプレート
 ├ vscode/              … VSCode 設定
 └ zsh/                 … zsh 設定
 ```
 
 # Depends
-- macOS
+- macOS (Intel / Apple Silicon)
 - zsh
+- Homebrew
 - mise 2026+
 
 # Development
 ## Getting Started
 ```sh
-git clone xxx
-cd dotfiles
+# zsh plugin (p10k など) は git submodule なので --recurse-submodules 必須
+git clone --recurse-submodules git@github.com:yano3nora/dotfiles.git ~/git/yano3nora/dotfiles
+cd ~/git/yano3nora/dotfiles
+
+# GUI apps / fonts / brew-managed CLIs
+brew bundle
 
 # setup symlinks with backup
 ./bin/dots link
@@ -41,6 +47,8 @@ dots doctor
 
 # reload shell
 reload
+
+# macOS 側の設定は macos/README.md を上から流す
 ```
 
 `dots link` が作る主なリンク:
@@ -49,6 +57,7 @@ reload
 - `git/gitconfig` -> `~/.gitconfig`
 - `git/gitignore_global` -> `~/.gitignore_global`
 - `~/.zshrc` -> `zsh/zshrc`
+- `~/.p10k.zsh` -> `zsh/p10k.zsh`
 - `~/.config/mise/config.toml` -> `mise/config.toml`
 - `~/.config/coda/config.toml` -> `coda/config.toml`
 - `~/.config/coda/bindings.json` -> `coda/bindings.json`
@@ -57,7 +66,6 @@ reload
 - `~/.codex/instructions.md` -> `ai/CLAUDE.md`
 - `~/.claude/CLAUDE.md` -> `ai/CLAUDE.md`
 - `~/.claude/skills/*`, `~/.codex/skills/*` -> `ai/skills/*`
-- `~/.config/nvim/lua/config/*.lua`, `~/.config/nvim/lua/plugins/blink.lua` -> `nvim/lua/...` (LazyVim starter は別途 clone しておく)
 
 ## Commands
 ```sh
@@ -96,21 +104,8 @@ dots project --typescript --react
 3. `dots link` を実行する
 
 # MacBook Tuning
-symlink やコマンドで管理できない、手で 1 回だけ流す macOS 側の設定。
-新しい Mac に移るときはここを上から順に適用する。
-項目ごとに「目的 / コマンド / 戻し方 / 適用日」を書く。
-
-## 新テキストカーソル機能 (CursorUIViewService) の無効化
-- 目的: macOS 26 でカーソル横の Caps Lock / 入力モード表示を担う `CursorUIViewService` が不可視 window を破棄せず溜め続け、数日で WindowServer が CPU 100% になる Apple 側バグの回避 (経緯は [`docs/TASK-260908-cursoruiviewservice-leak.md`](docs/TASK-260908-cursoruiviewservice-leak.md))
-- 代償: Caps Lock / 入力モードの吹き出し表示が出なくなる
-- コマンド (要再起動):
-    ```sh
-    sudo mkdir -p /Library/Preferences/FeatureFlags/Domain
-    sudo defaults write /Library/Preferences/FeatureFlags/Domain/UIKit.plist redesigned_text_cursor -dict-add Enabled -bool NO
-    ```
-- 戻し方: 同じコマンドを `-bool YES` で実行して再起動
-- 確認: `ps -A | grep CursorUIViewService` に何も出なければ効いている
-- 適用日: 2026-09-08 (macOS 26.5.2)
+symlink やコマンドで管理できない macOS 側の設定 (defaults / ショートカット / Spotlight 停止 / 症状が出たら入れる対処) は [`macos/README.md`](macos/README.md) にまとめる。
+新しい Mac に移るときはそこを上から順に適用する。
 
 # Deployment
 release 運用はしない。
@@ -127,5 +122,5 @@ push / publish は人間が判断して実行する。
 - [`ghostty/README.md`](ghostty/README.md)
 - [`lazygit/README.md`](lazygit/README.md)
 - [`leaf/README.md`](leaf/README.md)
+- [`macos/README.md`](macos/README.md)
 - [`mise/README.md`](mise/README.md)
-- [`nvim/README.md`](nvim/README.md)

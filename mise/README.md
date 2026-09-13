@@ -71,7 +71,7 @@ Then check whether old PATH entries remain in `zsh/zshrc.d/10-tool.zsh`.
 
 ## Homebrew migration status
 
-Homebrew on Intel macOS 26 no longer ships bottles, so `brew upgrade` builds every formula (and its toolchain, e.g. Go) from source. Daily CLIs are moved to mise whenever a prebuilt binary is available.
+Daily CLIs are moved to mise whenever a prebuilt binary is available. The remaining Homebrew formulae live in the root `Brewfile` and are limited to build / OS dependent tools (`ffmpeg`, `imagemagick`, `trash`, `zip`, `convmv`, ...), GUI apps, and fonts.
 
 Moved to mise:
 
@@ -79,11 +79,17 @@ Moved to mise:
 - daily CLIs: `jq`, `ripgrep`, `gh`, `bat`, `direnv`, `fd` (`ubi`), `fzf`, `lazygit`, `peco`, `fastfetch`, `yazi`, `gitleaks`, `aws-cli`
 - python tools: `pdm` (`pipx` backend via `uv`)
 
-Kept in Homebrew (no prebuilt binary for darwin/amd64, or OS/build dependent):
+Kept in Homebrew (see `Brewfile`):
 
-- `btop` (no macOS release asset), `php@8.1`, `grep`, `coreutils` (mise `coreutils` is uutils and not GNU compatible), `imagemagick`, `ffmpeg`, `neovim`, `macvim`, `powerlevel10k`, `trash`, `wget`, `zip`, `rustup`
+- `trash`, `zip`, `convmv`, `ffmpeg`, `imagemagick`, `ghostscript`, `exiftool`, `wget`, `btop`, `pv`
 
-Rule: when adding a tool, decide mise or Homebrew and uninstall the other. Do not keep both.
+Not managed (install individually when needed): `php`, `git-lfs`, GNU `grep` / `coreutils`.
+
+Rules:
+
+- when adding a tool, decide mise or Homebrew and uninstall the other. Do not keep both.
+- never write the Homebrew prefix (`/usr/local` on Intel, `/opt/homebrew` on Apple Silicon) into `zsh/`. Both machines share this repository; brew-managed commands are used through PATH only.
+- `ubi:sharkdp/fd` exists because aqua's `fd` has no darwin/amd64 build. Revisit once Intel is retired.
 
 ## My Recommendation
 

@@ -27,11 +27,12 @@ Agent 固有の設定形式や機能差はそれぞれのファイルに閉じ�
 `~/.codex/config.toml` は project path、trust、plugin 状態などを Codex 自身が書き戻すため、repo 管理しない。次の設定だけ手動で維持する:
 
 ```toml
-model = "gpt-5.6-sol"
-model_reasoning_effort = "high"
+model = "gpt-6-astra"
+model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
+personality = "pragmatic"
 ```
 
 ## Claude Code Plugins

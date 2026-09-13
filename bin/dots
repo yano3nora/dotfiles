@@ -91,6 +91,7 @@ link_all() {
   link_path "$DOTFILES_ROOT/git/gitconfig" "$HOME/.gitconfig"
   link_path "$DOTFILES_ROOT/git/gitignore_global" "$HOME/.gitignore_global"
   link_path "$DOTFILES_ROOT/zsh/zshrc" "$HOME/.zshrc"
+  link_path "$DOTFILES_ROOT/zsh/p10k.zsh" "$HOME/.p10k.zsh"
   link_path "$DOTFILES_ROOT/mise/config.toml" "$HOME/.config/mise/config.toml"
   link_path "$DOTFILES_ROOT/coda/config.toml" "$HOME/.config/coda/config.toml"
   link_path "$DOTFILES_ROOT/coda/bindings.json" "$HOME/.config/coda/bindings.json"
@@ -107,10 +108,6 @@ link_all() {
   link_path "$DOTFILES_ROOT/ai/skills/show-me" "$HOME/.codex/skills/show-me"
   link_path "$DOTFILES_ROOT/ai/skills/why-me" "$HOME/.claude/skills/why-me"
   link_path "$DOTFILES_ROOT/ai/skills/why-me" "$HOME/.codex/skills/why-me"
-  link_path "$DOTFILES_ROOT/nvim/lua/config/options.lua" "$HOME/.config/nvim/lua/config/options.lua"
-  link_path "$DOTFILES_ROOT/nvim/lua/config/keymaps.lua" "$HOME/.config/nvim/lua/config/keymaps.lua"
-  link_path "$DOTFILES_ROOT/nvim/lua/config/autocmds.lua" "$HOME/.config/nvim/lua/config/autocmds.lua"
-  link_path "$DOTFILES_ROOT/nvim/lua/plugins/blink.lua" "$HOME/.config/nvim/lua/plugins/blink.lua"
   link_bin_files
 }
 
@@ -120,11 +117,8 @@ doctor() {
   local commands=(
     zsh
     code
-    nvim
     trash
-    php
     mise
-    gdate
     convmv
     zip
     ffmpeg

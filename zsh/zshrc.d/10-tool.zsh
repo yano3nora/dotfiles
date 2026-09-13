@@ -1,19 +1,21 @@
 # ツール依存の初期化を集約する。
 # 方針: コマンドごとに細かく分けるより、「この環境が依存しているツール」をここで一覧できるようにする。
+# 方針: Homebrew の prefix (Intel /usr/local, Apple Silicon /opt/homebrew) に依存する PATH は書かない。
+#       brew は build / OS 依存の例外だけに使い、CLI の入口は mise に揃える (mise/README.md)。
 
 # user-local commands managed by this dotfiles repository and other tools
 export PATH="$HOME/.local/bin:$PATH"
 
+# Homebrew (Apple Silicon)
+# Intel は /usr/local/bin が標準 PATH に含まれるが、/opt/homebrew/bin は含まれないので brew 自身に PATH を設定させる。
+# mise activate より前に置き、mise 管理のコマンドが brew のものより優先されるようにする。
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 # mise
 # fzf / direnv など mise 管理のコマンドをこのファイル内で呼ぶため、他ツールの初期化より先に PATH を通す。
 eval "$(mise activate zsh)"
-
-# GNU grep
-export PATH="/usr/local/opt/grep/libexec/gnubin:$PATH"
-
-# php@8.1 remains Homebrew-managed until mise php build dependencies are settled.
-export PATH="/usr/local/opt/php@8.1/bin:$PATH"
-export PATH="/usr/local/opt/php@8.1/sbin:$PATH"
 
 # fd + fzf + bat
 # --hidden: fd は標準で dotfile を除外するため明示する。.git 配下だけはノイズなので除外を維持。
@@ -43,5 +45,8 @@ export COMPOSE_MENU=0
 export DIRENV_LOG_FORMAT=""
 eval "$(direnv hook zsh)"
 
-# Vite+ bin (https://viteplus.dev)
-. "$HOME/.vite-plus/env"
+# 各 installer が HOME に置く env。未導入の機で壊れないよう存在する時だけ読む。
+# rustup (https://rustup.rs)
+[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+# Vite+ (https://viteplus.dev)
+[[ -f "$HOME/.vite-plus/env" ]] && . "$HOME/.vite-plus/env"

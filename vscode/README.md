@@ -9,14 +9,19 @@ Managed files:
 - `settings.json`
 - `keybindings.json`
 - `github-markdown.css`
+- `extensions.txt` - 導入している拡張の一覧 (`code --list-extensions`)
 
 `dots link` links settings and keybindings into VSCode's user config directory.
 
 ## Getting Started
 
 ```sh
+brew bundle    # cask "visual-studio-code"
 dots link
+xargs -L1 code --install-extension < vscode/extensions.txt
 ```
+
+Settings Sync は symlink した `settings.json` と競合するので使わない。拡張の追加・削除をしたら `code --list-extensions | sort > vscode/extensions.txt` で更新する。
 
 ## Setup / Basic Usage
 
