@@ -22,6 +22,7 @@ Usage:
   dots addbin <name>      Create an executable bin/<name> template
   dots project [--typescript [--react] | --deno] [dir]
                           Create a new project template
+  dots mcp [on|off]       Show / switch MCP servers and claude.ai connectors (claude + codex)
   dots help               Show this help
 USAGE
 }
@@ -458,6 +459,156 @@ project() {
   info "next: edit TODOs in AGENTS.md, README.md, and docs/"
 }
 
+# mcp - remote MCP server と claude.ai connector の一括スイッチ。
+# 会社リソース (Slack / Notion / Figma ...) へ届く経路は普段は閉じておき、調査フェーズだけ開ける。
+# 個別に出し入れはしない。@ 補完にファイル以外が並ぶノイズを消すのも目的なので「全部 off」が既定。
+# 定義は ai/mcp.json (Claude の .mcp.json 形式、http のみ) に置き、claude user scope と codex global の両方へ展開する。
+MCP_DEFS="$DOTFILES_ROOT/ai/mcp.json"
+CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+CLAUDE_SETTINGS="$CLAUDE_DIR/settings.json"
+# ~/.claude.json は CLAUDE_CONFIG_DIR 指定時だけその配下へ移る (claude 自身の挙動に合わせる)
+CLAUDE_STATE="${CLAUDE_CONFIG_DIR:+$CLAUDE_CONFIG_DIR/.claude.json}"
+CLAUDE_STATE="${CLAUDE_STATE:-$HOME/.claude.json}"
+
+mcp_names() {
+  jq -r '.mcpServers | keys[]' "$MCP_DEFS"
+}
+
+claude_connectors_off() {
+  [[ -f "$CLAUDE_SETTINGS" ]] && [[ "$(jq -r '.disableClaudeAiConnectors // false' "$CLAUDE_SETTINGS")" == "true" ]]
+}
+
+# settings.json は機微情報が乗るため repo 管理していない。この key 1 つだけ書き換え、他は素通しする。
+# 同じディレクトリの tmp へ書いてから rename するのは、途中で失敗しても元ファイルを欠損させないため。
+set_claude_connectors() {
+  local filter="$1"
+  local tmp
+  mkdir -p "$CLAUDE_DIR"
+  tmp="$(mktemp "$CLAUDE_SETTINGS.XXXXXX")"
+  if [[ -f "$CLAUDE_SETTINGS" ]]; then
+    jq "$filter" "$CLAUDE_SETTINGS" > "$tmp"
+    chmod "$(stat -f %Lp "$CLAUDE_SETTINGS")" "$tmp"
+  else
+    jq -n "$filter" > "$tmp"
+  fi
+  mv "$tmp" "$CLAUDE_SETTINGS"
+}
+
+# 読めない state を「未登録」と誤認すると off が黙って残すので、読取失敗は落とす。
+# jq -e は false で 1、parse 失敗で 2 以上を返す。
+claude_has_mcp() {
+  local rc=0
+  [[ -f "$CLAUDE_STATE" ]] || return 1
+  jq -e --arg n "$1" '.mcpServers[$n] != null' "$CLAUDE_STATE" >/dev/null 2>&1 || rc=$?
+  if (( rc >= 2 )); then
+    warn "cannot read: $CLAUDE_STATE"
+    exit 1
+  fi
+  return $rc
+}
+
+codex_has_mcp() {
+  local list
+  list="$(codex mcp list --json)" || {
+    warn "codex mcp list failed"
+    exit 1
+  }
+  jq -e --arg n "$1" 'any(.[]; .name == $n)' <<< "$list" >/dev/null
+}
+
+mcp_status() {
+  local name
+  if claude_connectors_off; then
+    printf 'off  claude.ai connectors\n'
+  else
+    printf 'on   claude.ai connectors\n'
+  fi
+  for name in ${(f)"$(mcp_names)"}; do
+    if claude_has_mcp "$name"; then printf 'on   %s (claude)\n' "$name"; else printf 'off  %s (claude)\n' "$name"; fi
+    if codex_has_mcp "$name"; then printf 'on   %s (codex)\n' "$name"; else printf 'off  %s (codex)\n' "$name"; fi
+  done
+}
+
+mcp_on() {
+  local name url def
+
+  info "enabling claude.ai connectors"
+  set_claude_connectors 'del(.disableClaudeAiConnectors)'
+
+  for name in ${(f)"$(mcp_names)"}; do
+    def="$(jq -c --arg n "$name" '.mcpServers[$n]' "$MCP_DEFS")"
+    url="$(jq -r '.url // empty' <<< "$def")"
+    if [[ -z "$url" ]]; then
+      warn "only http servers are supported, skip: $name"
+      continue
+    fi
+
+    if claude_has_mcp "$name"; then
+      info "claude: already on: $name"
+    else
+      claude mcp add-json "$name" "$def" -s user
+    fi
+
+    if codex_has_mcp "$name"; then
+      info "codex: already on: $name"
+    else
+      # codex は add の時点で OAuth を始めてブラウザを開く。on = 使う直前なのでそのまま通す。
+      codex mcp add "$name" --url "$url"
+    fi
+  done
+
+  info "next: restart Claude Code sessions. OAuth for claude: /mcp in session, or claude mcp login <name>"
+}
+
+mcp_off() {
+  local name
+
+  # 起動中の Claude Code は終了時に自身の MCP 状態を ~/.claude.json へ書き戻すため、remove が巻き戻る。
+  warn "close all Claude Code sessions before running this, or removed servers come back"
+
+  info "disabling claude.ai connectors"
+  set_claude_connectors '.disableClaudeAiConnectors = true'
+
+  for name in ${(f)"$(mcp_names)"}; do
+    if claude_has_mcp "$name"; then
+      claude mcp remove "$name" -s user
+    else
+      info "claude: already off: $name"
+    fi
+    if codex_has_mcp "$name"; then
+      codex mcp remove "$name"
+    else
+      info "codex: already off: $name"
+    fi
+  done
+
+  info "next: restart Claude Code sessions"
+}
+
+mcp() {
+  # for 内のコマンド置換は失敗しても set -e に掛からず「定義なし」として素通りするので、先に検証する
+  if ! jq -e '.mcpServers | type == "object"' "$MCP_DEFS" >/dev/null 2>&1; then
+    warn "invalid or missing: $MCP_DEFS"
+    return 1
+  fi
+
+  case "${1:-status}" in
+    status)
+      mcp_status
+      ;;
+    on)
+      mcp_on
+      ;;
+    off)
+      mcp_off
+      ;;
+    *)
+      usage >&2
+      return 1
+      ;;
+  esac
+}
+
 case "${1:-help}" in
   link)
     link_all
@@ -472,6 +623,10 @@ case "${1:-help}" in
   project)
     shift
     project "$@"
+    ;;
+  mcp)
+    shift
+    mcp "$@"
     ;;
   help|--help|-h)
     usage

@@ -74,6 +74,7 @@ dots doctor         # 必要なコマンドを確認する
 dots addbin <name>  # bin/<name> を実行可能な雛形つきで作る
 dots project [--typescript] [--react] [dir]
                     # 新規 project 用テンプレートをコピーする
+dots mcp [on|off]   # MCP server / claude.ai connectors を claude + codex で一括 on / off する
 ```
 
 ## Workflows

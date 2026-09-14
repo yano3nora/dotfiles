@@ -82,22 +82,24 @@ autoConnect の設定手順 (Chrome 144+ が必要):
 
 この repo では plugin 内蔵の server (autoConnect なし) と同名の二重定義になる (`/mcp` で確認できる)。重複が邪魔なら `claude plugin disable chrome-devtools-mcp --scope local` で repo 単位で plugin を切れるが、その repo では skills も無効になる (MCP server だけを個別に切る手段はない)。
 
-## Claude Code MCP Servers
+## MCP Servers / claude.ai Connectors (`dots mcp`)
 
-### figma (使うときだけ on)
+Slack / Notion / Google Drive (claude.ai connectors) や Figma (remote MCP) など会社リソースへ届く経路は、普段は全部 off にしておき、調査フェーズだけ一括で on にする。理由は 2 つ:
 
-公式 Figma MCP server。常設すると `@` 補完に Figma リソースが並んで邪魔なので、普段は未登録にしておき、デザイン参照タスクのときだけ user scope に追加して終わったら削除する運用。
+- セキュリティ: 開発中に外部リソースへ届く経路を常設しない
+- `@` 補完はファイル名の列挙に限定したい。常設すると remote リソースが同じ補完に並んでノイズになる
 
 ```sh
-# on
-claude mcp add --transport http figma https://mcp.figma.com/mcp -s user
-
-# off
-claude mcp remove figma -s user
+dots mcp        # 状態表示
+dots mcp on     # claude.ai connectors を有効化 + ai/mcp.json の server を claude (user scope) / codex (global) に登録
+dots mcp off    # 全部 off
 ```
 
-- **off は Claude Code のセッションを全部閉じてから実行すること**。起動中のセッションが `~/.claude.json` へ自身の設定状態を書き戻すため、起動したまま remove しても即復活する
-- 登録したまま project 単位で切りたい場合は `/mcp` からサーバを選んで disable もできる (CLI にはトグルコマンドなし)
+- 定義は `mcp.json` (Claude の `.mcp.json` 形式、http のみ)。増やしたいときはここに足す
+- connectors は `~/.claude/settings.json` の `disableClaudeAiConnectors` で一括 off (個別制御はできない)
+- **off は Claude Code のセッションを全部閉じてから実行すること**。起動中のセッションが `~/.claude.json` へ自身の設定状態を書き戻すため、起動したまま remove しても即復活する。on / off どちらも反映には Claude Code の再起動が要る
+- OAuth: codex は `codex mcp add` の時点でブラウザが開く。claude はセッション内の `/mcp` か `claude mcp login <name>` で行う
+- chrome-devtools plugin はローカル開発用なので対象外
 
 ## Trouble Shooting
 
