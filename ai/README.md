@@ -6,7 +6,7 @@ AI coding agent 向けの個人用グローバル設定を管理する。
 
 Managed files:
 
-- `CLAUDE.md` -> `~/.claude/CLAUDE.md` (Claude Code) / `~/.codex/instructions.md` (Codex)
+- `CLAUDE.md` -> `~/.claude/CLAUDE.md` (Claude Code) / `~/.codex/AGENTS.md` (Codex)
 - `skills/*/` -> `~/.claude/skills/*` / `~/.codex/skills/*`
 
 project 固有の `AGENTS.md` / `CLAUDE.md` は `project/` テンプレートの管轄で、ここでは扱わない。
@@ -104,7 +104,7 @@ claude mcp remove figma -s user
 反映されない場合は symlink を確認する:
 
 ```sh
-readlink ~/.codex/instructions.md
+readlink ~/.codex/AGENTS.md
 readlink ~/.claude/CLAUDE.md
 ```
 
