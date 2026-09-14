@@ -16,6 +16,8 @@ unfocused-split-opacity = 0.9
 # カーソル
 cursor-opacity = 0.8
 cursor-color = ffffff
+# クリック位置へのカーソル移動を無効化 (矢印キー送信が zsh-autosuggestions の accept を誤爆するため)
+cursor-click-to-move = false
 
 # ウィンドウ
 window-padding-x = 4
