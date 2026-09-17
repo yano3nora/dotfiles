@@ -7,6 +7,7 @@ alias ls="ls -a -G"
 alias rm="trash"
 alias reload="exec $SHELL -l"
 alias chrome='open -a "Google Chrome"'
+alias cdw="cd ~/Downloads"
 
 # coda - https://github.com/yano3nora/coda
 # 意図: git commit など `$EDITOR` を実行するツールでも coda を使う。
