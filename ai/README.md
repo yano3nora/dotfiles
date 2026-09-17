@@ -43,44 +43,43 @@ personality = "pragmatic"
 
 Chrome を DevTools protocol 経由で Claude Code から操作・デバッグする MCP server + skills (a11y-debugging, memory-leak-debugging, debug-optimize-lcp など)。ブラウザ実機での動作確認・性能調査を Agent に任せられるのが嬉しさ。
 
-**特殊な導入をしているので注意**: 2026-08 時点で upstream が `devtools-frontend` を git submodule 化した影響 (Chromium / LLVM を再帰的に引くため数GB) で、公式手順の `/plugin marketplace add ChromeDevTools/chrome-devtools-mcp` はデフォルトの 120s timeout 内に clone が終わらず失敗する。回避策として submodule なしの local clone (~16MB) を directory marketplace として登録している:
+構成: **plugin は使わない**。MCP server は user scope、CLI は `bin/chrome-devtools`、skills は local clone からの symlink で入れる。
+
+- MCP server も CLI も `mise exec node@24 npm:chrome-devtools-mcp@latest --` で起動し、Node を project に委ねない。理由: plugin 内蔵の server 定義 (`npx chrome-devtools-mcp`) と mise の npm shim は PATH の node で動くため、`.node-version` が 18 以下の project では SyntaxError で即死する (1.9.0 は Node 20.19+ 必須)。plugin は server 定義を差し替えられない ([#1232](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/1232)) ので plugin ごとやめた
+- `npm:chrome-devtools-mcp` は mise の global config に載せない。載せると shim が PATH の先頭に出て `bin/chrome-devtools` を隠す。初回は `mise exec` が自動 install する。更新は自動ではない
+- skills は upstream の clone (`~/git/ChromeDevTools/chrome-devtools-mcp/skills/*`) を `dots link` で `~/.claude/skills` に張る。clone 側の skill 増減に追従する。`chrome-devtools-cli` skill が叩く `chrome-devtools` は `bin/chrome-devtools` に解決される
+- clone は `--depth 1` で submodule なし (~16MB)。upstream が `devtools-frontend` を submodule 化しており (数GB)、marketplace 経由の clone は timeout する ([#2563](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/2563))
 
 ```sh
-# 通常の git clone は submodule を取得しないため軽量で済む
 git clone --depth 1 https://github.com/ChromeDevTools/chrome-devtools-mcp.git ~/git/ChromeDevTools/chrome-devtools-mcp
-claude plugin marketplace add ~/git/ChromeDevTools/chrome-devtools-mcp
-claude plugin install chrome-devtools-mcp@chrome-devtools-plugins
+dots link
+claude mcp add --scope user chrome-devtools -- mise exec node@24 npm:chrome-devtools-mcp@latest -- chrome-devtools-mcp
 ```
 
-- 更新: `git -C ~/git/ChromeDevTools/chrome-devtools-mcp pull && claude plugin marketplace update chrome-devtools-plugins` (local 参照のため自動更新されない)
-- 復旧: upstream の repo 軽量化 ([#2563](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/2563)) が済んだら、この marketplace を remove して公式手順に戻す
+- 更新: `mise install npm:chrome-devtools-mcp@latest && git -C ~/git/ChromeDevTools/chrome-devtools-mcp pull && dots link` (server / CLI / skills の 3 つ)
+- 旧構成 (plugin + mise global) からの移行: `claude plugin disable chrome-devtools-mcp@chrome-devtools-plugins` してから上記を実行する。marketplace `chrome-devtools-plugins` は不要になるので remove してよい
 - リスク: MCP server は接続中の Chrome の cookie・ログイン済みセッション・ページ内容へアクセスできる。下記 autoConnect で実ブラウザへ繋ぐ場合はこれを許容していることを自覚して使う
+- `dots mcp on/off` の対象外。理由: あれは会社リソースへの経路 (http) を一括で開閉する仕組みで、この server はローカル完結
 
-運用方針: plugin は維持し、実ブラウザ接続 (autoConnect) は project 単位で opt-in する。
-
-- plugin 内蔵の server 定義により、全 project で MCP server が使える。ただしこれは autoConnect なし = 毎回独立した Chrome インスタンスを起動する構成
-- plugin 内蔵 server には起動フラグを注入できない ([#1232](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/1232) が open)。そのため autoConnect が必要な repo では、フラグ付きの server 定義を `.mcp.json` に自分で書く
-- ログイン済み実ブラウザへの接続を全 project へ開放しないための opt-in でもある
-- skills を使わないと判断したら、plugin を disable して user scope (`claude mcp add --scope user`) に一本化する
-- `chrome-devtools-cli` skill は PATH 上の `chrome-devtools` コマンドを Bash から叩く前提。この CLI は mise (`npm:chrome-devtools-mcp`) で導入する。MCP server の経路 (npx) とは別物で、mise で入れても plugin / `.mcp.json` の server には影響しない
+運用方針: user scope の server は autoConnect なし = 毎回独立した Chrome インスタンスを起動する構成にし、実ブラウザ接続 (autoConnect) は project 単位で opt-in する。ログイン済み実ブラウザへの接続を全 project へ開放しないための opt-in でもある。
 
 autoConnect の設定手順 (Chrome 144+ が必要):
 
 1. Chrome で `chrome://inspect/#remote-debugging` を開き、リモートデバッグを有効にする
-2. project 直下の `.mcp.json` に `--autoConnect` 付きで server を定義する
+2. project 直下の `.mcp.json` に `--autoConnect` 付きで server を定義する (Node の固定も同様に必要)
 
 ```json
 {
   "mcpServers": {
     "chrome-devtools": {
-      "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest", "--autoConnect"]
+      "command": "mise",
+      "args": ["exec", "node@24", "npm:chrome-devtools-mcp@latest", "--", "chrome-devtools-mcp", "--autoConnect"]
     }
   }
 }
 ```
 
-この repo では plugin 内蔵の server (autoConnect なし) と同名の二重定義になる (`/mcp` で確認できる)。重複が邪魔なら `claude plugin disable chrome-devtools-mcp --scope local` で repo 単位で plugin を切れるが、その repo では skills も無効になる (MCP server だけを個別に切る手段はない)。
+この repo では user scope の server (autoConnect なし) と同名の二重定義になる (`/mcp` で確認できる)。project scope が優先されるので実害はない。
 
 ## MCP Servers / claude.ai Connectors (`dots mcp`)
 

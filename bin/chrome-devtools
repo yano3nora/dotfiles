@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+# chrome-devtools CLI を Node 24 固定で起動する共通入口 (ai/README.md 参照)。
+# 理由: mise の npm shim は PATH の node で動き、.node-version が 18 以下の project では起動できない。
+# 同名の shim が PATH の先頭に出ないよう、npm:chrome-devtools-mcp は mise の global config に載せない。
+exec mise exec node@24 npm:chrome-devtools-mcp@latest -- chrome-devtools "$@"

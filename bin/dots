@@ -85,6 +85,29 @@ link_bin_files() {
   done
 }
 
+# chrome-devtools-mcp の skills を local clone から直接張る (ai/README.md 参照)。
+# plugin 経由をやめたため、skills の供給元は clone だけになった。
+# clone 側で skill が増減しても追従するよう glob で回す。
+CHROME_DEVTOOLS_MCP_ROOT="$HOME/git/ChromeDevTools/chrome-devtools-mcp"
+
+link_chrome_devtools_skills() {
+  local skill dest
+  if [[ ! -d "$CHROME_DEVTOOLS_MCP_ROOT/skills" ]]; then
+    warn "chrome-devtools-mcp clone not found: $CHROME_DEVTOOLS_MCP_ROOT (see ai/README.md)"
+    return 0
+  fi
+  # clone 側で消えた skill の link を先に片付ける。link_path は追加しかしないため。
+  for dest in "$HOME/.claude/skills"/*(@N); do
+    if [[ "$(readlink "$dest")" == "$CHROME_DEVTOOLS_MCP_ROOT/skills/"* && ! -e "$dest" ]]; then
+      info "remove stale link: $dest"
+      command rm "$dest"
+    fi
+  done
+  for skill in "$CHROME_DEVTOOLS_MCP_ROOT"/skills/*(N/); do
+    link_path "$skill" "$HOME/.claude/skills/${skill:t}"
+  done
+}
+
 link_all() {
   info "dotfiles root: $DOTFILES_ROOT"
 
@@ -109,6 +132,7 @@ link_all() {
   link_path "$DOTFILES_ROOT/ai/skills/show-me" "$HOME/.codex/skills/show-me"
   link_path "$DOTFILES_ROOT/ai/skills/why-me" "$HOME/.claude/skills/why-me"
   link_path "$DOTFILES_ROOT/ai/skills/why-me" "$HOME/.codex/skills/why-me"
+  link_chrome_devtools_skills
   link_bin_files
 }
 
