@@ -2,8 +2,12 @@
 set -euo pipefail
 
 # safezip - OS 間で文字化けしにくい NFC / UTF-8 な zip を作成する。
-# 前提: brew install convmv zip coreutils などで convmv / zip が利用できること。
-PATH="/usr/local/opt/zip/bin:$PATH"
+# 前提: brew install convmv zip で convmv / zip が利用できること。
+# brew の zip は keg-only で PATH に無い。Apple 付属の zip は -UN 未対応。
+# Intel / Apple Silicon 両対応のため brew shellenv の HOMEBREW_PREFIX から解決する。
+zip_bin="${HOMEBREW_PREFIX:-$(brew --prefix)}/opt/zip/bin"
+[[ -x "$zip_bin/zip" ]] || { echo "❌ brew install zip が必要: $zip_bin/zip" >&2; exit 1; }
+PATH="$zip_bin:$PATH"
 
 src="${1:-}"
 if [[ -z "$src" ]]; then
@@ -29,20 +33,28 @@ fi
 tmp="$(mktemp -d "${TMPDIR:-/tmp}/safezip.XXXXXX")"
 trap 'rm -rf -- "$tmp"' EXIT
 
+work="$tmp/work"
 if [[ -d "$src" ]]; then
-  mkdir -p "$tmp/$base"
-  cp -R "$src"/. "$tmp/$base"/
+  mkdir -p "$work/$base"
+  cp -R "$src"/. "$work/$base"/
 else
-  cp "$src" "$tmp/$base"
+  mkdir -p "$work"
+  cp "$src" "$work/$base"
 fi
 
-cd "$tmp"
+cd "$work"
 
 # convmv の --nfc でファイル名を NFC 正規化する。
 # -f / -t は UTF-8 同士の正規化でも convmv が変換元/先を判断するために必要。
-convmv -r -f utf-8 -t utf-8 --notest --nfc "$base"
+# 対象は "$base" ではなく "." を渡す。
+# 理由: APFS は正規化の違いを同名扱いするため、NFD 名を引数に渡すと rename が no-op になる。
+convmv -r -f utf-8 -t utf-8 --notest --nfc .
 
 # -UN=UTF8 で zip 内の UTF-8 フラグを付与し、メタ情報や不要ファイルを極力混ぜない。
-zip -r -X -UN=UTF8 "$dest" "$base" -x "*/.DS_Store" "*/__MACOSX/*"
+# 対象は "." を渡す。理由: "$base" を渡すと NFD のままの引数名が zip 内に記録される。
+# 一時 zip を新規作成してから置換する。
+# 理由: zip は既存 archive へ追記するため、旧 NFD 名の entry が残る。
+zip -r -X -UN=UTF8 "$tmp/out.zip" . -x "*/.DS_Store" "*/__MACOSX/*"
+mv -f -- "$tmp/out.zip" "$dest"
 
 echo "✅ Generated: $dest"
