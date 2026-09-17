@@ -6,6 +6,7 @@
 # trash は macOS 26 が /usr/bin/trash を標準搭載したので formula 不要 (30-alias.zsh の rm はそれを使う)
 brew "zip"         # bin/safezip
 brew "convmv"      # bin/safezip
+brew "coreutils"   # bin/isodate (gdate) と timeout。gnubin は PATH に足さず、macOS と重複する物は g 付きで呼ぶ
 brew "ffmpeg"      # bin/ffcomp
 brew "exiftool"
 brew "wget"

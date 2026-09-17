@@ -81,9 +81,11 @@ Moved to mise:
 
 Kept in Homebrew (see `Brewfile`):
 
-- `trash`, `zip`, `convmv`, `ffmpeg`, `imagemagick`, `ghostscript`, `exiftool`, `wget`, `btop`, `pv`
+- `trash`, `zip`, `convmv`, `coreutils`, `ffmpeg`, `imagemagick`, `ghostscript`, `exiftool`, `wget`, `btop`, `pv`
 
-Not managed (install individually when needed): `php`, `git-lfs`, GNU `grep` / `coreutils`.
+Not managed (install individually when needed): `php`, `git-lfs`, GNU `grep`.
+
+GNU `coreutils` is in `Brewfile`, but its `gnubin` is not added to PATH. Commands that macOS also has use the `g` prefix (`gdate`). Commands that macOS lacks (`timeout`, `nproc`) are linked without prefix by brew.
 
 Rules:
 

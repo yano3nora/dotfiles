@@ -148,6 +148,7 @@ doctor() {
     convmv
     zip
     ffmpeg
+    timeout
   )
   local mise_bins=(
     jq
