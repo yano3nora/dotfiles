@@ -1,0 +1,106 @@
+[
+  {
+    "command": "cursor.down",
+    "key": "cmd+j",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.up",
+    "key": "cmd+k",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.left",
+    "key": "cmd+h",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.right",
+    "key": "cmd+l",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.down",
+    "key": "ctrl+j",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.up",
+    "key": "ctrl+k",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.wordLeft",
+    "key": "ctrl+h",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.wordRight",
+    "key": "ctrl+l",
+    "when": "editorFocus"
+  },
+  {
+    "command": "selection.down",
+    "key": "ctrl+shift+j",
+    "when": "editorFocus"
+  },
+  {
+    "command": "selection.up",
+    "key": "ctrl+shift+k",
+    "when": "editorFocus"
+  },
+  {
+    "command": "selection.wordLeft",
+    "key": "ctrl+shift+h",
+    "when": "editorFocus"
+  },
+  {
+    "command": "selection.wordRight",
+    "key": "ctrl+shift+l",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.pageDown",
+    "key": "ctrl+shift+d"
+  },
+  {
+    "command": "cursor.pageUp",
+    "key": "ctrl+shift+u"
+  },
+  {
+    "command": "cursor.pageDown",
+    "key": "ctrl+cmd+j",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.pageUp",
+    "key": "ctrl+cmd+k",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.lineStart",
+    "key": "ctrl+cmd+h",
+    "when": "editorFocus"
+  },
+  {
+    "command": "cursor.lineEnd",
+    "key": "ctrl+cmd+l",
+    "when": "editorFocus"
+  },
+  {
+    "command": "buffer.new",
+    "key": "cmd+t"
+  },
+  {
+    "command": "edit.moveLinesUp",
+    "key": "ctrl+up"
+  },
+  {
+    "command": "edit.moveLinesDown",
+    "key": "ctrl+down"
+  },
+  {
+    "command": "edit.insertLineAfter",
+    "key": "ctrl+enter"
+  }
+]

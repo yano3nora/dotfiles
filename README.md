@@ -61,6 +61,7 @@ reload
 - `~/.config/mise/config.toml` -> `mise/config.toml`
 - `~/.config/coda/config.toml` -> `coda/config.toml`
 - `~/.config/coda/bindings.json` -> `coda/bindings.json`
+- `~/.config/coda/generated/vscode-bindings.json` -> `coda/generated/vscode-bindings.json`
 - `~/.local/bin/*` -> `bin/*`
 - VSCode / Ghostty / LazyGit / leaf 設定
 - `~/.codex/AGENTS.md` -> `ai/CLAUDE.md`

@@ -193,6 +193,7 @@
 - [x] (M1) Caps Lock が右 Command として動く (Google 日本語入力の英数 / かな切替が現行通り)
 - [x] (M1) ~~`defaults read com.apple.dock autohide` など Phase 4 の代表値が現行と一致する~~ 方針変更 (GUI 手動設定) により検証しない
 - [x] (M1) `claude` / `codex` が起動し、`~/.claude/CLAUDE.md` / `~/.codex/instructions.md` が repo の `ai/CLAUDE.md` を指す (2026-09-13 確認)
+- [x] (M1) coda の `~/.config/coda/generated/vscode-bindings.json` が repo の `coda/generated/` を指す (2026-09-17。旧機で import した生成物が管理外だったので import し直し、repo 管理に変更)
 
 ## notes
 
@@ -228,5 +229,6 @@
 - `brew leaves` に残っている build 依存 (automake, bison, re2c, guile, openvino など) は過去に何かを source build した名残。Brewfile には入れない
 - `~/.ssh/config` は空、鍵は `id_rsa` のみ。移設を機に ed25519 へ更新し、1Password SSH agent を使うかも検討する
 - Codex の `~/.codex/config.toml` には project ごとの trust 設定 (絶対パス) が書き戻されるため repo 管理しない。手動維持する項目は `ai/README.md` 参照
+- coda の `generated/vscode-bindings.json` は import の生成物だが repo 管理する。理由: 管理外だと新機で keymap が消える。import 手順は `coda/README.md` 参照
 - `/etc/hosts` の project 固有エントリ、仕事用 org の repo 名、token 類はこの docs にも書かない
 - 16GB について: 現行の使い方 (Docker VM 2GB + VSCode + Chrome + Claude Code) なら M1 のメモリ効率で足りる見込み。Docker の割当を増やさない、Chrome のタブを溜めない、の 2 点で様子を見る
