@@ -42,6 +42,7 @@ dots link
 - `isodate` - epoch milliseconds to ISO datetime
 - `safezip` - create NFC / UTF-8 zip archives
 - `ffcomp` - quick H.264/AAC mp4 re-encode
+- `ppt2png` - export pptx / pdf pages to 2x png via PowerPoint + poppler
 
 ## Trouble Shooting
 
