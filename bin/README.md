@@ -42,7 +42,25 @@ dots link
 - `isodate` - epoch milliseconds to ISO datetime
 - `safezip` - create NFC / UTF-8 zip archives
 - `ffcomp` - quick H.264/AAC mp4 re-encode
-- `ppt2png` - export pptx / pdf pages to 2x png via PowerPoint + poppler
+- `ppt2png` - export pptx / pdf pages to png at a given scale via PowerPoint + poppler (macOS only)
+- `pdf2png` - export pdf pages to png at a given scale via poppler (bash, macOS / Windows git bash)
+
+## pdf2png on Windows (git bash)
+
+1. Install poppler:
+
+    ```sh
+    winget install oschwartz10612.Poppler
+    ```
+
+2. Put `bin/pdf2png` somewhere on your PATH, e.g. `~/bin/pdf2png`, and `chmod +x` it.
+3. Run:
+
+    ```sh
+    pdf2png -s 2 slides.pdf 1-3 6   # -> slides_p1.png ... slides_p6.png (2x)
+    ```
+
+If `pdftoppm` is not found after install, add poppler's `Library/bin` directory to PATH and reopen git bash.
 
 ## Trouble Shooting
 

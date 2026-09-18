@@ -8,7 +8,7 @@ brew "zip"         # bin/safezip
 brew "convmv"      # bin/safezip
 brew "coreutils"   # bin/isodate (gdate) と timeout。gnubin は PATH に足さず、macOS と重複する物は g 付きで呼ぶ
 brew "ffmpeg"      # bin/ffcomp
-brew "poppler"     # bin/ppt2png (pdftoppm / pdfinfo)
+brew "poppler"     # bin/ppt2png, bin/pdf2png (pdftoppm / pdfinfo)
 brew "exiftool"
 brew "wget"
 brew "btop"
