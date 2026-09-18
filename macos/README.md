@@ -178,6 +178,7 @@ sudo pmset -a displaysleep 0 powernap 0
     done
     ```
 - 確認: `mdutil -s /` が `Indexing disabled.`、`launchctl print-disabled gui/$(id -u)` に上記が並ぶ
+- 定期確認: `dots doctor` が `mdutil -s -a` で全ボリュームを見る。OS 更新後と外部ディスクを挿した後に流す
 - 戻し方: 同じ list を `launchctl enable` し、`sudo mdutil -a -i on` → 再起動
 - 注意: OS アップデートで disabled 登録が戻ることがある。不調時はまず `launchctl print-disabled` を確認する
 - 適用日: 2026-07-01 (Intel / macOS 26.5) / 2026-09-13 (M1。Spotlight 系 agent のみ適用、Siri 系は GUI off に留めて launchctl disable は未適用)

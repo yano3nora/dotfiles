@@ -18,7 +18,7 @@ usage() {
   cat <<'USAGE'
 Usage:
   dots link               Link managed dotfiles
-  dots doctor             Check required commands
+  dots doctor             Check required commands and macOS settings
   dots addbin <name>      Create an executable bin/<name> template
   dots project [--typescript [--react] | --deno] [dir]
                           Create a new project template
@@ -183,12 +183,34 @@ doctor() {
     fi
   done
 
+  info "checking macos settings"
+  # OS update or a newly attached volume can silently re-enable Spotlight indexing.
+  # See macos/README.md "Spotlight / Siri".
+  local volume
+  local spotlight_status
+  local spotlight_enabled=0
+  spotlight_status="$(mdutil -s -a 2>/dev/null)"
+  if [[ -z "$spotlight_status" ]]; then
+    printf 'miss spotlight indexing disabled (mdutil -s -a failed)\n'
+    missing=1
+  else
+    while IFS= read -r volume; do
+      printf 'miss spotlight indexing disabled: %s (run: sudo mdutil -i off "%s")\n' "$volume" "$volume"
+      spotlight_enabled=1
+    done < <(printf '%s\n' "$spotlight_status" | awk -F: '/^\//{v=$1} /Indexing enabled/{print v}')
+    if [[ "$spotlight_enabled" -eq 0 ]]; then
+      printf 'ok   spotlight indexing disabled (all volumes)\n'
+    else
+      missing=1
+    fi
+  fi
+
   if [[ "$missing" -ne 0 ]]; then
-    warn "some commands are missing"
+    warn "some checks failed"
     return 1
   fi
 
-  info "all required commands are available"
+  info "all checks passed"
 }
 
 addbin() {

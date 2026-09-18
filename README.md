@@ -71,7 +71,7 @@ reload
 ## Commands
 ```sh
 dots link           # 管理対象の symlink を作る
-dots doctor         # 必要なコマンドを確認する
+dots doctor         # 必要なコマンドと macOS 設定を確認する
 dots addbin <name>  # bin/<name> を実行可能な雛形つきで作る
 dots project [--typescript] [--react] [dir]
                     # 新規 project 用テンプレートをコピーする
