@@ -1,0 +1,8 @@
+# gistan configuration managed by dotfiles.
+# Linked to: ~/.config/gistan/config.toml
+
+# Local gist repo. gistan does not expand $HOME or ~, so write an absolute path.
+repo = "/Users/y3n/git/yano3nora/gists"
+
+# Viewer used to preview gist files.
+viewer = "leaf"

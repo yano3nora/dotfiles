@@ -11,6 +11,7 @@ macOS 用の個人 dotfiles。
 ├ bin/                 … 個人用コマンド / dotfiles 管理コマンド
 ├ Brewfile             … Homebrew の入口 (GUI アプリ / フォント / build 依存の重い CLI)
 ├ coda/                … Coda 設定
+├ gistan/              … gistan 設定
 ├ git/                 … Git global config
 ├ ghostty/             … Ghostty 設定
 ├ lazygit/             … LazyGit 設定
@@ -63,7 +64,7 @@ reload
 - `~/.config/coda/bindings.json` -> `coda/bindings.json`
 - `~/.config/coda/generated/vscode-bindings.json` -> `coda/generated/vscode-bindings.json`
 - `~/.local/bin/*` -> `bin/*`
-- VSCode / Ghostty / LazyGit / leaf 設定
+- VSCode / Ghostty / LazyGit / leaf / gistan 設定
 - `~/.codex/AGENTS.md` -> `ai/CLAUDE.md`
 - `~/.claude/CLAUDE.md` -> `ai/CLAUDE.md`
 - `~/.claude/skills/*`, `~/.codex/skills/*` -> `ai/skills/*`
@@ -124,5 +125,6 @@ push / publish は人間が判断して実行する。
 - [`ghostty/README.md`](ghostty/README.md)
 - [`lazygit/README.md`](lazygit/README.md)
 - [`leaf/README.md`](leaf/README.md)
+- [`gistan/README.md`](gistan/README.md)
 - [`macos/README.md`](macos/README.md)
 - [`mise/README.md`](mise/README.md)
