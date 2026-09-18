@@ -26,6 +26,7 @@
 # [tasks.provision]
 # description = "provisioning"
 # run = [
+#   "git config --unset core.hooksPath || true",
 #   "mise generate git-pre-commit --task pre-commit --write",
 #   "npm ci",
 # ]
