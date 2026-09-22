@@ -34,10 +34,13 @@
     - 人間向けの手順書・README・コメントには command rm を書かずに rm のままにする
 - 実装作業時には、調査・設計・タスク化を必ず行い、完了後は Codex へレビューを依頼すること (大規模なら設計・タスクレビューも検討する)
 - Agent へのレビュー指示は、目的・差分・検証結果を渡し、影響範囲のみレビューさせ、全体調査・テスト再実行・他 Agent への委譲をさせないこと
-- Codex 依頼は数分の timeout 付きで `codex exec -s read-only --json -o <出力ファイル> "<プロンプト>" < /dev/null` の形を基本とすること
-    - `< /dev/null` は必須 (codex exec は stdin が非 TTY だと EOF まで読み続けてデッドロックするため)
-    - 進捗は --json の JSONL 出力を tail で観測し、結果は -o のファイルから回収する
-    - セッションを毎回新規起動せず --json イベントの thread.started (thread_id) を `codex exec -s read-only --json -o <出力> resume <thread_id> "<プロンプト>" < /dev/null` のように指定して再利用すること
+- Codex 依頼は `codex exec -s read-only --json -o <出力ファイル> "<プロンプト>"` を単一コマンドとして Bash tool で呼ぶこと
+    - `cd` / `timeout` / `;` / `&&` / リダイレクトで包むことを禁止する
+    - 理由: settings.json の `excludedCommands: ["codex *"]` はコマンド文字列全体が `codex …` のときだけ一致し、外れると sandbox 内で起動に失敗する
+    - timeout は Bash tool の timeout パラメータで数分付ける
+    - `< /dev/null` は付けない。Bash tool の stdin は即 EOF なのでデッドロックしない
+    - `-o` には実在する絶対パスを渡す。進捗と結果は --json の stdout を tool 結果から読む
+    - セッションを毎回新規起動せず --json イベントの thread.started (thread_id) を `codex exec -s read-only --json -o <出力> resume <thread_id> "<プロンプト>"` のように指定して再利用すること
 
 # 禁止事項
 - 本番環境へのリリース・変更操作、GitHub や NPM などホスティングサービスへの公開 (push, publish) は人間が判断するため **指示を受けても絶対に行わないこと**
