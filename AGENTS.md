@@ -3,7 +3,7 @@
 
 ## Overview
 - この repo は macOS 用の個人 dotfiles を管理する。
-- 主な管理対象は `zsh/`, `bin/`, `git/`, `mise/`, `Brewfile`, `macos/`, `vscode/`, `ghostty/`, `lazygit/`, `project/`。
+- 主な管理対象は `zsh/`, `bin/`, `git/`, `gh/`, `mise/`, `Brewfile`, `macos/`, `vscode/`, `ghostty/`, `lazygit/`, `project/`。
 - `bin/dots` が symlink 管理の入口。
 - global CLI tool は `mise/config.toml` で入口を揃える。ただし `jq` などの日常CLIは `latest` 許容、Node や deploy 系など project 影響が大きいものだけ version 管理を重視する。
 - 新規 project 用テンプレートは `project/` に置く。他 repo の具体文脈を root docs に混ぜない。
@@ -26,7 +26,7 @@
 - **`git/`**: Git global config。`git/gitconfig` と `git/gitignore_global` を HOME 配下に symlink する。
 - **`zsh/`**: zsh 設定。`zsh/zshrc` が `zsh/zshrc.d/*.zsh` をファイル名順に読む。plugin (p10k など) は `zsh/plugins/` の git submodule、p10k の設定は `zsh/p10k.zsh`。
 - **`mise/`**: global mise config。`mise/config.toml` を `~/.config/mise/config.toml` に symlink する。
-- **`vscode/`, `ghostty/`, `lazygit/`**: 各ツール設定。link 対象を増やす場合は `bin/dots` を更新する。VSCode 拡張は `vscode/extensions.txt`。
+- **`vscode/`, `ghostty/`, `lazygit/`, `gh/`**: 各ツール設定。link 対象を増やす場合は `bin/dots` を更新する。VSCode 拡張は `vscode/extensions.txt`。
 - **`macos/`**: macOS 側の設定メモとショートカットの plist。
 - **`project/`**: 新規 project 用テンプレート。`project/AGENTS.md`, `project/CLAUDE.md`, `project/docs/*` を他 repo にコピーして書き換える前提。
 - **`docs/`**: この dotfiles repo 自身の作業記録。`TASK-YYMMDD-<filename>.md` 形式で移行・整理タスクを管理する。

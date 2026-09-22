@@ -1,0 +1,2 @@
+yano3nora/gh-bprune
+yano3nora/gh-review-prompt

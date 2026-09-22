@@ -126,6 +126,7 @@ link_all() {
   link_path "$DOTFILES_ROOT/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
   link_path "$DOTFILES_ROOT/leaf/config.toml" "$HOME/.config/leaf/config.toml"
   link_path "$DOTFILES_ROOT/gistan/config.toml" "$HOME/.config/gistan/config.toml"
+  link_path "$DOTFILES_ROOT/gh/config.yml" "$HOME/.config/gh/config.yml"
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.codex/AGENTS.md"
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
   link_path "$DOTFILES_ROOT/ai/skills/chrome-connect" "$HOME/.claude/skills/chrome-connect"
@@ -154,6 +155,7 @@ doctor() {
   )
   local mise_bins=(
     jq
+    gh
     rg
     deno
     java

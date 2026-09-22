@@ -13,6 +13,7 @@ macOS 用の個人 dotfiles。
 ├ coda/                … Coda 設定
 ├ gistan/              … gistan 設定
 ├ git/                 … Git global config
+├ gh/                  … GitHub CLI 設定と拡張一覧
 ├ ghostty/             … Ghostty 設定
 ├ lazygit/             … LazyGit 設定
 ├ leaf/                … leaf 設定
@@ -64,7 +65,7 @@ reload
 - `~/.config/coda/bindings.json` -> `coda/bindings.json`
 - `~/.config/coda/generated/vscode-bindings.json` -> `coda/generated/vscode-bindings.json`
 - `~/.local/bin/*` -> `bin/*`
-- VSCode / Ghostty / LazyGit / leaf / gistan 設定
+- VSCode / Ghostty / LazyGit / leaf / gistan / gh 設定
 - `~/.codex/AGENTS.md` -> `ai/CLAUDE.md`
 - `~/.claude/CLAUDE.md` -> `ai/CLAUDE.md`
 - `~/.claude/skills/*`, `~/.codex/skills/*` -> `ai/skills/*`
@@ -122,6 +123,7 @@ push / publish は人間が判断して実行する。
 - [`zsh/README.md`](zsh/README.md)
 - [`project/README.md`](project/README.md)
 - [`vscode/README.md`](vscode/README.md)
+- [`gh/README.md`](gh/README.md)
 - [`ghostty/README.md`](ghostty/README.md)
 - [`lazygit/README.md`](lazygit/README.md)
 - [`leaf/README.md`](leaf/README.md)
