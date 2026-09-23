@@ -4,6 +4,7 @@
 
 symlink やコマンドで管理できない、macOS 側の設定のメモ。
 新しい Mac に移るときは上から順にコピペで流す。完全な復元 script ではなく「環境再現設定 + メモ」として維持する。
+正は Apple Silicon (M1 / macOS 26.6.2) の実機。2026-09-23 に実機の値へ揃えた。
 
 Managed files:
 
@@ -31,11 +32,7 @@ defaults import com.apple.symbolichotkeys macos/symbolichotkeys.plist
 ```sh
 defaults write NSGlobalDomain AppleInterfaceStyle -string Dark
 defaults write NSGlobalDomain AppleLocale -string ja_JP
-defaults write NSGlobalDomain AppleKeyboardUIMode -int 2               # Tab でフォーカス移動を全コントロールに
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-defaults write NSGlobalDomain AppleShowScrollBars -string WhenScrolling
-defaults write NSGlobalDomain AppleReduceDesktopTinting -bool true
-defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true
 defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -bool false
 defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -bool false
 # 自動修正系は全部 off (コードや英日混在の入力を勝手に変えさせない)
@@ -45,12 +42,9 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticInlinePredictionEnabled -bool false
-defaults write NSGlobalDomain NSAutomaticTextCompletionEnabled -bool false
-# トラックパッド / マウス
-defaults write NSGlobalDomain com.apple.trackpad.scaling -float 0.875
-defaults write NSGlobalDomain com.apple.mouse.scaling -float 3
+# トラックパッド / マウス (トラックパッド速度は default のまま)
+defaults write NSGlobalDomain com.apple.mouse.scaling -float 2
 defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool false
-defaults write NSGlobalDomain com.apple.springing.enabled -bool false
 ```
 
 ### トラックパッド
@@ -71,28 +65,25 @@ defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerPinchGesture 
 
 ```sh
 defaults write com.apple.dock autohide -bool true
-defaults write com.apple.dock tilesize -int 61
-defaults write com.apple.dock magnification -bool false
+defaults write com.apple.dock tilesize -int 51
 defaults write com.apple.dock show-recents -bool false
 defaults write com.apple.dock mru-spaces -bool false          # 最近の使用状況で操作スペースを並べ替えない
-defaults write com.apple.dock launchanim -bool false
-defaults write com.apple.dock expose-group-apps -bool false
 defaults write com.apple.dock showDesktopGestureEnabled -bool false
-defaults write com.apple.dock wvous-br-corner -int 1          # ホットコーナーなし (1 = no-op)
+defaults write com.apple.dock wvous-br-corner -int 1          # ホットコーナーなし (1 = no-op。default はクイックメモ)
 defaults write com.apple.spaces spans-displays -bool true     # 操作スペースを全ディスプレイにまたがせる (「ディスプレイごとに個別の操作スペース」off)
 killall Dock
 ```
+
+拡大 / 起動アニメーションは default のまま。
 
 ### Finder / デスクトップ
 
 ```sh
 defaults write com.apple.finder AppleShowAllFiles -bool true
 defaults write com.apple.finder FXPreferredViewStyle -string Nlsv        # リスト表示
-defaults write com.apple.finder FXDefaultSearchScope -string SCcf        # 検索は現在のフォルダ
 defaults write com.apple.finder NewWindowTarget -string PfHm             # 新規ウィンドウはホーム
-defaults write com.apple.finder QuitMenuItem -bool true
 defaults write com.apple.finder ShowPathbar -bool true
-defaults write com.apple.finder ShowStatusBar -bool false
+defaults write com.apple.finder ShowStatusBar -bool true
 defaults write com.apple.finder ShowRecentTags -bool false
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
 defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
@@ -111,36 +102,30 @@ killall Finder
 ### メニューバー / アクセシビリティ / スクリーンショット
 
 ```sh
-# 時計: 24 時間 + 秒 + 曜日、日付は空きがあれば表示 (ShowDate: 0 = 空きがあれば, 1 = 常に, 2 = しない)
+# 時計: 24 時間 + 秒 + 曜日、日付は常に表示 (ShowDate: 0 = 空きがあれば, 1 = 常に, 2 = しない)
 defaults write com.apple.menuextra.clock Show24Hour -bool true
 defaults write com.apple.menuextra.clock ShowSeconds -bool true
 defaults write com.apple.menuextra.clock ShowDayOfWeek -bool true
-defaults write com.apple.menuextra.clock ShowDate -int 0
-# コントロールセンターの常時表示は Battery / Bluetooth / WiFi / Clock のみ。Siri / Spotlight は GUI で off にする
-defaults write com.apple.controlcenter "NSStatusItem Visible Bluetooth" -bool true
-defaults write com.apple.controlcenter "NSStatusItem Visible WiFi" -bool true
+defaults write com.apple.menuextra.clock ShowDate -int 1
 # アクセシビリティ (透明度を下げる / ポインタサイズは GUI の方が確実)
 defaults write com.apple.universalaccess reduceTransparency -bool true
-# スクリーンショット: ~/Downloads に capture*.png、選択範囲、カーソル込み
+# スクリーンショット: ~/Downloads に選択範囲で保存。name を空にして「スクリーンショット」の接頭辞を外す (日付の書式は変えられない)
 defaults write com.apple.screencapture location -string "$HOME/Downloads"
-defaults write com.apple.screencapture name -string capture
+defaults write com.apple.screencapture name -string ""
 defaults write com.apple.screencapture style -string selection
-defaults write com.apple.screencapture showsCursor -bool true
 killall SystemUIServer
 ```
 
+メニューバーの表示項目 (Wi-Fi / Bluetooth / Siri / Spotlight など) は macOS 26 では `defaults` の key が安定しないので GUI で設定する (下記 GUI 項)。
+
 ### 電源
 
-```sh
-sudo pmset -a displaysleep 0 powernap 0
-```
-
-- 戻し方: `sudo pmset -a displaysleep 10 powernap 1`
-- Apple Silicon の電池持ちを見て見直す
+- M1 は default のまま (`displaysleep` バッテリー 2 分 / 電源 10 分、`powernap` on)
+- Intel では `sudo pmset -a displaysleep 0 powernap 0` を使っていた。戻し方は `sudo pmset -a displaysleep 10 powernap 1`
 
 ### キーボードショートカット
 
-- 目的: macOS 標準のショートカット 107 項目のうち 98 項目を off にする (Spotlight の cmd+space は Raycast に譲る、Mission Control や入力ソース切替などアプリの keybind と衝突するものを消す)
+- 目的: macOS 標準のショートカット 100 項目のうち 92 項目を off にする (Spotlight の cmd+space も off にする。Raycast は ctrl+¥ で開く。Mission Control や入力ソース切替などアプリの keybind と衝突するものを消す)
 - コマンド:
     ```sh
     defaults import com.apple.symbolichotkeys macos/symbolichotkeys.plist
@@ -148,15 +133,17 @@ sudo pmset -a displaysleep 0 powernap 0
     その後ログアウト → ログイン。効かない場合は システム設定 → キーボード → キーボードショートカット で「デフォルトに戻す」から手で off にする
 - 戻し方: システム設定 → キーボード → キーボードショートカット → デフォルトに戻す
 - 更新: 現行機で変えたら `defaults export com.apple.symbolichotkeys - > macos/symbolichotkeys.plist`
+- 適用日: 2026-09-23 (M1 の実機から export。cmd+shift+3 / 4 は off、cmd+shift+5 は default の on。shift 付きのスローモーション版 34 / 35 / 37 / 80 / 82 は GUI から消せないので `defaults write ... -dict-add` で off にした)
 
 ### GUI でしか設定できないもの
 
 - 修飾キー: Caps Lock → 右 Command (システム設定 → キーボード → キーボードショートカット → 修飾キー)。キーボードごとの設定なので `defaults` では持ち越せない
 - 入力ソース: Google 日本語入力 (ローマ字) + 日本語 IM (ローマ字)。ユーザー辞書は Google 日本語入力の環境設定 → 辞書 から export / import
-- Siri: システム設定 → Apple Intelligence と Siri → off。メニューバーの Siri / Spotlight アイコンもここで off
-- アクセシビリティ → ディスプレイ → ポインタのサイズ: 約 1.5
+- メニューバー: システム設定 → メニューバー。コントロールセンター / Battery / Clock 以外は基本 off。Siri / Spotlight もここで off
+- Siri: システム設定 → Apple Intelligence と Siri → off
+- アクセシビリティ → ディスプレイ → ポインタのサイズ: 約 1.8
 - デフォルトブラウザ: Google Chrome
-- Raycast: cmd+space を hotkey にする。設定は Settings → Advanced → Export / Import (`.rayconfig`、暗号化されるので 1Password などに保管、repo には置かない)
+- Raycast: hotkey は ctrl+¥ (cmd+space は使わない)。設定は Settings → Advanced → Export / Import (`.rayconfig`、暗号化されるので 1Password などに保管、repo には置かない)
 - Rectangle: Settings → Export / Import Config
 - `/etc/hosts`: project 固有のエントリは必要な project 分だけ手で追加する
 
@@ -177,15 +164,16 @@ sudo pmset -a displaysleep 0 powernap 0
       launchctl disable "gui/$(id -u)/$s"
     done
     ```
-- 確認: `mdutil -s /` が `Indexing disabled.`、`launchctl print-disabled gui/$(id -u)` に上記が並ぶ
+- 確認: `mdutil -s /` が `Spotlight server is disabled.` (または `Indexing disabled.`)、`launchctl print-disabled gui/$(id -u)` に上記が並ぶ
 - 定期確認: `dots doctor` が `mdutil -s -a` で全ボリュームを見る。OS 更新後と外部ディスクを挿した後に流す
 - 戻し方: 同じ list を `launchctl enable` し、`sudo mdutil -a -i on` → 再起動
 - 注意: OS アップデートで disabled 登録が戻ることがある。不調時はまず `launchctl print-disabled` を確認する
-- 適用日: 2026-07-01 (Intel / macOS 26.5) / 2026-09-13 (M1。Spotlight 系 agent のみ適用、Siri 系は GUI off に留めて launchctl disable は未適用)
+- 適用日: 2026-07-01 (Intel / macOS 26.5) / 2026-09-13 (M1)
+- 適用日: 2026-09-23 (M1。Spotlight 系 9 つの disabled 登録が消えていたので再適用。理由: 不明、26.6.2 更新の可能性。Siri 系 4 つも同日 disable し、上の list 全 18 項目が disabled)
 
 ## 症状が出たら適用するもの
 
-いずれも Intel (iGPU + HiDPI 外部ディスプレイ) で重かった時の対処。Apple Silicon では前提が変わるので、先回りせず症状が出てから適用する。
+いずれも Intel (iGPU + HiDPI 外部ディスプレイ) で重かった時の対処。Apple Silicon では前提が変わるので、先回りせず症状が出てから適用する。M1 では未適用 (2026-09-23)。
 
 ### duetexpertd の無効化
 
@@ -224,7 +212,7 @@ killall cfprefsd   # キャッシュを捨てる
 `defaults import` した hotkey が効かない:
 
 ```sh
-defaults read com.apple.symbolichotkeys AppleSymbolicHotKeys | grep -c "enabled = 0"   # 98 なら import 自体は成功
+defaults read com.apple.symbolichotkeys AppleSymbolicHotKeys | grep -c "enabled = 0"   # 92 なら import 自体は成功
 # システム設定 → キーボード → キーボードショートカット を一度開いて閉じる (cfprefsd に読み直させる)
 ```
 

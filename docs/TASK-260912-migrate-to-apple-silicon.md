@@ -137,12 +137,12 @@
 
 方針変更 (2026-09-13): M1 では一括適用をやめた。GUI で一通り手動設定済みだったため、`defaults` の流し込みは省略し、必要になった項目だけ `macos/README.md` から個別に適用する (memo はリファレンスとして維持)。適用済みは Spotlight 停止のみ。
 
-- [ ] キーボードショートカット: `defaults import com.apple.symbolichotkeys macos/symbolichotkeys.plist` → ログアウト。効かない場合は「システム設定 → キーボード → キーボードショートカット」で手動確認
+- [x] キーボードショートカット: M1 で GUI 設定済みだったので import せず、逆に M1 の実機から `macos/symbolichotkeys.plist` を再 export した (2026-09-23。100 項目中 92 off)
 - [x] Caps Lock → 右 Command: 内蔵キーボードの product ID が M1 で変わるので、システム設定 → キーボード → 修飾キー で手動再設定 (`defaults` では持ち越せない)
 - [x] 入力ソース: Google 日本語入力 (ローマ字) + Kotoeri を並べ、ユーザー辞書を import する
 - [x] Spotlight 停止: `sudo mdutil -a -i off` + Spotlight 系 LaunchAgent の disable (corespotlightd / corespotlightservice / managedcorespotlightd / spotlightknowledged{,.updater,.importer} / metadata.md{write,bulkimport,flagwriter}) → 再起動。Raycast の hotkey は M1 では ctrl+¥ 運用に変更 (2026-09-13 M1 適用。Siri 系 agent は GUI off のみで launchctl disable は未適用)
-- [ ] Siri 停止: システム設定で Siri off + `Siri.agent` / `siriactionsd` / `siriknowledged` / `siriinferenced` / `sirittsd` を disable
-- [ ] その他 disable: `FolderActionsDispatcher`, `ScriptMenuApp`, `ManagedClientAgent.enrollagent`, `appleseed.seedusaged.postinstall`
+- [x] Siri 停止: システム設定で Siri off + `Siri.agent` / `siriactionsd` / `siriknowledged` / `siriinferenced` / `sirittsd` を disable (2026-09-23)
+- [x] その他 disable: `FolderActionsDispatcher`, `ScriptMenuApp`, `ManagedClientAgent.enrollagent`, `appleseed.seedusaged.postinstall` (2026-09-23 確認)
 - [ ] duetexpertd / CursorUIViewService: **適用しない**。M1 で WindowServer や CPU の異常が出た時だけ README のメモを見て適用する
 - [ ] NSGlobalDomain (外観・入力): Dark モード / `AppleKeyboardUIMode=2` / `AppleShowAllExtensions=1` / `NSAutomatic*=0` (自動大文字・スペル修正・スマート引用符・ダッシュ・ピリオド・インライン予測・補完すべて off) / `AppleReduceDesktopTinting=1` / `AppleShowScrollBars=WhenScrolling` / `NSQuitAlwaysKeepsWindows=1` / `AppleSpacesSwitchOnActivate=0` / `AppleMiniaturizeOnDoubleClick=0` / `com.apple.springing.enabled=0` / `com.apple.trackpad.forceClick=0` / トラックパッド速度 `0.875` / マウス速度 `3` / locale `ja_JP`
 - [ ] Dock: 自動的に隠す / `tilesize=61` / 拡大 off / 最近使ったアプリ off / `mru-spaces=0` / `launchanim=0` / `expose-group-apps=0` / ホットコーナーなし / デスクトップ表示ジェスチャ off
@@ -152,7 +152,7 @@
 - [ ] トラックパッド: タップでクリック off / 3 本指ドラッグ off / 強めのクリック off / 副ボタン (2 本指) on / 3・4 本指スワイプ on / 5 本指ピンチ off
 - [ ] アクセシビリティ: 透明度を下げる on / ポインタサイズ約 1.5
 - [ ] メニューバー: 時計 24 時間 + 秒 + 曜日、日付は空きがあれば表示 (`ShowDate=0`) / コントロールセンターは Battery, Bluetooth, WiFi, Clock のみ表示 / Siri と Spotlight のメニュー項目 off
-- [ ] スクリーンショット: 保存先 `~/Downloads`、ファイル名 `capture`、選択範囲、カーソル表示
+- [x] スクリーンショット: 保存先 `~/Downloads`、選択範囲、`name` を空にして接頭辞なし (2026-09-23)
 - [ ] 電源: `sudo pmset -a displaysleep 0 powernap 0` (現行と同じ。M1 の電池持ちを見て見直す)
 - [ ] デフォルトブラウザを Chrome にする
 - [ ] `/etc/hosts` は必要な project 分だけ手で追加する
@@ -220,7 +220,8 @@
     - plugin manager (zinit / antidote 等): 新しい依存が増える。3 つしか使わないので過剰
     - git submodule (採用): 純 zsh script なので arch 非依存、clone 一発、version も固定される。更新は `git submodule update --remote` を年に数回で十分
     - p10k は 2024 年以降 maintenance mode だが動作に支障はない。壊れたら starship 等へ乗り換える (今回は対象外)
-- Symbolic hotkeys で on のまま残っている 9 項目: 55, 56, 62, 63, 70, 73, 156, 164, 184。plist ごと import すれば個別の意味を追う必要はない
+- Symbolic hotkeys で on のまま残っている項目 (Intel 時点): 55, 56, 62, 63, 70, 73, 156, 164, 184。M1 (2026-09-23 export) は 51, 55, 56, 62, 63, 70, 73, 156 の 8 項目 (shift 付きスローモーション版 34 / 35 / 37 / 80 / 82 は defaults で off にした)。plist ごと import すれば個別の意味を追う必要はない
+- 2026-09-23: `macos/README.md` を M1 実機の値に揃えた (Intel 由来で M1 未適用だった `defaults` 行は削除、Finder 表示 / 時計 / ホットコーナーは再適用)。Spotlight 系 LaunchAgent の disabled 登録が M1 で消えていたので再適用した (`mdutil` off は維持)
 - 修飾キー remap は `com.apple.keyboard.modifiermapping.1452-638-0` (Apple 内蔵キーボードの vendor-product ID)。M1 は product ID が変わるので `defaults` の持ち越しは不可
 - Spotlight / Siri 系の disable は 2026-07-01 に実施。復元手順は `~/.mac-tuning-backups/restore-spotlight-siri-shortcuts.sh` にある。これを `macos/README.md` の元ネタにする
 - `~/.mac-tuning-backups/restore-vscode-gpu.sh` は VSCode の `argv.json` (`disable-hardware-acceleration`) 用。現行は `false` に戻っているので M1 では不要

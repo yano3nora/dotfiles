@@ -194,7 +194,13 @@ doctor() {
   local spotlight_status
   local spotlight_enabled=0
   spotlight_status="$(mdutil -s -a 2>/dev/null)"
+  # Spotlight server ごと止まっていると -a は何も出力しないので、/ で server 停止を確認する。
   if [[ -z "$spotlight_status" ]]; then
+    spotlight_status="$(mdutil -s / 2>/dev/null)"
+  fi
+  if [[ "$spotlight_status" == *"Spotlight server is disabled"* ]]; then
+    printf 'ok   spotlight server disabled\n'
+  elif [[ -z "$spotlight_status" ]]; then
     printf 'miss spotlight indexing disabled (mdutil -s -a failed)\n'
     missing=1
   else
