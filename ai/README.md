@@ -100,6 +100,23 @@ dots mcp off    # 全部 off
 - OAuth: codex は `codex mcp add` の時点でブラウザが開く。claude はセッション内の `/mcp` か `claude mcp login <name>` で行う
 - chrome-devtools plugin はローカル開発用なので対象外
 
+## Claude Code Sandbox 除外 (`excludedCommands`)
+
+Claude Code の sandbox は `~/.config/gcloud` など HOME 配下への書き込みを禁止する。gcloud は資格情報 DB とログを開けず、`gsheet` が動かない。
+`~/.claude/settings.json` は repo 管理しないので、次を手動で維持する:
+
+```json
+{
+  "sandbox": {
+    "excludedCommands": ["codex *", "gsheet *"]
+  }
+}
+```
+
+- 一致はコマンド文字列全体が `gsheet …` のときだけ。`cd` / パイプ / `&&` / リダイレクトで包むと sandbox 内で起動して失敗する
+- `~/.config/gcloud` を sandbox の書き込み許可に足す案は採らない。理由: 資格情報の置き場を全コマンドから書き込み可能にする
+- `dangerouslyDisableSandbox` も採らない。理由: auto mode の classifier に止められる
+
 ## Trouble Shooting
 
 反映されない場合は symlink を確認する:

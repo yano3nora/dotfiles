@@ -44,6 +44,31 @@ dots link
 - `ffcomp` - quick H.264/AAC mp4 re-encode
 - `ppt2png` - export pptx / pdf pages to png at a given scale via PowerPoint + poppler (macOS only)
 - `pdf2png` - export pdf pages to png at a given scale via poppler (bash, macOS / Windows git bash)
+- `gsheet` - read / write Google Sheets cells via Sheets REST API with gcloud credentials (see below)
+
+## gsheet setup
+
+`gsheet` は gcloud 内蔵の OAuth client で認可する。OAuth 同意画面や client の自作は要らない。
+Sheets API は無料。請求先アカウントも要らない。1 回だけ次を実行する:
+
+```sh
+brew bundle                                  # gcloud-cli
+gcloud auth login --enable-gdrive-access     # 内蔵 client で drive scope を取る
+gcloud projects create <project-id>          # 割り当て先。Sheets 専用にしておく
+gcloud config set project <project-id>
+gcloud services enable sheets.googleapis.com
+```
+
+確認:
+
+```sh
+gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit
+```
+
+- scope は `drive` 全体になる。理由: 内蔵 client で取れる Drive 系 scope はこれだけ。`spreadsheets` だけに絞るには自作 OAuth client と ADC が要る
+- 資格情報は `~/.config/gcloud/` に残る。自分の Drive 全体に効くので扱いは他の gcloud 資格情報と同じ
+- ファイル名からの検索は `gsheet` ではやらない。claude.ai の Google Drive connector に任せる
+- Agent 向けの使い方は `ai/skills/gsheet/SKILL.md`
 
 ## pdf2png on Windows (git bash)
 

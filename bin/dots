@@ -135,6 +135,8 @@ link_all() {
   link_path "$DOTFILES_ROOT/ai/skills/show-me" "$HOME/.codex/skills/show-me"
   link_path "$DOTFILES_ROOT/ai/skills/why-me" "$HOME/.claude/skills/why-me"
   link_path "$DOTFILES_ROOT/ai/skills/why-me" "$HOME/.codex/skills/why-me"
+  link_path "$DOTFILES_ROOT/ai/skills/gsheet" "$HOME/.claude/skills/gsheet"
+  link_path "$DOTFILES_ROOT/ai/skills/gsheet" "$HOME/.codex/skills/gsheet"
   link_chrome_devtools_skills
   link_bin_files
 }
@@ -152,6 +154,7 @@ doctor() {
     ffmpeg
     pdftoppm
     timeout
+    gcloud
   )
   local mise_bins=(
     jq

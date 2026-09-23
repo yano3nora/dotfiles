@@ -14,6 +14,8 @@ brew "wget"
 brew "btop"
 brew "pv"
 brew "mas"         # 下記 mas エントリ用。App Store サインイン + 入手済み履歴が前提
+# gcloud は bin/gsheet の認可に使う。mise の gcloud plugin は動かず、Python 同梱の大きな SDK なので brew に置く。
+cask "gcloud-cli"  # bin/gsheet (gcloud)。旧 cask 名 "google-cloud-sdk" から改名された
 
 # 設定を dotfiles で管理しているアプリ
 cask "visual-studio-code"

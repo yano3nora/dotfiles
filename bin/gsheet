@@ -1,0 +1,195 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+# gsheet - Google Sheets のセルを gcloud の認可で読み書きする。
+# 出力は Sheets API の JSON をそのまま stdout に出す。理由: 利用者は Agent と jq なので整形層は要らない。
+# 前提: gcloud config に project があり、gcloud auth login --enable-gdrive-access 済みであること。
+# 初期設定は bin/README.md の "gsheet" を参照。
+
+readonly API_BASE="https://sheets.googleapis.com/v4"
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  gsheet meta   <sheet>                          sheet 名と行列数の一覧
+  gsheet get    <sheet> <range>                  値を取得
+  gsheet set    <sheet> <range> [values]         range を上書き (USER_ENTERED)
+  gsheet append <sheet> <range> [values]         末尾に行を追加 (USER_ENTERED)
+  gsheet api    <METHOD> <path> [body]           生 API。path は v4/ 以下 (例: spreadsheets/<id>:batchUpdate)
+
+  <sheet>   spreadsheet の URL か ID
+  <range>   'Sheet1!A1:C10' 形式。sheet 名は日本語でもよい
+  values    2 次元配列の JSON。例: '[["a","b"],["c","d"]]'。数式は "=SUM(A1:A3)" の文字列で渡す
+            values / body を省略すると stdin から読む
+
+Example:
+  gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit
+  gsheet get <id> 'Sheet1!A1:C10'
+  gsheet set <id> 'Sheet1!B5' '[["Completed"]]'
+  gsheet append <id> 'Sheet1!A:C' '[["a","b","c"]]'
+  gsheet api POST spreadsheets/<id>:batchUpdate '{"requests":[...]}'
+USAGE
+}
+
+die() {
+  printf '❌ %s\n' "$*" >&2
+  exit 1
+}
+
+# URL でも ID でも受ける。理由: ユーザはブラウザの URL をそのまま貼る。
+sheet_id() {
+  local input="$1"
+  if [[ "$input" =~ '/spreadsheets/d/([A-Za-z0-9_-]+)' ]]; then
+    printf '%s' "${match[1]}"
+  elif [[ "$input" =~ '^[A-Za-z0-9_-]+$' ]]; then
+    printf '%s' "$input"
+  else
+    die "spreadsheet の URL か ID を指定する: $input"
+  fi
+}
+
+# range は path に入るので、'!' や日本語 sheet 名をエンコードする。
+uri_encode() {
+  jq -rn --arg s "$1" '$s | @uri'
+}
+
+require_gcloud() {
+  command -v gcloud >/dev/null 2>&1 || die "gcloud が無い。brew bundle で gcloud-cli を入れる"
+}
+
+# Sheets API は割り当て先 project を要求する。gcloud 内蔵 client の project では API が無効なので header で渡す。
+quota_project() {
+  local project
+  project="$(gcloud config get-value project 2>/dev/null || true)"
+  [[ -n "$project" ]] || die "gcloud の project が未設定。gcloud config set project <project-id> を実行する"
+  printf '%s' "$project"
+}
+
+# ADC ではなく gcloud 本体の資格情報を使う。理由: ADC で Drive 系 scope を取るには自作 OAuth client が要る。
+# --enable-gdrive-access は内蔵 client で drive scope を取り、Sheets API はその scope を受け付ける。
+access_token() {
+  gcloud auth print-access-token 2>/dev/null \
+    || die "資格情報が無い。gcloud auth login --enable-gdrive-access を実行する"
+}
+
+# json_input <argc> <arg>: 引数があればそれを、無ければ stdin を返す。
+# 有無は文字数ではなく個数で判定する。理由: 明示した '' を stdin 読みに化けさせない。
+# Agent は引数で渡す。理由: sandbox 除外 (excludedCommands) はリダイレクトやヒアストリングが付くと一致しない。
+# 空白だけも弾く。理由: Agent の Bash は stdin が常に非 tty で、-t 0 では検出できない。
+json_input() {
+  local input
+  if (( $1 >= 3 )); then
+    input="$2"
+  else
+    input="$(cat)"
+  fi
+  [[ -n "${input//[[:space:]]/}" ]] || die "JSON を引数か stdin で渡す"
+  printf '%s' "$input"
+}
+
+# values_body <argc> <arg>: values を 2 次元配列として検証し、Sheets API の values 形式に包む。
+values_body() {
+  local input body
+  input="$(json_input "$1" "${2:-}")"
+  body="$(printf '%s' "$input" \
+    | jq -c 'if type == "array" and all(type == "array") then {values: .} else error("not a 2D array") end' 2>/dev/null)" \
+    || die "values が JSON の 2 次元配列ではない"
+  [[ -n "$body" ]] || die "values が JSON の 2 次元配列ではない"
+  printf '%s' "$body"
+}
+
+# call <METHOD> <api_path> [body]
+# --fail-with-body: エラー時も API の JSON を stdout に出し、非 0 で終了する。
+# 変数名を path にしない。理由: zsh の path は PATH と連動する特殊配列で、local path は PATH を壊す。
+call() {
+  local method="$1"
+  local api_path="$2"
+  local body="${3:-}"
+  local project token
+  project="$(quota_project)"
+  token="$(access_token)"
+
+  local -a data_args=()
+  if [[ -n "$body" ]]; then
+    data_args=(--data-binary "$body")
+  fi
+
+  curl -sS --fail-with-body -X "$method" \
+    -H "Authorization: Bearer $token" \
+    -H "x-goog-user-project: $project" \
+    -H "Content-Type: application/json" \
+    "${data_args[@]}" \
+    "$API_BASE/$api_path"
+  printf '\n'
+}
+
+main() {
+  if [[ $# -lt 1 || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+    usage
+    return 0
+  fi
+
+  local cmd="$1"
+  shift
+
+  case "$cmd" in
+    meta)
+      [[ $# -eq 1 ]] || { usage >&2; return 1; }
+      local id
+      id="$(sheet_id "$1")"
+      require_gcloud
+      call GET "spreadsheets/$id?fields=properties.title,sheets.properties(title,sheetId,index,gridProperties(rowCount,columnCount))"
+      ;;
+    get)
+      [[ $# -eq 2 ]] || { usage >&2; return 1; }
+      local id range
+      id="$(sheet_id "$1")"
+      range="$(uri_encode "$2")"
+      require_gcloud
+      call GET "spreadsheets/$id/values/$range"
+      ;;
+    set)
+      [[ $# -eq 2 || $# -eq 3 ]] || { usage >&2; return 1; }
+      local id range body
+      id="$(sheet_id "$1")"
+      range="$(uri_encode "$2")"
+      body="$(values_body $# "${3:-}")"
+      require_gcloud
+      call PUT "spreadsheets/$id/values/$range?valueInputOption=USER_ENTERED" "$body"
+      ;;
+    append)
+      [[ $# -eq 2 || $# -eq 3 ]] || { usage >&2; return 1; }
+      local id range body
+      id="$(sheet_id "$1")"
+      range="$(uri_encode "$2")"
+      body="$(values_body $# "${3:-}")"
+      require_gcloud
+      # ${range} と括る。理由: zsh は $range:append の :a を修飾子と解釈し、絶対 path に化ける。
+      call POST "spreadsheets/$id/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS" "$body"
+      ;;
+    api)
+      [[ $# -eq 2 || $# -eq 3 ]] || { usage >&2; return 1; }
+      local method="${1:u}" api_path="$2" body=""
+      # GET は body なし。引数 3 つで渡すか、stdin にあれば JSON として送る。
+      if (( $# == 3 )); then
+        body="$(json_input $# "$3" | jq -c . 2>/dev/null)" || die "body が JSON ではない"
+        [[ -n "$body" ]] || die "body が JSON ではない"
+      elif [[ ! -t 0 ]]; then
+        local raw
+        raw="$(cat)"
+        if [[ -n "${raw//[[:space:]]/}" ]]; then
+          body="$(printf '%s' "$raw" | jq -c . 2>/dev/null)" || die "body が JSON ではない"
+          [[ -n "$body" ]] || die "body が JSON ではない"
+        fi
+      fi
+      require_gcloud
+      call "$method" "$api_path" "$body"
+      ;;
+    *)
+      usage >&2
+      return 1
+      ;;
+  esac
+}
+
+main "$@"
