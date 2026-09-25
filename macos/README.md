@@ -84,6 +84,7 @@ defaults write com.apple.finder FXPreferredViewStyle -string Nlsv        # リ�
 defaults write com.apple.finder NewWindowTarget -string PfHm             # 新規ウィンドウはホーム
 defaults write com.apple.finder ShowPathbar -bool true
 defaults write com.apple.finder ShowStatusBar -bool true
+defaults write com.apple.finder ShowSidebar -bool false                # 新規ウィンドウで sidebar を隠す (適用日: 2026-09-25)
 defaults write com.apple.finder ShowRecentTags -bool false
 defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
 defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
