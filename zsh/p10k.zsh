@@ -35,9 +35,6 @@
     os_icon                 # os identifier
     dir                     # current directory
     vcs                     # git status
-    # 意図: 直前コマンドの結果は、その出力の直後 (1 行目) に置くと読み違えない。
-    status                  # exit code of the last command
-    command_execution_time  # duration of the last command
     # =========================[ Line #2 ]=========================
     newline                 # \n
     # prompt_char           # prompt symbol
@@ -53,6 +50,8 @@
     # 右プロンプトは入力行 (2 行目) に置く。
     newline
     # =========================[ Line #2 ]=========================
+    status                  # exit code of the last command
+    command_execution_time  # duration of the last command
     background_jobs         # presence of background jobs
     direnv                  # direnv status (https://direnv.net/)
     asdf                    # asdf version manager (https://github.com/asdf-vm/asdf)
