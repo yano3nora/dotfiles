@@ -121,8 +121,19 @@ killall SystemUIServer
 
 ### 電源
 
-- M1 は default のまま (`displaysleep` バッテリー 2 分 / 電源 10 分、`powernap` on)
+- `displaysleep` / `powernap` は default のまま (`displaysleep` バッテリー 2 分 / 電源 10 分、`powernap` on)
 - Intel では `sudo pmset -a displaysleep 0 powernap 0` を使っていた。戻し方は `sudo pmset -a displaysleep 10 powernap 1`
+
+#### 電源接続時は無操作でスリープさせない
+
+- 目的: Agent に長時間作業させている間に本体をスリープさせない。画面は消えてよい。蓋を閉じたときは今まで通りスリープする。バッテリー駆動時は電池を使い切るので触らない
+- コマンド:
+    ```sh
+    sudo pmset -c sleep 0
+    pmset -g custom   # AC Power の sleep が 0 なら OK
+    ```
+- 戻し方: `sudo pmset -c sleep 1`
+- 適用日: 2026-09-27
 
 ### キーボードショートカット
 
