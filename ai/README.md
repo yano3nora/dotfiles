@@ -48,7 +48,10 @@ Chrome を DevTools protocol 経由で Claude Code から操作・デバッグ�
 - MCP server も CLI も `mise exec node@24 npm:chrome-devtools-mcp@latest --` で起動し、Node を project に委ねない。理由: plugin 内蔵の server 定義 (`npx chrome-devtools-mcp`) と mise の npm shim は PATH の node で動くため、`.node-version` が 18 以下の project では SyntaxError で即死する (1.9.0 は Node 20.19+ 必須)。plugin は server 定義を差し替えられない ([#1232](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/1232)) ので plugin ごとやめた
 - `npm:chrome-devtools-mcp` は mise の global config に載せない。載せると shim が PATH の先頭に出て `bin/chrome-devtools` を隠す。初回は `mise exec` が自動 install する。更新は自動ではない
 - skills は upstream の clone (`~/git/ChromeDevTools/chrome-devtools-mcp/skills/*`) を `dots link` で `~/.claude/skills` に張る。clone 側の skill 増減に追従する。`chrome-devtools-cli` skill が叩く `chrome-devtools` は `bin/chrome-devtools` に解決される
-- clone は `--depth 1` で submodule なし (~16MB)。upstream が `devtools-frontend` を submodule 化しており (数GB)、marketplace 経由の clone は timeout する ([#2563](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/2563))
+- clone は `--depth 1` で submodule なし (~16MB)。upstream が `devtools-frontend` を submodule 化しており、marketplace 経由の clone は 120s で timeout する ([#2829](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/2829))
+    - #2829 は closed だが未解決。修正 PR [#2835](https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/2835) は `npm run prepare` の sparse checkout 化と `.gitmodules` の `fetchRecurseSubmodules = false` のみ
+    - Claude Code の marketplace clone は `git clone --depth 1 --recurse-submodules --shallow-submodules`。`fetchRecurseSubmodules` は fetch 用の設定で、この経路には効かない。nested submodule (chromium.googlesource.com) まで落ちる
+    - 実測 (2026-09-29, Claude Code 2.1.284): 222s / 2.9GB。GitHub source への切り替えは upstream が submodule なし branch などを用意するまで見送る
 
 ```sh
 git clone --depth 1 https://github.com/ChromeDevTools/chrome-devtools-mcp.git ~/git/ChromeDevTools/chrome-devtools-mcp
