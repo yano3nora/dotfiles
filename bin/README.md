@@ -44,7 +44,7 @@ dots link
 - `ffcomp` - quick H.264/AAC mp4 re-encode
 - `ppt2png` - export pptx / pdf pages to png at a given scale via PowerPoint + poppler (macOS only)
 - `pdf2png` - export pdf pages to png at a given scale via poppler (bash, macOS / Windows git bash)
-- `gsheet` - read / write Google Sheets cells via Sheets REST API with gcloud credentials (see below)
+- `gsheet` - read / write Google Sheets cells via Sheets REST API with gcloud credentials (bash, macOS / Windows git bash, see below)
 
 ## gsheet setup
 
@@ -69,6 +69,34 @@ gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit
 - 資格情報は `~/.config/gcloud/` に残る。自分の Drive 全体に効くので扱いは他の gcloud 資格情報と同じ
 - ファイル名からの検索は `gsheet` ではやらない。claude.ai の Google Drive connector に任せる
 - Agent 向けの使い方は `ai/skills/gsheet/SKILL.md`
+
+## gsheet on Windows (git bash)
+WSL2 は使わない。git bash と mise が入っている前提。資格情報は Mac からコピーせず、Windows で login し直す。
+理由: `~/.config/gcloud/` の refresh token は自分の Drive 全体に効く。GCP project は Mac と同じものを使う。
+
+1. Install gcloud:
+
+    ```sh
+    winget install Google.CloudSDK
+    ```
+
+2. Reopen git bash and check `gcloud --version`. If not found, add `Google\Cloud SDK\google-cloud-sdk\bin` to PATH.
+3. Authorize with the same project as macOS:
+
+    ```sh
+    gcloud auth login --enable-gdrive-access
+    gcloud config set project <project-id>
+    ```
+
+4. Put `bin/gsheet` somewhere on your PATH, e.g. `~/bin/gsheet`, and `chmod +x` it. `jq` comes from mise.
+5. Run:
+
+    ```sh
+    gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit
+    ```
+
+- `gcloud` の出力に付く `\r` は `gsheet` 側で除いている。header に混ざると curl が落ちる
+- Windows の Claude Code には sandbox が無い。`excludedCommands` の設定は要らない
 
 ## pdf2png on Windows (git bash)
 

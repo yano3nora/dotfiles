@@ -1,10 +1,11 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 set -euo pipefail
 
 # gsheet - Google Sheets のセルを gcloud の認可で読み書きする。
 # 出力は Sheets API の JSON をそのまま stdout に出す。理由: 利用者は Agent と jq なので整形層は要らない。
 # 前提: gcloud config に project があり、gcloud auth login --enable-gdrive-access 済みであること。
 # 初期設定は bin/README.md の "gsheet" を参照。
+# bash 3.2 で書く。理由: macOS の /bin/bash と Windows の git bash の両方で動かす。
 
 readonly API_BASE="https://sheets.googleapis.com/v4"
 
@@ -37,11 +38,14 @@ die() {
 }
 
 # URL でも ID でも受ける。理由: ユーザはブラウザの URL をそのまま貼る。
+# 正規表現は変数に置く。理由: bash は [[ =~ ]] の右辺を引用符で囲むと文字列一致になる。
 sheet_id() {
   local input="$1"
-  if [[ "$input" =~ '/spreadsheets/d/([A-Za-z0-9_-]+)' ]]; then
-    printf '%s' "${match[1]}"
-  elif [[ "$input" =~ '^[A-Za-z0-9_-]+$' ]]; then
+  local url_re='/spreadsheets/d/([A-Za-z0-9_-]+)'
+  local id_re='^[A-Za-z0-9_-]+$'
+  if [[ "$input" =~ $url_re ]]; then
+    printf '%s' "${BASH_REMATCH[1]}"
+  elif [[ "$input" =~ $id_re ]]; then
     printf '%s' "$input"
   else
     die "spreadsheet の URL か ID を指定する: $input"
@@ -49,18 +53,24 @@ sheet_id() {
 }
 
 # range は path に入るので、'!' や日本語 sheet 名をエンコードする。
+# -b を付ける。理由: Windows 版 jq は CRLF を出し、$(...) は LF しか除かないので URL に CR が残る。
 uri_encode() {
-  jq -rn --arg s "$1" '$s | @uri'
+  jq -rbn --arg s "$1" '$s | @uri'
 }
 
 require_gcloud() {
-  command -v gcloud >/dev/null 2>&1 || die "gcloud が無い。brew bundle で gcloud-cli を入れる"
+  command -v gcloud >/dev/null 2>&1 || die "gcloud が無い。bin/README.md の gsheet setup を参照"
+}
+
+# gcloud の出力から CR を除く。理由: git bash では .cmd 経由の出力に \r が混ざり、curl の header で落ちる。
+gcloud_value() {
+  gcloud "$@" 2>/dev/null | tr -d '\r'
 }
 
 # Sheets API は割り当て先 project を要求する。gcloud 内蔵 client の project では API が無効なので header で渡す。
 quota_project() {
   local project
-  project="$(gcloud config get-value project 2>/dev/null || true)"
+  project="$(gcloud_value config get-value project || true)"
   [[ -n "$project" ]] || die "gcloud の project が未設定。gcloud config set project <project-id> を実行する"
   printf '%s' "$project"
 }
@@ -68,8 +78,10 @@ quota_project() {
 # ADC ではなく gcloud 本体の資格情報を使う。理由: ADC で Drive 系 scope を取るには自作 OAuth client が要る。
 # --enable-gdrive-access は内蔵 client で drive scope を取り、Sheets API はその scope を受け付ける。
 access_token() {
-  gcloud auth print-access-token 2>/dev/null \
-    || die "資格情報が無い。gcloud auth login --enable-gdrive-access を実行する"
+  local token
+  token="$(gcloud_value auth print-access-token || true)"
+  [[ -n "$token" ]] || die "資格情報が無い。gcloud auth login --enable-gdrive-access を実行する"
+  printf '%s' "$token"
 }
 
 # json_input <argc> <arg>: 引数があればそれを、無ければ stdin を返す。
@@ -88,9 +100,10 @@ json_input() {
 }
 
 # values_body <argc> <arg>: values を 2 次元配列として検証し、Sheets API の values 形式に包む。
+# || exit 1 を付ける。理由: bash 3.2 は $(...) の中で set -e が効かず、die が subshell しか終了させない。
 values_body() {
   local input body
-  input="$(json_input "$1" "${2:-}")"
+  input="$(json_input "$1" "${2:-}")" || exit 1
   body="$(printf '%s' "$input" \
     | jq -c 'if type == "array" and all(type == "array") then {values: .} else error("not a 2D array") end' 2>/dev/null)" \
     || die "values が JSON の 2 次元配列ではない"
@@ -100,7 +113,7 @@ values_body() {
 
 # call <METHOD> <api_path> [body]
 # --fail-with-body: エラー時も API の JSON を stdout に出し、非 0 で終了する。
-# 変数名を path にしない。理由: zsh の path は PATH と連動する特殊配列で、local path は PATH を壊す。
+# 空配列の展開は ${arr[@]+"${arr[@]}"} と書く。理由: bash 3.2 は set -u で空配列の展開を unbound と扱う。
 call() {
   local method="$1"
   local api_path="$2"
@@ -118,7 +131,7 @@ call() {
     -H "Authorization: Bearer $token" \
     -H "x-goog-user-project: $project" \
     -H "Content-Type: application/json" \
-    "${data_args[@]}" \
+    ${data_args[@]+"${data_args[@]}"} \
     "$API_BASE/$api_path"
   printf '\n'
 }
@@ -164,12 +177,12 @@ main() {
       range="$(uri_encode "$2")"
       body="$(values_body $# "${3:-}")"
       require_gcloud
-      # ${range} と括る。理由: zsh は $range:append の :a を修飾子と解釈し、絶対 path に化ける。
       call POST "spreadsheets/$id/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS" "$body"
       ;;
     api)
       [[ $# -eq 2 || $# -eq 3 ]] || { usage >&2; return 1; }
-      local method="${1:u}" api_path="$2" body=""
+      local method api_path="$2" body=""
+      method="$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')"
       # GET は body なし。引数 3 つで渡すか、stdin にあれば JSON として送る。
       if (( $# == 3 )); then
         body="$(json_input $# "$3" | jq -c . 2>/dev/null)" || die "body が JSON ではない"
