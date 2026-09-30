@@ -88,13 +88,24 @@ WSL2 は使わない。git bash と mise が入っている前提。資格情報
     gcloud config set project <project-id>
     ```
 
-4. Put `bin/gsheet` somewhere on your PATH, e.g. `~/bin/gsheet`, and `chmod +x` it. `jq` comes from mise.
-5. Run:
+4. Install `jq` via mise, then put `bin/gsheet` and `bin/gsheet.cmd` in `~/bin` and `chmod +x ~/bin/gsheet`.
+5. Add `%USERPROFILE%\bin` and `%LOCALAPPDATA%\mise\shims` to the Windows user PATH. Run this in a PowerShell window, then reopen git bash:
+
+    ```powershell
+    [Environment]::SetEnvironmentVariable('Path', "$env:USERPROFILE\bin;$env:LOCALAPPDATA\mise\shims;" + [Environment]::GetEnvironmentVariable('Path','User'), 'User')
+    ```
+
+6. Run from git bash and from PowerShell:
 
     ```sh
     gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit
+    powershell -Command "gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit"
     ```
 
+- `gsheet.cmd` は PowerShell / cmd からの入口。Codex は Windows では PowerShell でコマンドを実行するので、Agent はこの経路で呼ぶ
+    - `~/.bashrc` の PATH は PowerShell に効かない。理由: 手順 5 で Windows 側の PATH に足すのはそのため
+- Agent は JSON を `'@<file>'` で渡し、`<sheet>` は ID で渡す。理由: PowerShell → cmd → bash の経路で引用符が壊れ、cmd が `&` を区切りと解釈する
+- `gsheet.cmd` は `CHERE_INVOKING=1` を立てる。理由: login shell は HOME へ cd するので、相対の `@file` が読めなくなる
 - `gcloud` の出力に付く `\r` は `gsheet` 側で除いている。header に混ざると curl が落ちる
 - Windows の Claude Code には sandbox が無い。`excludedCommands` の設定は要らない
 

@@ -25,12 +25,17 @@
     - `$(...)` の中で `die` する箇所には `|| exit 1` を付ける。理由: bash 3.2 は `inherit_errexit` が無く、`die` が subshell しか終了させない
 - `uri_encode` の jq に `-b` を付ける。理由: Windows 版 jq は CRLF を出し、`$(...)` は LF しか除かない
 - gcloud の出力を `tr -d '\r'` に通す。理由: git bash では `.cmd` 経由の出力に CR が混ざり、curl の header で落ちる
+- `bin/gsheet.cmd` を足す。PowerShell / cmd から `bash.exe -l` で `gsheet` を呼ぶ 2 行の shim
+    - 理由: Codex は Windows では PowerShell でコマンドを実行する (codex-rs/shell-command/src/shell_detect.rs)。config で変えられない
+    - 644 で置く。理由: `dots link` は executable だけ `~/.local/bin` に張るので、mac 側に影響しない
+- values / body に `@<file>` 読み込みを足す。理由: PowerShell → cmd → bash の経路で JSON 引数の引用符が壊れる。UTF-8 BOM は除く
 - `bin/README.md` に「gsheet on Windows (git bash)」節を足す。`pdf2png on Windows` と同じ体裁
 
 ## todo
 
 - [x] `bin/gsheet` を bash 3.2 へ移植
 - [x] `bin/README.md` に Windows 手順と一覧行の更新
+- [x] `bin/gsheet.cmd` と `@<file>` の追加、`ai/skills/gsheet/SKILL.md` に Windows の注意を追加
 - [x] 偽 gcloud / curl で mac の `/bin/bash` 3.2 上の全コマンドを確認
 - [x] `bash -n bin/gsheet` / `dots doctor`
 - [x] Codex にレビュー依頼 (P2 1 件を反映。notes 参照)
@@ -42,12 +47,20 @@
 - [x] gcloud の出力に `\r` が付いても header に混ざらない
 - [x] macOS で `jq -b` が従来と同じ出力を返す
 - [x] 空白だけの values、2 次元配列でない values は 1 行のエラーで非 0 終了する
+- [x] `@<file>` で BOM 付き UTF-8 の日本語 JSON を読み、request body が正しい。無いファイルは 1 行のエラーで非 0 終了する
 - [x] project 未設定、資格情報なしは手順を表示して非 0 終了する
 - [ ] Windows git bash で `gcloud` が `command -v` で見つかる
 - [ ] Windows git bash で `gsheet meta <url>` が 200 を返す
+- [ ] Windows PowerShell で `gsheet meta <url>` が 200 を返し、`@<file>` の日本語が文字化けせず書ける
 
 ## notes
 
+- Codex レビュー 2 回目 (2026-09-30、shim と @file) の指摘と対応
+    - P2: README の PATH 設定を bash から `powershell -Command "..."` で呼ぶと `$env` が bash に展開される。PowerShell で直接実行する手順に変えた
+    - P2: PowerShell では先頭の `@` が splatting 構文。SKILL / README の例を `'@C:\...'` に変えた
+        - https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parsing
+    - P2: `bash -l` は HOME へ cd するので相対 `@file` が壊れる。shim で `CHERE_INVOKING=1` を立てた
+    - P2: cmd は `&` を区切りと解釈し、URL の `&usp=` 以降がコマンドになる。SKILL で「Windows では ID を渡す、`&` を入れない」とした。cmd を介さない `.ps1` は実行ポリシーに依存するので採らない
 - Codex レビュー (2026-09-30) の指摘と対応
     - P2: Windows 版 jq は標準で CRLF を出力し、`range` の URL 末尾に CR が残る。`uri_encode` に `jq -b` を付けた
         - https://jqlang.org/manual/#invoking-jq

@@ -32,6 +32,11 @@ gsheet api    POST spreadsheets/<id>:batchUpdate '{"requests":[...]}'
     - 出力の JSON はそのまま読む。jq で整形しない
     - `set` / `append` / `api` の JSON は 3 つ目の引数で渡す。`<<<` や `<` の stdin は使わない。理由: ヒアストリングも除外の一致から外れる
     - `dangerouslyDisableSandbox` は使わない。auto mode の classifier に止められる
+- Windows の Codex は PowerShell で `gsheet.cmd` を呼ぶ。次の 3 つを守る
+    - JSON はファイルに UTF-8 で書き、`'@<file>'` で渡す。例: `gsheet set <id> 'phases!A2' '@C:\Users\<name>\bs-gameplate\tmp\phases.json'`
+        - 理由: 引数の JSON は PowerShell → cmd → bash で引用符が壊れる。先頭の `@` は PowerShell の splatting なので引用符で囲む
+    - `<sheet>` は URL ではなく ID を渡す。引数に `&` を入れない。理由: cmd が `&` をコマンド区切りと解釈する
+    - 日本語をコマンド引数に入れない。range の sheet 名だけは可
 - `set` は values の形だけ書く。range より小さい values を送っても、残りのセルは消えない
 - 消すときは `""` を送る。`null` は既存値を保持する
 - range を単一セルで渡すと、そこを左上として values の形に書く。`A1` に `[["a","b"]]` を送ると B1 も更新される
