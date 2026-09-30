@@ -62,7 +62,7 @@
 - [x] SA 経路: gcloud が PATH に無くても `meta` の request が組める。`x-goog-user-project` header を送らない
 - [x] SA 経路: `type` が service_account でない JSON、無い JSON は 1 行のエラーで非 0 終了する
 - [x] gcloud 経路: header と token が従来どおり付く
-- [ ] SA 経路: 本物の鍵と共有済みスプシで `meta` / `set` が 200 を返す (鍵は人間が用意する)
+- [x] SA 経路: 本物の鍵と SA に共有したスプシで `meta` が 200 を返す (2026-09-30 macOS)。未共有だと Sheets API が 403 `PERMISSION_DENIED` を返す
 - [ ] Windows git bash で `gcloud` が `command -v` で見つかる
 - [ ] Windows git bash で `gsheet meta <url>` が 200 を返す
 - [ ] Windows PowerShell で `gsheet meta <url>` が 200 を返し、`@<file>` の日本語が文字化けせず書ける
