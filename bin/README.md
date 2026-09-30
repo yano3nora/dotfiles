@@ -44,7 +44,7 @@ dots link
 - `ffcomp` - quick H.264/AAC mp4 re-encode
 - `ppt2png` - export pptx / pdf pages to png at a given scale via PowerPoint + poppler (macOS only)
 - `pdf2png` - export pdf pages to png at a given scale via poppler (bash, macOS / Windows git bash)
-- `gsheet` - read / write Google Sheets cells via Sheets REST API with gcloud credentials (bash, macOS / Windows git bash, see below)
+- `gsheet` - read / write Google Sheets cells via Sheets REST API with gcloud or a service account key (bash, macOS / Windows git bash, see below)
 
 ## gsheet setup
 
@@ -69,6 +69,24 @@ gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit
 - 資格情報は `~/.config/gcloud/` に残る。自分の Drive 全体に効くので扱いは他の gcloud 資格情報と同じ
 - ファイル名からの検索は `gsheet` ではやらない。claude.ai の Google Drive connector に任せる
 - Agent 向けの使い方は `ai/skills/gsheet/SKILL.md`
+
+## gsheet with a service account (no gcloud)
+`GOOGLE_APPLICATION_CREDENTIALS` にサービスアカウントの鍵 JSON を置くと、`gsheet` は gcloud を使わない。
+openssl で JWT を署名して token を取り、scope は `spreadsheets` だけになる。複数人に配るときはこちらを使う。
+
+```sh
+gcloud iam service-accounts create gsheet --project <project-id>
+gcloud iam service-accounts keys create ~/Downloads/gsheet-key.json \
+  --iam-account=gsheet@<project-id>.iam.gserviceaccount.com
+export GOOGLE_APPLICATION_CREDENTIALS=~/Downloads/gsheet-key.json
+gsheet meta <id>
+```
+
+- 対象の spreadsheet を、鍵の `client_email` に「編集者」で共有する。サービスアカウントは共有されたものしか触れない
+- 依存は `curl`, `jq`, `openssl`。`curl` と `openssl` は git bash に入っている。`jq` は mise で入れる
+- quota header は送らない。理由: 割り当て先は鍵の project に決まる。IAM の追加は要らない
+- 鍵 JSON は秘密鍵。配った鍵は用が済んだら `gcloud iam service-accounts keys delete` で消す
+- 誰が書いたかは区別できない。全員が同じサービスアカウントとして書く
 
 ## gsheet on Windows (git bash)
 WSL2 は使わない。git bash と mise が入っている前提。資格情報は Mac からコピーせず、Windows で login し直す。
@@ -108,6 +126,7 @@ WSL2 は使わない。git bash と mise が入っている前提。資格情報
 - `gsheet.cmd` は `CHERE_INVOKING=1` を立てる。理由: login shell は HOME へ cd するので、相対の `@file` が読めなくなる
 - `gcloud` の出力に付く `\r` は `gsheet` 側で除いている。header に混ざると curl が落ちる
 - Windows の Claude Code には sandbox が無い。`excludedCommands` の設定は要らない
+- サービスアカウントで使うなら手順 1〜3 は不要。鍵 JSON を置き、`GOOGLE_APPLICATION_CREDENTIALS` を Windows のユーザ環境変数に設定する。理由: Codex の PowerShell に `~/.bashrc` の export は効かない
 
 ## pdf2png on Windows (git bash)
 

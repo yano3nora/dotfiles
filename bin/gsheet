@@ -3,11 +3,14 @@ set -euo pipefail
 
 # gsheet - Google Sheets のセルを gcloud の認可で読み書きする。
 # 出力は Sheets API の JSON をそのまま stdout に出す。理由: 利用者は Agent と jq なので整形層は要らない。
-# 前提: gcloud config に project があり、gcloud auth login --enable-gdrive-access 済みであること。
+# 認可は 2 通り。GOOGLE_APPLICATION_CREDENTIALS にサービスアカウントの鍵 JSON があればそれを使い、gcloud は要らない。
+# 無ければ gcloud の資格情報を使う。前提は gcloud config に project があり、gcloud auth login --enable-gdrive-access 済みであること。
 # 初期設定は bin/README.md の "gsheet" を参照。
 # bash 3.2 で書く。理由: macOS の /bin/bash と Windows の git bash の両方で動かす。
 
 readonly API_BASE="https://sheets.googleapis.com/v4"
+readonly TOKEN_URL="https://oauth2.googleapis.com/token"
+readonly SA_SCOPE="https://www.googleapis.com/auth/spreadsheets"
 
 usage() {
   cat <<'USAGE'
@@ -59,8 +62,17 @@ uri_encode() {
   jq -rbn --arg s "$1" '$s | @uri'
 }
 
-require_gcloud() {
-  command -v gcloud >/dev/null 2>&1 || die "gcloud が無い。bin/README.md の gsheet setup を参照"
+sa_key_file() {
+  printf '%s' "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+}
+
+require_auth() {
+  if [[ -n "$(sa_key_file)" ]]; then
+    [[ -r "$(sa_key_file)" ]] || die "鍵 JSON を読めない: $(sa_key_file)"
+    command -v openssl >/dev/null 2>&1 || die "openssl が無い"
+  else
+    command -v gcloud >/dev/null 2>&1 || die "gcloud が無い。bin/README.md の gsheet setup を参照"
+  fi
 }
 
 # gcloud の出力から CR を除く。理由: git bash では .cmd 経由の出力に \r が混ざり、curl の header で落ちる。
@@ -78,11 +90,55 @@ quota_project() {
 
 # ADC ではなく gcloud 本体の資格情報を使う。理由: ADC で Drive 系 scope を取るには自作 OAuth client が要る。
 # --enable-gdrive-access は内蔵 client で drive scope を取り、Sheets API はその scope を受け付ける。
-access_token() {
+gcloud_access_token() {
   local token
   token="$(gcloud_value auth print-access-token || true)"
   [[ -n "$token" ]] || die "資格情報が無い。gcloud auth login --enable-gdrive-access を実行する"
   printf '%s' "$token"
+}
+
+base64url() {
+  openssl base64 -A | tr '+/' '-_' | tr -d '='
+}
+
+# サービスアカウントの鍵で JWT を署名し、access token に交換する。理由: gcloud 無しで動かし、scope を spreadsheets に絞る。
+# token は 1 時間有効だが cache しない。理由: 呼び出しごとの往復 1 回で足りる。
+# jq に -b を付ける。理由: Windows 版 jq の CR が iss や token に混ざる。
+# 秘密鍵は 600 の一時ファイルで openssl に渡す。理由: git bash の openssl は native 版で、プロセス置換の /dev/fd を読めない。
+# JWT は stdin で curl に渡す。理由: プロセス引数は他のプロセスから見える。
+sa_access_token() {
+  local key_file email now header claims unsigned signature response token key_tmp
+  key_file="$(sa_key_file)"
+  email="$(jq -rb 'select(.type == "service_account") | .client_email // empty' "$key_file" 2>/dev/null)" \
+    || die "鍵 JSON を parse できない: $key_file"
+  [[ -n "$email" ]] || die "サービスアカウントの鍵 JSON ではない: $key_file"
+  now="$(date +%s)"
+  header='{"alg":"RS256","typ":"JWT"}'
+  claims="$(jq -cbn --arg iss "$email" --arg scope "$SA_SCOPE" --arg aud "$TOKEN_URL" --argjson iat "$now" \
+    '{iss: $iss, scope: $scope, aud: $aud, iat: $iat, exp: ($iat + 3600)}')"
+  unsigned="$(printf '%s' "$header" | base64url).$(printf '%s' "$claims" | base64url)"
+  key_tmp="$(umask 077 && mktemp "${TMPDIR:-/tmp}/gsheet-key.XXXXXX")" || die "一時ファイルを作れない"
+  # 定義時に展開する。理由: EXIT trap は関数の外で走り、local の key_tmp は set -u で未定義になる。
+  trap "rm -f '$key_tmp'" EXIT
+  jq -rb '.private_key' "$key_file" > "$key_tmp"
+  signature="$(printf '%s' "$unsigned" | openssl dgst -sha256 -sign "$key_tmp" | base64url)" \
+    || die "JWT の署名に失敗した。鍵 JSON の private_key を確認する"
+  rm -f "$key_tmp"
+  response="$(printf '%s' "$unsigned.$signature" | curl -sS --fail-with-body -X POST \
+    --data-urlencode 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer' \
+    --data-urlencode 'assertion@-' \
+    "$TOKEN_URL")" || die "token の取得に失敗した: $response"
+  token="$(printf '%s' "$response" | jq -rb '.access_token // empty')"
+  [[ -n "$token" ]] || die "token の取得に失敗した: $response"
+  printf '%s' "$token"
+}
+
+access_token() {
+  if [[ -n "$(sa_key_file)" ]]; then
+    sa_access_token
+  else
+    gcloud_access_token
+  fi
 }
 
 # json_input <argc> <arg>: 引数があればそれを、無ければ stdin を返す。
@@ -122,24 +178,28 @@ values_body() {
 # call <METHOD> <api_path> [body]
 # --fail-with-body: エラー時も API の JSON を stdout に出し、非 0 で終了する。
 # 空配列の展開は ${arr[@]+"${arr[@]}"} と書く。理由: bash 3.2 は set -u で空配列の展開を unbound と扱う。
+# quota header はサービスアカウントでは送らない。理由: 割り当て先は鍵の project に決まり、header を送ると別途 IAM が要る。
 call() {
   local method="$1"
   local api_path="$2"
   local body="${3:-}"
-  local project token
-  project="$(quota_project)"
-  token="$(access_token)"
+  local token
+  token="$(access_token)" || exit 1
 
-  local -a data_args=()
+  local -a extra_args=()
+  if [[ -z "$(sa_key_file)" ]]; then
+    local project
+    project="$(quota_project)" || exit 1
+    extra_args=(-H "x-goog-user-project: $project")
+  fi
   if [[ -n "$body" ]]; then
-    data_args=(--data-binary "$body")
+    extra_args=(${extra_args[@]+"${extra_args[@]}"} --data-binary "$body")
   fi
 
   curl -sS --fail-with-body -X "$method" \
     -H "Authorization: Bearer $token" \
-    -H "x-goog-user-project: $project" \
     -H "Content-Type: application/json" \
-    ${data_args[@]+"${data_args[@]}"} \
+    ${extra_args[@]+"${extra_args[@]}"} \
     "$API_BASE/$api_path"
   printf '\n'
 }
@@ -158,7 +218,7 @@ main() {
       [[ $# -eq 1 ]] || { usage >&2; return 1; }
       local id
       id="$(sheet_id "$1")"
-      require_gcloud
+      require_auth
       call GET "spreadsheets/$id?fields=properties.title,sheets.properties(title,sheetId,index,gridProperties(rowCount,columnCount))"
       ;;
     get)
@@ -166,7 +226,7 @@ main() {
       local id range
       id="$(sheet_id "$1")"
       range="$(uri_encode "$2")"
-      require_gcloud
+      require_auth
       call GET "spreadsheets/$id/values/$range"
       ;;
     set)
@@ -175,7 +235,7 @@ main() {
       id="$(sheet_id "$1")"
       range="$(uri_encode "$2")"
       body="$(values_body $# "${3:-}")"
-      require_gcloud
+      require_auth
       call PUT "spreadsheets/$id/values/$range?valueInputOption=USER_ENTERED" "$body"
       ;;
     append)
@@ -184,7 +244,7 @@ main() {
       id="$(sheet_id "$1")"
       range="$(uri_encode "$2")"
       body="$(values_body $# "${3:-}")"
-      require_gcloud
+      require_auth
       call POST "spreadsheets/$id/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS" "$body"
       ;;
     api)
@@ -203,7 +263,7 @@ main() {
           [[ -n "$body" ]] || die "body が JSON ではない"
         fi
       fi
-      require_gcloud
+      require_auth
       call "$method" "$api_path" "$body"
       ;;
     *)

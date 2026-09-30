@@ -30,12 +30,20 @@
     - 644 で置く。理由: `dots link` は executable だけ `~/.local/bin` に張るので、mac 側に影響しない
 - values / body に `@<file>` 読み込みを足す。理由: PowerShell → cmd → bash の経路で JSON 引数の引用符が壊れる。UTF-8 BOM は除く
 - `bin/README.md` に「gsheet on Windows (git bash)」節を足す。`pdf2png on Windows` と同じ体裁
+- サービスアカウントの鍵 JSON で動く経路を足す。`GOOGLE_APPLICATION_CREDENTIALS` があれば openssl で JWT を署名し、token endpoint で access token に交換する
+    - 理由: 社内デモで複数人に配るとき、各自の Google アカウントと IAM 追加、gcloud のインストールとログインが要らなくなる
+    - `domain:` の IAM は使えなかった。理由: 社のドメインは Google Workspace / Cloud Identity に登録されていない
+    - gcloud の `print-access-token` は SA に Sheets の scope を付けられない。ADC 経由なら `--scopes` が使えるが、gcloud 自体を無くす方を選んだ
+    - quota header は SA では送らない。理由: 割り当て先は鍵の project に決まり、header を送ると SA にも IAM が要る
+    - 秘密鍵は 600 の一時ファイルで openssl に渡し、署名後に消す。理由: git bash の openssl は native 版で、プロセス置換の /dev/fd を読めない。token は cache しない
+    - JWT は stdin で curl に渡す。理由: プロセス引数は他のプロセスから見える。Bearer header は従来どおり引数で、1 時間で切れる token なので許容する
 
 ## todo
 
 - [x] `bin/gsheet` を bash 3.2 へ移植
 - [x] `bin/README.md` に Windows 手順と一覧行の更新
 - [x] `bin/gsheet.cmd` と `@<file>` の追加、`ai/skills/gsheet/SKILL.md` に Windows の注意を追加
+- [x] サービスアカウント経路の追加、`bin/README.md` に「gsheet with a service account」節を追加
 - [x] 偽 gcloud / curl で mac の `/bin/bash` 3.2 上の全コマンドを確認
 - [x] `bash -n bin/gsheet` / `dots doctor`
 - [x] Codex にレビュー依頼 (P2 1 件を反映。notes 参照)
@@ -49,12 +57,23 @@
 - [x] 空白だけの values、2 次元配列でない values は 1 行のエラーで非 0 終了する
 - [x] `@<file>` で BOM 付き UTF-8 の日本語 JSON を読み、request body が正しい。無いファイルは 1 行のエラーで非 0 終了する
 - [x] project 未設定、資格情報なしは手順を表示して非 0 終了する
+- [x] SA 経路: 生成した RSA 鍵で JWT を作り、公開鍵で署名を検証できる。claims は iss / scope / aud / iat / exp
+- [x] SA 経路: 本物の token endpoint が JWT を受理し、存在しない SA は `invalid_grant: account not found` を返す
+- [x] SA 経路: gcloud が PATH に無くても `meta` の request が組める。`x-goog-user-project` header を送らない
+- [x] SA 経路: `type` が service_account でない JSON、無い JSON は 1 行のエラーで非 0 終了する
+- [x] gcloud 経路: header と token が従来どおり付く
+- [ ] SA 経路: 本物の鍵と共有済みスプシで `meta` / `set` が 200 を返す (鍵は人間が用意する)
 - [ ] Windows git bash で `gcloud` が `command -v` で見つかる
 - [ ] Windows git bash で `gsheet meta <url>` が 200 を返す
 - [ ] Windows PowerShell で `gsheet meta <url>` が 200 を返し、`@<file>` の日本語が文字化けせず書ける
 
 ## notes
 
+- Codex レビュー 3 回目 (2026-09-30、SA 経路) の指摘と対応
+    - P2: SA 経路の jq にも `-b` が要る。iss と token に CR が混ざる。全 jq に付けた
+    - P2: git bash の `openssl` は `/mingw64/bin` の native 版が先に解決され、プロセス置換の `/dev/fd` を読めない。600 の一時ファイルに変えた
+    - P2: JWT がプロセス引数に露出する。`--data-urlencode 'assertion@-'` で stdin 渡しにした
+    - P3: README の「jq は git bash に入っている」は誤り。mise 導入に直した
 - Codex レビュー 2 回目 (2026-09-30、shim と @file) の指摘と対応
     - P2: README の PATH 設定を bash から `powershell -Command "..."` で呼ぶと `$env` が bash に展開される。PowerShell で直接実行する手順に変えた
     - P2: PowerShell では先頭の `@` が splatting 構文。SKILL / README の例を `'@C:\...'` に変えた

@@ -5,7 +5,7 @@ description: Google Sheets (spreadsheet) のセルを読み書きする。「こ
 
 # gsheet
 
-Google Drive connector は閲覧専用で、セル更新ができない。`gsheet` は gcloud の認可で Sheets REST API を直接叩く CLI。
+Google Drive connector は閲覧専用で、セル更新ができない。`gsheet` は gcloud かサービスアカウントの鍵で Sheets REST API を直接叩く CLI。
 
 ## 使い方
 
@@ -41,4 +41,5 @@ gsheet api    POST spreadsheets/<id>:batchUpdate '{"requests":[...]}'
 - 消すときは `""` を送る。`null` は既存値を保持する
 - range を単一セルで渡すと、そこを左上として values の形に書く。`A1` に `[["a","b"]]` を送ると B1 も更新される
 - 認可エラーや project 未設定は `gsheet` が手順を表示する。人間の作業なのでユーザに渡す
+- サービスアカウントの鍵で動いているとき、403 は「スプシが鍵の client_email に共有されていない」が最有力。共有をユーザに依頼する
 - ファイル名からの検索は Drive connector に任せる。`gsheet` は URL か ID だけを受ける
