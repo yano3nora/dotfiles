@@ -48,7 +48,7 @@ dots link
 
 ## gsheet setup
 
-`gsheet` はサービスアカウントの鍵 JSON で認可する。鍵のパスを環境変数 `GOOGLE_APPLICATION_CREDENTIALS` に設定する。
+`gsheet` はサービスアカウントの鍵 JSON で認可する。鍵は `~/.config/gsheet/key.json` に置く。
 gcloud は鍵を作るときだけ使う。実行時の依存は `curl`, `jq`, `openssl` だけ。Sheets API は無料で、請求先アカウントも要らない。
 
 鍵は 1 回だけ作る:
@@ -70,16 +70,15 @@ gcloud iam service-accounts keys create ~/.config/gsheet/key.json \
 jq -r .client_email ~/.config/gsheet/key.json      # この address に共有する
 ```
 
-鍵のパスを環境変数に設定し、動作を確認する。export は repo 管理外の `~/.zshenv` に書く。理由: 鍵の無い機でも dotfiles は共通:
+動作を確認する:
 
 ```sh
-export GOOGLE_APPLICATION_CREDENTIALS=~/.config/gsheet/key.json
 gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit
 ```
 
 - scope は `spreadsheets` だけ。自分の Drive 全体には効かない
 - 誰が書いたかは区別できない。全員が同じサービスアカウントとして書く
-- `GOOGLE_APPLICATION_CREDENTIALS` は他の Google SDK も読む。別の鍵を使う作業では、その shell で上書きする
+- 別の鍵を一時的に使うときだけ `GOOGLE_APPLICATION_CREDENTIALS` でパスを上書きする。shell 全体に立てない。理由: 他の Google SDK もこの変数を読む
 - 鍵 JSON は秘密鍵。配った鍵は用が済んだら `gcloud iam service-accounts keys delete` で消す
 - 割り当て先 project の header は送らない。理由: 割り当て先は鍵の project に決まる。IAM の追加は要らない
 - ファイル名からの検索は `gsheet` ではやらない。claude.ai の Google Drive connector に任せる
@@ -89,18 +88,13 @@ gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit
 WSL2 は使わない。git bash と mise が入っている前提。gcloud は要らない。鍵 JSON は Mac で作ったものを置く。
 
 1. Install `jq` via mise, then put `bin/gsheet` and `bin/gsheet.cmd` in `~/bin` and `chmod +x ~/bin/gsheet`.
-2. Add `%USERPROFILE%\bin` and `%LOCALAPPDATA%\mise\shims` to the Windows user PATH. Run this in a PowerShell window:
+2. Add `%USERPROFILE%\bin` and `%LOCALAPPDATA%\mise\shims` to the Windows user PATH. Run this in a PowerShell window, then reopen git bash and PowerShell:
 
     ```powershell
     [Environment]::SetEnvironmentVariable('Path', "$env:USERPROFILE\bin;$env:LOCALAPPDATA\mise\shims;" + [Environment]::GetEnvironmentVariable('Path','User'), 'User')
     ```
 
-3. Put the key JSON at `%USERPROFILE%\.config\gsheet\key.json` and set the Windows user environment variable. Run this in PowerShell, then reopen git bash and PowerShell:
-
-    ```powershell
-    [Environment]::SetEnvironmentVariable('GOOGLE_APPLICATION_CREDENTIALS', "$env:USERPROFILE\.config\gsheet\key.json", 'User')
-    ```
-
+3. Put the key JSON at `%USERPROFILE%\.config\gsheet\key.json`. git bash resolves `~` to `%USERPROFILE%`, so no environment variable is needed.
 4. Run from git bash and from PowerShell:
 
     ```sh
@@ -108,7 +102,6 @@ WSL2 は使わない。git bash と mise が入っている前提。gcloud は�
     powershell -Command "gsheet meta https://docs.google.com/spreadsheets/d/<id>/edit"
     ```
 
-- 環境変数は Windows のユーザ環境変数に置く。理由: Codex は PowerShell でコマンドを実行し、`~/.bashrc` の export も PATH も効かない
 - `gsheet.cmd` は PowerShell / cmd からの入口。Codex は Windows では PowerShell でコマンドを実行するので、Agent はこの経路で呼ぶ
 - Agent は JSON を `'@<file>'` で渡し、`<sheet>` は ID で渡す。理由: PowerShell → cmd → bash の経路で引用符が壊れ、cmd が `&` を区切りと解釈する
 - `gsheet.cmd` は `CHERE_INVOKING=1` を立てる。理由: login shell は HOME へ cd するので、相対の `@file` が読めなくなる

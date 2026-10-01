@@ -3,7 +3,7 @@ set -euo pipefail
 
 # gsheet - Google Sheets のセルをサービスアカウントの鍵で読み書きする。
 # 出力は Sheets API の JSON をそのまま stdout に出す。理由: 利用者は Agent と jq なので整形層は要らない。
-# 認可は GOOGLE_APPLICATION_CREDENTIALS の鍵 JSON だけ。gcloud は使わない。
+# 認可はサービスアカウントの鍵 JSON だけ。既定は ~/.config/gsheet/key.json で、GOOGLE_APPLICATION_CREDENTIALS で上書きできる。gcloud は使わない。
 # 理由: 経路が 1 つなら Agent は迷わず、Windows でも SDK 無しで動く。
 # 初期設定は bin/README.md の "gsheet setup" を参照。
 # bash 3.2 で書く。理由: macOS の /bin/bash と Windows の git bash の両方で動かす。
@@ -62,16 +62,26 @@ uri_encode() {
   jq -rbn --arg s "$1" '$s | @uri'
 }
 
+# 既定は固定パス。理由: Windows でも git bash の $HOME は %USERPROFILE% なので、環境変数の設定なしで Codex から読める。
+# 環境変数は別の鍵を一時的に使うための上書きに限る。shell 全体に立てると他の Google SDK もこの鍵を使う。
+readonly DEFAULT_KEY_FILE="$HOME/.config/gsheet/key.json"
+
 sa_key_file() {
-  printf '%s' "${GOOGLE_APPLICATION_CREDENTIALS:-}"
+  printf '%s' "${GOOGLE_APPLICATION_CREDENTIALS:-$DEFAULT_KEY_FILE}"
 }
 
-# 未設定のときは設定手順を 1 行で返す。理由: 初見の Agent がこの文を読み、ユーザに鍵 JSON のパス設定を依頼できる。
+# 鍵が無いときは直すべき場所を 1 行で返す。理由: 初見の Agent がこの文を読み、ユーザに鍵 JSON の配置を依頼できる。
+# 環境変数で上書き中は既定パスへの配置を案内しない。理由: 置いても環境変数が優先され、失敗が続く。
+# ${key_file} と書く。理由: bash 3.2 は直後の全角文字を変数名の一部と読む。
 require_auth() {
   local key_file
   key_file="$(sa_key_file)"
-  [[ -n "$key_file" ]] || die "GOOGLE_APPLICATION_CREDENTIALS が未設定。サービスアカウントの鍵 JSON のパスを環境変数に設定する。手順: bin/README.md の gsheet setup"
-  [[ -r "$key_file" ]] || die "鍵 JSON を読めない: $key_file"
+  if [[ ! -r "$key_file" ]]; then
+    if [[ -n "${GOOGLE_APPLICATION_CREDENTIALS:-}" ]]; then
+      die "GOOGLE_APPLICATION_CREDENTIALS が指す鍵 JSON を読めない: ${key_file}。パスを直すか、変数を外して ~/.config/gsheet/key.json を使う"
+    fi
+    die "鍵 JSON が無い: ${key_file}。サービスアカウントの鍵 JSON をそこに置く。手順: bin/README.md の gsheet setup"
+  fi
   command -v openssl >/dev/null 2>&1 || die "openssl が無い"
 }
 
@@ -178,7 +188,7 @@ main() {
   local cmd="$1"
   shift
 
-  # require_auth は入力処理より先に呼ぶ。理由: 未設定のまま stdin 待ちや JSON エラーにならず、設定手順を先に返す。
+  # require_auth は入力処理より先に呼ぶ。理由: 鍵が無いまま stdin 待ちや JSON エラーにならず、配置手順を先に返す。
   case "$cmd" in
     meta)
       [[ $# -eq 1 ]] || { usage >&2; return 1; }

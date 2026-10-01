@@ -9,9 +9,11 @@ Google Drive connector は閲覧専用で、セル更新ができない。`gshee
 
 ## 認証
 
-- 認証は環境変数 `GOOGLE_APPLICATION_CREDENTIALS` だけ。値はサービスアカウントの鍵 JSON のパス
-- 未設定なら `gsheet` が「GOOGLE_APPLICATION_CREDENTIALS が未設定」と出て止まる。作業を止め、ユーザに鍵 JSON のパスを環境変数に設定してもらう
-    - gcloud のインストールやログインは提案しない。鍵 JSON を探し回らない。設定はユーザの作業
+- 認証はサービスアカウントの鍵 JSON だけ。置き場は `~/.config/gsheet/key.json`
+- 鍵が無いと `gsheet` が「鍵 JSON が無い」と出て止まる。作業を止め、ユーザに鍵 JSON をその場所に置いてもらう
+    - gcloud のインストールやログインは提案しない。鍵 JSON を探し回らない、作らない、書かない。配置はユーザの作業
+- 「GOOGLE_APPLICATION_CREDENTIALS が指す鍵 JSON を読めない」と出たら、環境変数が優先されている。既定パスに置いても直らない。ユーザに変数のパスを直すか外してもらう
+    - この環境変数は別の鍵を一時的に使う上書き用。ユーザが指示したときだけ使う
     - 鍵の作り方と設定先は `bin/README.md` の "gsheet setup"。ユーザに案内する
 - 403 は「スプシが鍵の client_email に共有されていない」が最有力。鍵 JSON の `client_email` を読んでユーザに伝え、編集者で共有を依頼する
 
