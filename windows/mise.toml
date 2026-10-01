@@ -1,6 +1,8 @@
 # Windows (サブ機) 用の global mise config。`windows/copy-configs.sh` が ~/.config/mise/config.toml にコピーする。
 # mac の mise/config.toml は共有しない。理由: Windows で入らない tool (hunk など) で mise install が止まる。
 # サブ機なので必要最低限だけ載せる。version 方針は mise/config.toml と揃える。
+# codex は載せない。公式 installer で入れる。手順は windows/README.md の Getting Started。
+# 理由: mise (aqua) は codex.exe 単体しか入れず、補助 exe が無いので起動できない。
 [tools]
 node = "24.19.0"
 python = "3.13.7"
@@ -12,7 +14,6 @@ fzf = "latest"
 bat = "latest"
 "ubi:sharkdp/fd" = "latest"
 uv = "latest"
-"aqua:openai/codex" = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node", "python"]

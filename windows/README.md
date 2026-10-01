@@ -28,6 +28,7 @@ OS 設定は項目ごとに「目的 / コマンド / 戻し方 / 適用日」�
 | `ai/CLAUDE.md`, `ai/skills/{gsheet,show-me,why-me}` | `~/.claude/`, `~/.codex/` にコピー |
 | `bin/{gsheet,gsheet.cmd,pdf2png}` | `~/.local/bin/` にコピー (git bash で動く bash 製のものだけ) |
 | `mise/config.toml` | 共有しない。`windows/mise.toml` に絞って別管理 |
+| `Brewfile` の codex 経路 | mac と同じく公式 installer で入れる。手順は Getting Started の 6 |
 | `lazygit/config.yml` | 持っていかない。hunk と coda 前提。default で使う |
 | `ai/skills/chrome-connect`, zsh 製の `bin/*` | 持っていかない。zsh 前提 |
 | `zsh/`, `Brewfile`, `macos/`, `ghostty/`, `coda/`, `leaf/`, `gistan/` | 持っていかない |
@@ -49,7 +50,12 @@ cd ~/git/yano3nora/dotfiles
 cd ~ && mise install   # 403 (rate limit) なら GITHUB_TOKEN="$(gh auth token)" mise install
 # 5. VSCode 拡張
 xargs -L1 code --install-extension < ~/git/yano3nora/dotfiles/vscode/extensions.txt
+# 6. codex (CLI) は公式 installer で入れる。PATH も installer が通す
+powershell -c "irm https://chatgpt.com/codex/install.ps1 | iex"
 ```
+
+- codex は mise に載せない。理由: mise (aqua) は `codex.exe` 単体しか入れず、補助 exe が無いので起動できない。
+- 以前 mise で入れていた場合は、先に `mise uninstall aqua:openai/codex` で消す。理由: mise の shim が installer 版より PATH で優先されることがある。
 
 - `~/.local/bin` が PATH に無ければ通す (`gsheet.cmd` を PowerShell から呼ぶため、Windows のユーザー環境変数 PATH にも入れる)。
 - repo 側を更新したら `./windows/copy-configs.sh` をもう一度流す。中身が同じファイルは触らない。
