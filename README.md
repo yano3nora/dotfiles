@@ -61,7 +61,7 @@ reload
 - `git/gitignore_global` -> `~/.gitignore_global`
 - `~/.zshrc` -> `zsh/zshrc`
 - `~/.p10k.zsh` -> `zsh/p10k.zsh`
-- `~/.config/mise/config.toml` -> `mise/config.toml`
+- `~/.config/mise/config.toml` -> `mise/mac.toml`
 - `~/.config/coda/config.toml` -> `coda/config.toml`
 - `~/.config/coda/bindings.json` -> `coda/bindings.json`
 - `~/.config/coda/generated/vscode-bindings.json` -> `coda/generated/vscode-bindings.json`

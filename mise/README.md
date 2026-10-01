@@ -4,11 +4,15 @@
 
 Global CLI tools and selected runtime versions are managed by mise.
 
-This dotfiles repository manages the global mise config:
+This dotfiles repository manages the global mise config per OS:
 
 ```txt
-mise/config.toml -> ~/.config/mise/config.toml
+mise/mac.toml -> ~/.config/mise/config.toml   # dots link (symlink)
+mise/win.toml -> ~/.config/mise/config.toml   # windows/copy-configs.sh (copy)
 ```
+
+Do not name a file `config.toml` in this directory.
+mise reads `<dir>/mise/config.toml` as a project config, so it would load inside this repo.
 
 Project-local tool versions should be managed by each project's `mise.toml`, not here.
 
@@ -24,7 +28,8 @@ mise install
 Global tools are defined in:
 
 ```txt
-mise/config.toml
+mise/mac.toml
+mise/win.toml
 ```
 
 Version policy:
@@ -46,7 +51,7 @@ mise use -g tool@version
 
 ### Add a global CLI tool
 
-1. Add the tool to `mise/config.toml`
+1. Add the tool to `mise/mac.toml` (and `mise/win.toml` if Windows needs it)
     - use `latest` for low-risk daily utilities
     - use an explicit version for runtimes or deploy/project-impacting CLIs
 2. Run `dots link`

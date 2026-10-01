@@ -81,14 +81,11 @@ vscode_settings_for_windows() {
   jq -s '.[0] * .[1]' "$DOTFILES_ROOT/vscode/settings.json" "$DOTFILES_ROOT/windows/vscode-settings.json" | tr -d '\r'
 }
 
-# repo を cwd にすると mise が mise/config.toml (mac 用) を project config として読み、jq の shim 経由で mac 用 tool を auto install する。
-cd "$HOME"
-
 info "dotfiles root: $DOTFILES_ROOT"
 
 copy_path windows/gitconfig "$HOME/.gitconfig"
 copy_path git/gitignore_global "$HOME/.gitignore_global"
-copy_path windows/mise.toml "$HOME/.config/mise/config.toml"
+copy_path mise/win.toml "$HOME/.config/mise/config.toml"
 copy_path gh/config.yml "$APPDATA_DIR/GitHub CLI/config.yml"
 generated_dir="$(mktemp -d)"
 trap 'rm -rf "$generated_dir"' EXIT

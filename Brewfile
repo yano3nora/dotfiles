@@ -1,5 +1,5 @@
 # brew 側の唯一の入口。`brew bundle` で適用する。
-# 方針: CLI の入口は mise/config.toml に揃え、brew は build / OS 依存の例外と GUI アプリ・フォントだけに使う。
+# 方針: CLI の入口は mise/mac.toml に揃え、brew は build / OS 依存の例外と GUI アプリ・フォントだけに使う。
 # 方針: 必要になった時に個別に入れるもの (php, git-lfs, 各種 SDK など) はここに書かない。
 
 # CLI (bin/ や zsh/ から使う、mise に無い / build 依存が重いもの)

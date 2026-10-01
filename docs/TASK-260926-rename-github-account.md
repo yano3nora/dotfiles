@@ -10,7 +10,7 @@
 - ローカルの macOS user / `~/git/yano3nora/` は `y3n` / `yano3nora` の混在
 - dotfiles 内の `yano3nora` 依存
     - `git/gitconfig`: `name`、noreply email `18728262+yano3nora@users.noreply.github.com`
-    - `mise/config.toml`: `github:yano3nora/*` 6 件 (gistan / coda / excel2json / kawsay / rubylize / jsonalize)
+    - `mise/mac.toml`: `github:yano3nora/*` 6 件 (gistan / coda / excel2json / kawsay / rubylize / jsonalize)
     - `gh/extensions.txt`: `yano3nora/gh-bprune`, `yano3nora/gh-review-prompt`
     - `vscode/settings.json`, `vscode/README.md`: jsdelivr の CSS URL
     - `README.md`, `docs/TASK-260912-*.md`, `coda/README.md`, `zsh/zshrc.d/30-alias.zsh`: clone URL / リンク / コメント
@@ -50,7 +50,7 @@
 
 - [ ] `gh auth logout -h github.com -u yano3nora` → `gh auth login` で再認証する
 - [ ] `git/gitconfig` の `name` と noreply email を `18728262+y3n608@users.noreply.github.com` に変える
-- [ ] `mise/config.toml` の `github:yano3nora/*` を `github:y3n608/*` に置換し、`mise install` で取得できることを確認する
+- [ ] `mise/mac.toml` の `github:yano3nora/*` を `github:y3n608/*` に置換し、`mise install` で取得できることを確認する
 - [ ] `gh/extensions.txt` を `y3n608/*` に置換し、`gh extension list` で動作確認する
 - [ ] `vscode/settings.json` / `vscode/README.md` の jsdelivr URL を新名にし、purge URL を叩く
 - [ ] `README.md` / `coda/README.md` / `zsh/zshrc.d/30-alias.zsh` のリンク・コメントを新名にする

@@ -12,7 +12,7 @@
     - `zsh/zshrc.d/10-tool.zsh`: GNU grep / php@8.1 の PATH
     - `zsh/zshrc.d/20-zsh.zsh`: `/usr/local/share/powerlevel10k/...`
     - `zsh/zshrc.d/30-alias.zsh`: `alias grep='/usr/local/opt/grep/...'`
-    - `mise/config.toml`: `ubi:sharkdp/fd` は darwin/amd64 回避のための指定
+    - `mise/mac.toml`: `ubi:sharkdp/fd` は darwin/amd64 回避のための指定
     - `mise/README.md`: 「Intel macOS 26 は bottle が無いので mise へ寄せる」という前提で書かれている
 - dotfiles 未管理だが shell 起動に必須のものがある
     - `~/.p10k.zsh` (95KB、repo 外)。p10k 本体は brew formula (`powerlevel10k`)
@@ -87,7 +87,7 @@
 - [x] `~/.zshenv` の cargo / Vite+ env を `10-tool.zsh` の条件付き source に統合。`~/.zprofile` の Docker Desktop 追記はそのまま
 - [x] **nvim を廃棄** (`nvim/` 削除、`bin/dots` の link 4 行と doctor の `nvim` 削除、`alias vim=nvim` 削除、README 更新)
 - [x] **mactune を廃棄** (`bin/mactune` 削除、`bin/README.md` 更新)。duetexpertd / CursorUIViewService の知見は `macos/README.md` の「症状が出たら適用するもの」に移した
-- [ ] `mise/config.toml` の `ubi:sharkdp/fd` を `fd = "latest"` に戻せるか M1 で確認する (Intel は ubi のままなら分岐が要るので、Intel 退役まで触らない)
+- [ ] `mise/mac.toml` の `ubi:sharkdp/fd` を `fd = "latest"` に戻せるか M1 で確認する (Intel は ubi のままなら分岐が要るので、Intel 退役まで触らない)
 - [x] M1 疎通後の追加整理 (2026-09-14):
     - `brew "trash"` を Brewfile から削除 (macOS 26 が `/usr/bin/trash` を標準搭載し、formula は未リンクの死に依存になっていた。`alias rm=trash` は OS 標準で動く)
     - Docker Desktop が `~/.zshrc` (symlink 経由で repo の `zsh/zshrc`) へ追記した補完設定を、絶対パス排除のため `$HOME` ベースで `10-tool.zsh` へ移設
@@ -226,7 +226,7 @@
 - Spotlight / Siri 系の disable は 2026-07-01 に実施。復元手順は `~/.mac-tuning-backups/restore-spotlight-siri-shortcuts.sh` にある。これを `macos/README.md` の元ネタにする
 - `~/.mac-tuning-backups/restore-vscode-gpu.sh` は VSCode の `argv.json` (`disable-hardware-acceleration`) 用。現行は `false` に戻っているので M1 では不要
 - duetexpertd / CursorUIViewService / Macs Fan Control / BetterDisplay の HiDPI 切替はいずれも「Intel iGPU + HiDPI 外部ディスプレイで重い」問題への対処。M1 では前提が変わるので、症状が出てから適用する
-- Homebrew は M1 なら bottle があるので、brew → mise の移行 (`docs/TASK-260707-brew-to-mise-cleanup.md`) の動機の半分は消える。ただし「global CLI の入口を `mise/config.toml` に揃える」方針自体は維持し、brew は build / OS 依存の例外に限定する
+- Homebrew は M1 なら bottle があるので、brew → mise の移行 (`docs/TASK-260707-brew-to-mise-cleanup.md`) の動機の半分は消える。ただし「global CLI の入口を `mise/mac.toml` に揃える」方針自体は維持し、brew は build / OS 依存の例外に限定する
 - `brew leaves` に残っている build 依存 (automake, bison, re2c, guile, openvino など) は過去に何かを source build した名残。Brewfile には入れない
 - `~/.ssh/config` は空、鍵は `id_rsa` のみ。移設を機に ed25519 へ更新し、1Password SSH agent を使うかも検討する
 - Codex の `~/.codex/config.toml` には project ごとの trust 設定 (絶対パス) が書き戻されるため repo 管理しない。手動維持する項目は `ai/README.md` 参照

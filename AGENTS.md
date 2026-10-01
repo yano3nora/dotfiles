@@ -5,7 +5,7 @@
 - この repo は macOS 用の個人 dotfiles を管理する。
 - 主な管理対象は `zsh/`, `bin/`, `git/`, `gh/`, `mise/`, `Brewfile`, `macos/`, `vscode/`, `ghostty/`, `lazygit/`, `project/`。
 - `bin/dots` が symlink 管理の入口。
-- global CLI tool は `mise/config.toml` で入口を揃える。ただし `jq` などの日常CLIは `latest` 許容、Node や deploy 系など project 影響が大きいものだけ version 管理を重視する。
+- global CLI tool は `mise/mac.toml` で入口を揃える。ただし `jq` などの日常CLIは `latest` 許容、Node や deploy 系など project 影響が大きいものだけ version 管理を重視する。
 - 新規 project 用テンプレートは `project/` に置く。他 repo の具体文脈を root docs に混ぜない。
 
 ### 🎯 Role & Objective
@@ -25,10 +25,10 @@
 - **`bin/`**: 個人用コマンド。新規追加は `dots addbin <name>` を使う。手作業で追加した場合は `chmod +x` を忘れない。
 - **`git/`**: Git global config。`git/gitconfig` と `git/gitignore_global` を HOME 配下に symlink する。
 - **`zsh/`**: zsh 設定。`zsh/zshrc` が `zsh/zshrc.d/*.zsh` をファイル名順に読む。plugin (p10k など) は `zsh/plugins/` の git submodule、p10k の設定は `zsh/p10k.zsh`。
-- **`mise/`**: global mise config。`mise/config.toml` を `~/.config/mise/config.toml` に symlink する。
+- **`mise/`**: global mise config。mac は `mise/mac.toml` を、Windows は `mise/win.toml` を `~/.config/mise/config.toml` に置く。`config.toml` という名前を repo に置かない。理由: mise が repo 内で project config として読む。
 - **`vscode/`, `ghostty/`, `lazygit/`, `gh/`**: 各ツール設定。link 対象を増やす場合は `bin/dots` を更新する。VSCode 拡張は `vscode/extensions.txt`。
 - **`macos/`**: macOS 側の設定メモとショートカットの plist。
-- **`windows/`**: Windows サブ機の設定。`dots` は使わず `windows/copy-configs.sh` (git bash) でコピーする。mac の設定を Windows 用に変えたい場合は `windows/` に別ファイルを置き、`git/gitconfig` などを直接変えない。OS 設定は `macos/` と同じく「目的 / コマンド / 戻し方 / 適用日」で書く。
+- **`windows/`**: Windows サブ機の設定。`dots` は使わず `windows/copy-configs.sh` (git bash) でコピーする。mac の設定を Windows 用に変えたい場合は `windows/` に別ファイルを置き、`git/gitconfig` などを直接変えない。mise だけは例外で `mise/win.toml` に置く。OS 設定は `macos/` と同じく「目的 / コマンド / 戻し方 / 適用日」で書く。
 - **`project/`**: 新規 project 用テンプレート。`project/AGENTS.md`, `project/CLAUDE.md`, `project/docs/*` を他 repo にコピーして書き換える前提。
 - **`docs/`**: この dotfiles repo 自身の作業記録。`TASK-YYMMDD-<filename>.md` 形式で移行・整理タスクを管理する。
 - **root `AGENTS.md` / `CLAUDE.md`**: この dotfiles repo 自身の Agentic Coding docs。

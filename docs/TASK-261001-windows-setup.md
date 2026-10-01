@@ -18,11 +18,11 @@
     - 名前は `install` を避ける (AGENTS.md の方針)
 - mac の設定を Windows 用に変える場合は `windows/` に別ファイルを置く。mac 側のファイルは変えない
     - `windows/gitconfig`: `git/gitconfig` を include し、`core.pager` だけ less に上書き。理由: hunk は mise registry に無く Windows で入らない
-    - `windows/mise.toml`: サブ機用に絞った global tool。理由: mac の config を共有すると Windows で入らない tool で `mise install` が止まる
+    - `mise/win.toml`: サブ機用に絞った global tool。理由: mac の config を共有すると Windows で入らない tool で `mise install` が止まる
 
 ## todo
 
-- [x] `windows/copy-configs.sh`, `windows/gitconfig`, `windows/mise.toml` を作る
+- [x] `windows/copy-configs.sh`, `windows/gitconfig`, `windows/mise.toml` を作る (後で `mise/win.toml` に移した)
 - [x] `windows/README.md` に「mac から持っていくもの」と Getting Started を書く
 - [x] root `README.md` / `AGENTS.md` に `windows/` を足す
 - [x] 実機で `copy-configs.sh` を流す
@@ -34,6 +34,9 @@
 - [x] VSCode settings は `windows/vscode-settings.json` を jq で上書き merge する (フォントサイズ、既定ターミナルを Git Bash、`alt+f` などでメニューを開かない)
 - [ ] 他にも Windows 標準を優先したい ctrl+X があれば `WINDOWS_STANDARD_CTRL_KEYS` に足す
 - [ ] 必要になったら: lazygit の Windows 用 config
+- [x] mise の global config を `mise/mac.toml` / `mise/win.toml` に分け、`config.toml` という名前を repo から無くす
+- [ ] Windows で mac 用 tool の混入分を `mise prune` で消す (`powershell-core`, `deno`, `java` など)
+- [ ] mac で `dots link` を流し直し、`~/.config/mise/config.toml` が `mise/mac.toml` を指すことを確認する
 
 ## testcases
 
@@ -53,4 +56,7 @@
 - CapsLock = Alt 案は捨てた。VSCode の keybindings は揃うが、terminal (bash の Ctrl 系) は読み替えられず、指の位置が揃わない
 - mac は ctrl (CapsLock) と cmd が別キーだが、Windows ではどちらも ctrl になる。mac の ctrl+X 独自割り当てと Windows 標準 ctrl+X (mac の cmd+X) はどちらか一方しか取れないので、Windows 標準を優先するキーを `WINDOWS_STANDARD_CTRL_KEYS` で選び、mac 側を alt+X に逃がす
 - `cmd+h/l` (1 文字移動) は `ctrl+h/l` (単語移動) と重なり、後勝ちで単語移動になる
+- 261001: codex が PATH 上の mise shim `pwsh.exe` を拾い、sandbox 内で「アクセス拒否」になって全コマンドが失敗した。shim は repo の `mise/config.toml` (mac 用) が project config として読まれ、`powershell-core` が入ったもの。HOME で流す運用は対症療法だったので、`mise/mac.toml` / `mise/win.toml` に名前を変えて根本から読まれないようにした
+- mise 2026.3.13 (Windows) では `MISE_IGNORED_CONFIG_PATHS` も `mise trust --ignore` も効かなかった。パス比較のバグと思われる
+- codex 0.159.3 には Windows の shell を Git Bash にする設定が無い (`[windows] agent_shell` は fork 版の話)
 - Windows 側で直接 mise config (codex 追加) と VSCode のフォントサイズを変えていたのを、`copy-configs.sh` の再実行で 2 回上書きした (.bak から repo の windows/ 側に反映済み)。Windows で直接いじる運用になるなら、上書き前に差分を出すか止める仕組みを検討する

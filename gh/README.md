@@ -14,7 +14,7 @@ Managed files:
 ## Getting Started
 
 ```sh
-mise install    # gh は mise/config.toml で管理する
+mise install    # gh は mise/mac.toml で管理する
 dots link
 gh auth login
 xargs -L1 gh extension install < gh/extensions.txt

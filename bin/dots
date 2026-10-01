@@ -116,7 +116,7 @@ link_all() {
   link_path "$DOTFILES_ROOT/git/gitignore_global" "$HOME/.gitignore_global"
   link_path "$DOTFILES_ROOT/zsh/zshrc" "$HOME/.zshrc"
   link_path "$DOTFILES_ROOT/zsh/p10k.zsh" "$HOME/.p10k.zsh"
-  link_path "$DOTFILES_ROOT/mise/config.toml" "$HOME/.config/mise/config.toml"
+  link_path "$DOTFILES_ROOT/mise/mac.toml" "$HOME/.config/mise/config.toml"
   link_path "$DOTFILES_ROOT/coda/config.toml" "$HOME/.config/coda/config.toml"
   link_path "$DOTFILES_ROOT/coda/bindings.json" "$HOME/.config/coda/bindings.json"
   link_path "$DOTFILES_ROOT/coda/generated/vscode-bindings.json" "$HOME/.config/coda/generated/vscode-bindings.json"

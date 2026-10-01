@@ -11,7 +11,6 @@ Managed files:
 - `README.md` - このメモ (セットアップ手順 + レジストリなどの OS 設定)
 - `copy-configs.sh` - repo の設定ファイルを HOME / AppData にコピーする
 - `gitconfig` - `~/.gitconfig`。`git/gitconfig` を include し、Windows で動かない設定だけ上書きする
-- `mise.toml` - `~/.config/mise/config.toml`。サブ機用に絞った global tool
 - `vscode-settings.json` - `vscode/settings.json` に上書き merge する Windows 用の差分
 
 OS 設定は項目ごとに「目的 / コマンド / 戻し方 / 適用日」を書く。GUI でしか設定できないものは GUI の場所を書く。
@@ -27,7 +26,7 @@ OS 設定は項目ごとに「目的 / コマンド / 戻し方 / 適用日」�
 | `vscode/keybindings.json` | mac cmd -> ctrl に読み替えて書き出す (mac ctrl はそのまま、CapsLock = Ctrl)。Windows 標準を優先したい ctrl+X (今は `f` `d` `i` `[` `]`) は mac 側の割り当てを alt+X に逃がす。`cmd+w` と `cmd+shift+i` は読み替えない。詳細は `copy-configs.sh` のコメント |
 | `ai/CLAUDE.md`, `ai/skills/{gsheet,show-me,why-me}` | `~/.claude/`, `~/.codex/` にコピー |
 | `bin/{gsheet,gsheet.cmd,pdf2png}` | `~/.local/bin/` にコピー (git bash で動く bash 製のものだけ) |
-| `mise/config.toml` | 共有しない。`windows/mise.toml` に絞って別管理 |
+| `mise/mac.toml` | 共有しない。`mise/win.toml` に絞って別管理 |
 | `Brewfile` の codex 経路 | mac と同じく公式 installer で入れる。手順は Getting Started の 6 |
 | `lazygit/config.yml` | 持っていかない。hunk と coda 前提。default で使う |
 | `ai/skills/chrome-connect`, zsh 製の `bin/*` | 持っていかない。zsh 前提 |
@@ -46,8 +45,8 @@ git clone https://github.com/yano3nora/dotfiles.git ~/git/yano3nora/dotfiles
 cd ~/git/yano3nora/dotfiles
 # 3. 設定ファイルをコピー (既存は .bak.YYYYMMDDHHMMSS に退避)
 ./windows/copy-configs.sh
-# 4. CLI (repo の mise/config.toml を拾わないよう HOME で流す)
-cd ~ && mise install   # 403 (rate limit) なら GITHUB_TOKEN="$(gh auth token)" mise install
+# 4. CLI
+mise install   # 403 (rate limit) なら GITHUB_TOKEN="$(gh auth token)" mise install
 # 5. VSCode 拡張
 xargs -L1 code --install-extension < ~/git/yano3nora/dotfiles/vscode/extensions.txt
 # 6. codex (CLI) は公式 installer で入れる。PATH も installer が通す
