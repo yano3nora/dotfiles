@@ -24,16 +24,19 @@ Agent 固有の設定形式や機能差はそれぞれのファイルに閉じ�
 
 ## Codex CLI
 
-`~/.codex/config.toml` は project path、trust、plugin 状態などを Codex 自身が書き戻すため、repo 管理しない。次の設定だけ手動で維持する:
+`~/.codex/config.toml` は repo 管理しない。理由: project の trust、TUI 状態、MCP 登録を Codex 自身が書き戻す。
+model は TUI で選ぶ。次の 4 キーだけ手動で維持する:
 
 ```toml
-model = "gpt-6-astra"
-model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
-personality = "pragmatic"
+personality = "none"
 ```
+
+- `approval_policy = "on-request"`: 承認を減らす。既定の `untrusted` は信頼済み以外のコマンドで毎回聞いてくる
+- `approvals_reviewer = "auto_review"`: 残った承認を先に自動レビューへ回す
+- 分割管理は見送り。Codex に include は無く、system 層 `/etc/codex/config.toml` か profile v2 (`-p`) しか手が無い。4 キーなら手書きで足りる
 
 ## Claude Code Plugins
 
