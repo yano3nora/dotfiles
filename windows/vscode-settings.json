@@ -1,0 +1,7 @@
+{
+  "editor.fontSize": 20,
+  "terminal.integrated.fontSize": 15,
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "window.customMenuBarAltFocus": false,
+  "window.enableMenuBarMnemonics": false
+}

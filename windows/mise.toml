@@ -1,0 +1,18 @@
+# Windows (サブ機) 用の global mise config。`windows/copy-configs.sh` が ~/.config/mise/config.toml にコピーする。
+# mac の mise/config.toml は共有しない。理由: Windows で入らない tool (hunk など) で mise install が止まる。
+# サブ機なので必要最低限だけ載せる。version 方針は mise/config.toml と揃える。
+[tools]
+node = "24.19.0"
+python = "3.13.7"
+jq = "latest"
+ripgrep = "latest"
+gh = "latest"
+lazygit = "latest"
+fzf = "latest"
+bat = "latest"
+"ubi:sharkdp/fd" = "latest"
+uv = "latest"
+"aqua:openai/codex" = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["node", "python"]

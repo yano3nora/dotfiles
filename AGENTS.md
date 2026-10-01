@@ -28,6 +28,7 @@
 - **`mise/`**: global mise config。`mise/config.toml` を `~/.config/mise/config.toml` に symlink する。
 - **`vscode/`, `ghostty/`, `lazygit/`, `gh/`**: 各ツール設定。link 対象を増やす場合は `bin/dots` を更新する。VSCode 拡張は `vscode/extensions.txt`。
 - **`macos/`**: macOS 側の設定メモとショートカットの plist。
+- **`windows/`**: Windows サブ機の設定。`dots` は使わず `windows/copy-configs.sh` (git bash) でコピーする。mac の設定を Windows 用に変えたい場合は `windows/` に別ファイルを置き、`git/gitconfig` などを直接変えない。OS 設定は `macos/` と同じく「目的 / コマンド / 戻し方 / 適用日」で書く。
 - **`project/`**: 新規 project 用テンプレート。`project/AGENTS.md`, `project/CLAUDE.md`, `project/docs/*` を他 repo にコピーして書き換える前提。
 - **`docs/`**: この dotfiles repo 自身の作業記録。`TASK-YYMMDD-<filename>.md` 形式で移行・整理タスクを管理する。
 - **root `AGENTS.md` / `CLAUDE.md`**: この dotfiles repo 自身の Agentic Coding docs。

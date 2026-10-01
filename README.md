@@ -21,6 +21,7 @@ macOS 用の個人 dotfiles。
 ├ mise/                … global mise 設定
 ├ project/             … 新規 project 用テンプレート
 ├ vscode/              … VSCode 設定
+├ windows/             … Windows サブ機の設定 (コピー script / gitconfig / mise / レジストリメモ)
 └ zsh/                 … zsh 設定
 ```
 
@@ -111,6 +112,10 @@ dots project --typescript --react
 symlink やコマンドで管理できない macOS 側の設定 (defaults / ショートカット / Spotlight 停止 / 症状が出たら入れる対処) は [`macos/README.md`](macos/README.md) にまとめる。
 新しい Mac に移るときはそこを上から順に適用する。
 
+# Windows Tuning
+Windows はサブ機として必要最低限だけ用意する。`dots` は使わず、手順と設定は [`windows/README.md`](windows/README.md) にまとめる。
+新しい PC に移るときはそこを上から順に適用する。
+
 # Deployment
 release 運用はしない。
 push / publish は人間が判断して実行する。
@@ -130,3 +135,4 @@ push / publish は人間が判断して実行する。
 - [`gistan/README.md`](gistan/README.md)
 - [`macos/README.md`](macos/README.md)
 - [`mise/README.md`](mise/README.md)
+- [`windows/README.md`](windows/README.md)

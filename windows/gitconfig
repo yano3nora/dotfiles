@@ -1,0 +1,8 @@
+# Windows 用の ~/.gitconfig。`windows/copy-configs.sh` が HOME にコピーする。
+# 本体は mac と同じ git/gitconfig を include し、Windows で動かない設定だけ後ろで上書きする。
+# include の path は README の clone 先 (~/git/yano3nora/dotfiles) 前提。
+[include]
+  path = ~/git/yano3nora/dotfiles/git/gitconfig
+[core]
+  # hunk は mise registry に無く Windows で入らない。git for Windows 同梱の less に戻す。
+  pager = less
