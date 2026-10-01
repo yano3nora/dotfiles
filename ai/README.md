@@ -108,7 +108,7 @@ dots mcp off    # 全部 off
 
 ## Claude Code Sandbox 除外 (`excludedCommands`)
 
-Claude Code の sandbox は `~/.config/gcloud` など HOME 配下への書き込みを禁止する。gcloud は資格情報 DB とログを開けず、`gsheet` が動かない。
+Claude Code の sandbox は `googleapis.com` への通信を拒否する。`gsheet` は token の取得と Sheets API の呼び出しで落ちる。
 `~/.claude/settings.json` は repo 管理しないので、次を手動で維持する:
 
 ```json
@@ -120,8 +120,7 @@ Claude Code の sandbox は `~/.config/gcloud` など HOME 配下への書き込
 ```
 
 - 一致はコマンド文字列全体が `gsheet …` のときだけ。`cd` / パイプ / `&&` / リダイレクトで包むと sandbox 内で起動して失敗する
-- `~/.config/gcloud` を sandbox の書き込み許可に足す案は採らない。理由: 資格情報の置き場を全コマンドから書き込み可能にする
-- `dangerouslyDisableSandbox` も採らない。理由: auto mode の classifier に止められる
+- `dangerouslyDisableSandbox` は採らない。理由: auto mode の classifier に止められる
 
 ## Trouble Shooting
 

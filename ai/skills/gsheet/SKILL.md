@@ -5,7 +5,15 @@ description: Google Sheets (spreadsheet) のセルを読み書きする。「こ
 
 # gsheet
 
-Google Drive connector は閲覧専用で、セル更新ができない。`gsheet` は gcloud かサービスアカウントの鍵で Sheets REST API を直接叩く CLI。
+Google Drive connector は閲覧専用で、セル更新ができない。`gsheet` はサービスアカウントの鍵 JSON で Sheets REST API を直接叩く CLI。
+
+## 認証
+
+- 認証は環境変数 `GOOGLE_APPLICATION_CREDENTIALS` だけ。値はサービスアカウントの鍵 JSON のパス
+- 未設定なら `gsheet` が「GOOGLE_APPLICATION_CREDENTIALS が未設定」と出て止まる。作業を止め、ユーザに鍵 JSON のパスを環境変数に設定してもらう
+    - gcloud のインストールやログインは提案しない。鍵 JSON を探し回らない。設定はユーザの作業
+    - 鍵の作り方と設定先は `bin/README.md` の "gsheet setup"。ユーザに案内する
+- 403 は「スプシが鍵の client_email に共有されていない」が最有力。鍵 JSON の `client_email` を読んでユーザに伝え、編集者で共有を依頼する
 
 ## 使い方
 
@@ -28,7 +36,7 @@ gsheet api    POST spreadsheets/<id>:batchUpdate '{"requests":[...]}'
 ## 注意
 
 - Claude Code では `gsheet …` を単一コマンドとして Bash tool で呼ぶ。`cd` / パイプ / `&&` / リダイレクトで包まない
-    - 理由: sandbox は `~/.config/gcloud` への書き込みを禁止し、gcloud が動かない。settings.json の `excludedCommands: ["gsheet *"]` はコマンド文字列全体が `gsheet …` のときだけ一致する
+    - 理由: sandbox は `googleapis.com` への通信を拒否する。settings.json の `excludedCommands: ["gsheet *"]` はコマンド文字列全体が `gsheet …` のときだけ一致する
     - 出力の JSON はそのまま読む。jq で整形しない
     - `set` / `append` / `api` の JSON は 3 つ目の引数で渡す。`<<<` や `<` の stdin は使わない。理由: ヒアストリングも除外の一致から外れる
     - `dangerouslyDisableSandbox` は使わない。auto mode の classifier に止められる
@@ -40,6 +48,4 @@ gsheet api    POST spreadsheets/<id>:batchUpdate '{"requests":[...]}'
 - `set` は values の形だけ書く。range より小さい values を送っても、残りのセルは消えない
 - 消すときは `""` を送る。`null` は既存値を保持する
 - range を単一セルで渡すと、そこを左上として values の形に書く。`A1` に `[["a","b"]]` を送ると B1 も更新される
-- 認可エラーや project 未設定は `gsheet` が手順を表示する。人間の作業なのでユーザに渡す
-- サービスアカウントの鍵で動いているとき、403 は「スプシが鍵の client_email に共有されていない」が最有力。共有をユーザに依頼する
 - ファイル名からの検索は Drive connector に任せる。`gsheet` は URL か ID だけを受ける

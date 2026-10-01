@@ -154,7 +154,6 @@ doctor() {
     ffmpeg
     pdftoppm
     timeout
-    gcloud
   )
   local mise_bins=(
     jq

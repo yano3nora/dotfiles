@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# gsheet - Google Sheets のセルを gcloud の認可で読み書きする。
+# gsheet - Google Sheets のセルをサービスアカウントの鍵で読み書きする。
 # 出力は Sheets API の JSON をそのまま stdout に出す。理由: 利用者は Agent と jq なので整形層は要らない。
-# 認可は 2 通り。GOOGLE_APPLICATION_CREDENTIALS にサービスアカウントの鍵 JSON があればそれを使い、gcloud は要らない。
-# 無ければ gcloud の資格情報を使う。前提は gcloud config に project があり、gcloud auth login --enable-gdrive-access 済みであること。
-# 初期設定は bin/README.md の "gsheet" を参照。
+# 認可は GOOGLE_APPLICATION_CREDENTIALS の鍵 JSON だけ。gcloud は使わない。
+# 理由: 経路が 1 つなら Agent は迷わず、Windows でも SDK 無しで動く。
+# 初期設定は bin/README.md の "gsheet setup" を参照。
 # bash 3.2 で書く。理由: macOS の /bin/bash と Windows の git bash の両方で動かす。
 
 readonly API_BASE="https://sheets.googleapis.com/v4"
@@ -66,42 +66,20 @@ sa_key_file() {
   printf '%s' "${GOOGLE_APPLICATION_CREDENTIALS:-}"
 }
 
+# 未設定のときは設定手順を 1 行で返す。理由: 初見の Agent がこの文を読み、ユーザに鍵 JSON のパス設定を依頼できる。
 require_auth() {
-  if [[ -n "$(sa_key_file)" ]]; then
-    [[ -r "$(sa_key_file)" ]] || die "鍵 JSON を読めない: $(sa_key_file)"
-    command -v openssl >/dev/null 2>&1 || die "openssl が無い"
-  else
-    command -v gcloud >/dev/null 2>&1 || die "gcloud が無い。bin/README.md の gsheet setup を参照"
-  fi
-}
-
-# gcloud の出力から CR を除く。理由: git bash では .cmd 経由の出力に \r が混ざり、curl の header で落ちる。
-gcloud_value() {
-  gcloud "$@" 2>/dev/null | tr -d '\r'
-}
-
-# Sheets API は割り当て先 project を要求する。gcloud 内蔵 client の project では API が無効なので header で渡す。
-quota_project() {
-  local project
-  project="$(gcloud_value config get-value project || true)"
-  [[ -n "$project" ]] || die "gcloud の project が未設定。gcloud config set project <project-id> を実行する"
-  printf '%s' "$project"
-}
-
-# ADC ではなく gcloud 本体の資格情報を使う。理由: ADC で Drive 系 scope を取るには自作 OAuth client が要る。
-# --enable-gdrive-access は内蔵 client で drive scope を取り、Sheets API はその scope を受け付ける。
-gcloud_access_token() {
-  local token
-  token="$(gcloud_value auth print-access-token || true)"
-  [[ -n "$token" ]] || die "資格情報が無い。gcloud auth login --enable-gdrive-access を実行する"
-  printf '%s' "$token"
+  local key_file
+  key_file="$(sa_key_file)"
+  [[ -n "$key_file" ]] || die "GOOGLE_APPLICATION_CREDENTIALS が未設定。サービスアカウントの鍵 JSON のパスを環境変数に設定する。手順: bin/README.md の gsheet setup"
+  [[ -r "$key_file" ]] || die "鍵 JSON を読めない: $key_file"
+  command -v openssl >/dev/null 2>&1 || die "openssl が無い"
 }
 
 base64url() {
   openssl base64 -A | tr '+/' '-_' | tr -d '='
 }
 
-# サービスアカウントの鍵で JWT を署名し、access token に交換する。理由: gcloud 無しで動かし、scope を spreadsheets に絞る。
+# サービスアカウントの鍵で JWT を署名し、access token に交換する。理由: scope を spreadsheets だけに絞る。
 # token は 1 時間有効だが cache しない。理由: 呼び出しごとの往復 1 回で足りる。
 # jq に -b を付ける。理由: Windows 版 jq の CR が iss や token に混ざる。
 # 秘密鍵は 600 の一時ファイルで openssl に渡す。理由: git bash の openssl は native 版で、プロセス置換の /dev/fd を読めない。
@@ -131,14 +109,6 @@ sa_access_token() {
   token="$(printf '%s' "$response" | jq -rb '.access_token // empty')"
   [[ -n "$token" ]] || die "token の取得に失敗した: $response"
   printf '%s' "$token"
-}
-
-access_token() {
-  if [[ -n "$(sa_key_file)" ]]; then
-    sa_access_token
-  else
-    gcloud_access_token
-  fi
 }
 
 # json_input <argc> <arg>: 引数があればそれを、無ければ stdin を返す。
@@ -178,22 +148,17 @@ values_body() {
 # call <METHOD> <api_path> [body]
 # --fail-with-body: エラー時も API の JSON を stdout に出し、非 0 で終了する。
 # 空配列の展開は ${arr[@]+"${arr[@]}"} と書く。理由: bash 3.2 は set -u で空配列の展開を unbound と扱う。
-# quota header はサービスアカウントでは送らない。理由: 割り当て先は鍵の project に決まり、header を送ると別途 IAM が要る。
+# 割り当て先 project の header は送らない。理由: 割り当て先は鍵の project に決まり、header を送ると別途 IAM が要る。
 call() {
   local method="$1"
   local api_path="$2"
   local body="${3:-}"
   local token
-  token="$(access_token)" || exit 1
+  token="$(sa_access_token)" || exit 1
 
   local -a extra_args=()
-  if [[ -z "$(sa_key_file)" ]]; then
-    local project
-    project="$(quota_project)" || exit 1
-    extra_args=(-H "x-goog-user-project: $project")
-  fi
   if [[ -n "$body" ]]; then
-    extra_args=(${extra_args[@]+"${extra_args[@]}"} --data-binary "$body")
+    extra_args=(--data-binary "$body")
   fi
 
   curl -sS --fail-with-body -X "$method" \
@@ -213,42 +178,44 @@ main() {
   local cmd="$1"
   shift
 
+  # require_auth は入力処理より先に呼ぶ。理由: 未設定のまま stdin 待ちや JSON エラーにならず、設定手順を先に返す。
   case "$cmd" in
     meta)
       [[ $# -eq 1 ]] || { usage >&2; return 1; }
+      require_auth
       local id
       id="$(sheet_id "$1")"
-      require_auth
       call GET "spreadsheets/$id?fields=properties.title,sheets.properties(title,sheetId,index,gridProperties(rowCount,columnCount))"
       ;;
     get)
       [[ $# -eq 2 ]] || { usage >&2; return 1; }
+      require_auth
       local id range
       id="$(sheet_id "$1")"
       range="$(uri_encode "$2")"
-      require_auth
       call GET "spreadsheets/$id/values/$range"
       ;;
     set)
       [[ $# -eq 2 || $# -eq 3 ]] || { usage >&2; return 1; }
+      require_auth
       local id range body
       id="$(sheet_id "$1")"
       range="$(uri_encode "$2")"
       body="$(values_body $# "${3:-}")"
-      require_auth
       call PUT "spreadsheets/$id/values/$range?valueInputOption=USER_ENTERED" "$body"
       ;;
     append)
       [[ $# -eq 2 || $# -eq 3 ]] || { usage >&2; return 1; }
+      require_auth
       local id range body
       id="$(sheet_id "$1")"
       range="$(uri_encode "$2")"
       body="$(values_body $# "${3:-}")"
-      require_auth
       call POST "spreadsheets/$id/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS" "$body"
       ;;
     api)
       [[ $# -eq 2 || $# -eq 3 ]] || { usage >&2; return 1; }
+      require_auth
       local method api_path="$2" body=""
       method="$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')"
       # GET は body なし。引数 3 つで渡すか、stdin にあれば JSON として送る。
@@ -263,7 +230,6 @@ main() {
           [[ -n "$body" ]] || die "body が JSON ではない"
         fi
       fi
-      require_auth
       call "$method" "$api_path" "$body"
       ;;
     *)
