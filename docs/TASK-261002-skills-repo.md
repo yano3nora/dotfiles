@@ -50,7 +50,7 @@
 
 - [x] `~/git/yano3nora/skills` を作る (install.sh / README.md / skills/*)
 - [x] gsheet の SKILL.md / scripts / README を配布先の読者向けに書き直す (dotfiles への参照を消す)
-- [ ] 人間: GitHub に `yano3nora/skills` (public) を作って push する
+- [x] 人間: GitHub に `yano3nora/skills` (public) を作って push する
 - [x] dotfiles に `ai/shared` を submodule 追加する
 - [x] `bin/dots` の `link_all` を submodule 参照に切り替える
 - [x] `windows/copy-configs.sh` を `install.sh` 委譲に切り替える
@@ -58,7 +58,7 @@
 - [x] `bin/README.md`, `ai/README.md`, `windows/README.md`, root `README.md` を直す
 - [x] `zsh -n bin/dots` / `bash -n install.sh` / 一時 HOME で `install.sh` と `dots link`
 - [x] Codex にレビュー依頼 (P2 3 件 / P3 1 件を反映。notes 参照)
-- [ ] 人間: Windows 実機で `git clone` → `./install.sh` → `gsheet meta` を確認
+- [x] 人間: Windows 実機で `git clone` → `./install.sh` → `gsheet meta` を確認
 
 ## testcases
 
@@ -68,9 +68,11 @@
 - [x] 一時 HOME で `dots link` を流すと skills と `~/.local/bin/gsheet` が submodule 配下への symlink になる。`gsheet.cmd` は張られない
 - [x] `~/.local/bin/gsheet --help` が従来どおり出る
 - [x] `grep -r 'bin/README\|bin/gsheet' skills/` が 0 件
-- [ ] Windows git bash と PowerShell で `gsheet meta <id>` が 200 を返す
+- [x] Windows git bash と PowerShell で `gsheet meta <id>` が 200 を返す
 
 ## notes
+
+- 2026-10-02: Windows 実機で確認済み。配布先と同じ経路 (`git clone` → `install.sh`、旧ファイルは `.bak` 退避) と、サブ機の経路 (`git submodule update --init ai/shared` → `copy-configs.sh`) の両方が通った。git bash / PowerShell の `gsheet meta`、`@file` の日本語書き込みも OK
 
 - Codex レビュー (2026-10-02) の指摘と対応
     - P2: `core.autocrlf=true` の Windows で clone すると shell script が CRLF になる。`.gitattributes` で LF 固定にした

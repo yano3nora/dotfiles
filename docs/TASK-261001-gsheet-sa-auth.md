@@ -38,7 +38,7 @@
 - [x] `bin/dots` の doctor から gcloud を削除、Brewfile のコメントを鍵作成用に変更
 - [x] `bash -n bin/gsheet` / `zsh -n bin/dots` / `dots doctor`
 - [x] Codex にレビュー依頼
-- [ ] 人間: Windows の `%USERPROFILE%\.config\gsheet\key.json` に鍵を置き、PowerShell から `gsheet meta` を確認
+- [x] 人間: Windows の `%USERPROFILE%\.config\gsheet\key.json` に鍵を置き、PowerShell から `gsheet meta` を確認 (2026-10-02)
 
 ## testcases
 
@@ -48,7 +48,7 @@
 - [x] 使い捨ての RSA 鍵で `meta` を呼ぶと、token endpoint が `invalid_grant` を返す。JWT の組み立てと通信が通る
 - [x] 偽 curl で `set` の request を見ると、`Authorization` はあり `x-goog-user-project` は無い
 - [x] Claude Code の sandbox 内では `oauth2.googleapis.com` が拒否される。`excludedCommands` の除外は引き続き要る
-- [ ] Windows: git bash の `~/.config/gsheet/key.json` が `%USERPROFILE%` 配下に解決され、PowerShell 経由でも読める
+- [x] Windows: git bash の `~/.config/gsheet/key.json` が `%USERPROFILE%` 配下に解決され、PowerShell 経由でも読める (2026-10-02)
 
 ## notes
 

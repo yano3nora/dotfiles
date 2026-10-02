@@ -47,7 +47,7 @@
 - [x] 偽 gcloud / curl で mac の `/bin/bash` 3.2 上の全コマンドを確認
 - [x] `bash -n bin/gsheet` / `dots doctor`
 - [x] Codex にレビュー依頼 (P2 1 件を反映。notes 参照)
-- [ ] 人間: Windows 実機で `gcloud --version` と `gsheet meta` を確認
+- [x] 人間: Windows 実機で `gsheet meta` を確認 (2026-10-02)。gcloud は SA 経路化で不要になった
 
 ## testcases
 
@@ -63,9 +63,9 @@
 - [x] SA 経路: `type` が service_account でない JSON、無い JSON は 1 行のエラーで非 0 終了する
 - [x] gcloud 経路: header と token が従来どおり付く
 - [x] SA 経路: 本物の鍵と SA に共有したスプシで `meta` が 200 を返す (2026-09-30 macOS)。未共有だと Sheets API が 403 `PERMISSION_DENIED` を返す
-- [ ] Windows git bash で `gcloud` が `command -v` で見つかる
-- [ ] Windows git bash で `gsheet meta <url>` が 200 を返す
-- [ ] Windows PowerShell で `gsheet meta <url>` が 200 を返し、`@<file>` の日本語が文字化けせず書ける
+- [x] Windows git bash で `gcloud` が `command -v` で見つかる → SA 経路化で不要になった
+- [x] Windows git bash で `gsheet meta <url>` が 200 を返す (2026-10-02)
+- [x] Windows PowerShell で `gsheet meta <id>` が 200 を返し、`@<file>` の日本語が文字化けせず書ける (2026-10-02)
 
 ## notes
 
