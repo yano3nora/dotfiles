@@ -96,13 +96,12 @@ place_path "$generated_dir/keybindings.json" "$APPDATA_DIR/Code/User/keybindings
 
 copy_path ai/CLAUDE.md "$HOME/.claude/CLAUDE.md"
 copy_path ai/CLAUDE.md "$HOME/.codex/AGENTS.md"
+# チーム配布用の skills (gsheet / show-me / why-me) は submodule の install.sh に任せる。配布先と同じ経路で入れる。
 # chrome-connect は zsh 製の bin/chrome-devtools に依存するので載せない。
-for skill in gsheet show-me why-me; do
-  copy_path "ai/skills/$skill" "$HOME/.claude/skills/$skill"
-  copy_path "ai/skills/$skill" "$HOME/.codex/skills/$skill"
-done
+[[ -x "$DOTFILES_ROOT/ai/shared/install.sh" ]] || die "skills submodule not found (run: git submodule update --init ai/shared)"
+"$DOTFILES_ROOT/ai/shared/install.sh"
 
 # git bash で動く bash 製のコマンドだけ。zsh 製のものは Windows に zsh が無いので載せない。
-for cmd in gsheet gsheet.cmd pdf2png; do
+for cmd in pdf2png; do
   copy_path "bin/$cmd" "$HOME/.local/bin/$cmd"
 done

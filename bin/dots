@@ -85,6 +85,26 @@ link_bin_files() {
   done
 }
 
+# チーム配布用の skills は submodule ai/shared から張る (ai/README.md 参照)。
+# 配布先と違い install.sh のコピーは使わない。理由: symlink なら submodule の更新にそのまま追従する。
+# skills/*/scripts/ の executable は bin/* と同じく ~/.local/bin に張る。.cmd は PowerShell 用なので mac では張らない。
+SKILLS_ROOT="$DOTFILES_ROOT/ai/shared"
+
+link_agent_skills() {
+  local skill script
+  if [[ ! -d "$SKILLS_ROOT/skills" ]]; then
+    warn "skills submodule not found: $SKILLS_ROOT (run: git submodule update --init ai/shared)"
+    return 0
+  fi
+  for skill in "$SKILLS_ROOT"/skills/*(N/); do
+    link_path "$skill" "$HOME/.claude/skills/${skill:t}"
+    link_path "$skill" "$HOME/.codex/skills/${skill:t}"
+    for script in "$skill"/scripts/*(N.x); do
+      link_path "$script" "$HOME/.local/bin/${script:t}"
+    done
+  done
+}
+
 # chrome-devtools-mcp の skills を local clone から直接張る (ai/README.md 参照)。
 # plugin 経由をやめたため、skills の供給元は clone だけになった。
 # clone 側で skill が増減しても追従するよう glob で回す。
@@ -129,14 +149,9 @@ link_all() {
   link_path "$DOTFILES_ROOT/gh/config.yml" "$HOME/.config/gh/config.yml"
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.codex/AGENTS.md"
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-  link_path "$DOTFILES_ROOT/ai/skills/chrome-connect" "$HOME/.claude/skills/chrome-connect"
-  link_path "$DOTFILES_ROOT/ai/skills/chrome-connect" "$HOME/.codex/skills/chrome-connect"
-  link_path "$DOTFILES_ROOT/ai/skills/show-me" "$HOME/.claude/skills/show-me"
-  link_path "$DOTFILES_ROOT/ai/skills/show-me" "$HOME/.codex/skills/show-me"
-  link_path "$DOTFILES_ROOT/ai/skills/why-me" "$HOME/.claude/skills/why-me"
-  link_path "$DOTFILES_ROOT/ai/skills/why-me" "$HOME/.codex/skills/why-me"
-  link_path "$DOTFILES_ROOT/ai/skills/gsheet" "$HOME/.claude/skills/gsheet"
-  link_path "$DOTFILES_ROOT/ai/skills/gsheet" "$HOME/.codex/skills/gsheet"
+  link_path "$DOTFILES_ROOT/ai/local/chrome-connect" "$HOME/.claude/skills/chrome-connect"
+  link_path "$DOTFILES_ROOT/ai/local/chrome-connect" "$HOME/.codex/skills/chrome-connect"
+  link_agent_skills
   link_chrome_devtools_skills
   link_bin_files
 }

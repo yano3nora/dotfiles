@@ -7,7 +7,16 @@ AI coding agent 向けの個人用グローバル設定を管理する。
 Managed files:
 
 - `CLAUDE.md` -> `~/.claude/CLAUDE.md` (Claude Code) / `~/.codex/AGENTS.md` (Codex)
-- `skills/*/` -> `~/.claude/skills/*` / `~/.codex/skills/*`
+- `shared/skills/*/` -> `~/.claude/skills/*` / `~/.codex/skills/*`。チーム配布用の skill。[yano3nora/skills](https://github.com/yano3nora/skills) の git submodule
+    - `shared/skills/*/scripts/*` -> `~/.local/bin/*`
+- `local/*/` -> `~/.claude/skills/*` / `~/.codex/skills/*`。この環境専用の skill (chrome-connect)
+
+## skills (submodule)
+
+- 汎用で公開できる skill は `skills` に置く。社内文脈を含む skill は社内 repo に置き、`skills` を参照する
+- 配布先は `git clone` → `./install.sh` → skill ごとの README。自分の環境は `dots link` の symlink で submodule に追従する
+- 更新: `git -C ai/shared pull && dots link`。submodule の commit を進めたら dotfiles 側も commit する
+- chrome-connect は載せない。理由: chrome-devtools-mcp の clone、Node 24、Chrome 側の remote debugging と依存が重く、mac 専用
 
 project 固有の `AGENTS.md` / `CLAUDE.md` は `project/` テンプレートの管轄で、ここでは扱わない。
 

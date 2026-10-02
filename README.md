@@ -34,7 +34,7 @@ macOS 用の個人 dotfiles。
 # Development
 ## Getting Started
 ```sh
-# zsh plugin (p10k など) は git submodule なので --recurse-submodules 必須
+# zsh plugin (p10k など) と ai/shared は git submodule なので --recurse-submodules 必須
 git clone --recurse-submodules git@github.com:yano3nora/dotfiles.git ~/git/yano3nora/dotfiles
 cd ~/git/yano3nora/dotfiles
 
@@ -69,7 +69,7 @@ reload
 - VSCode / Ghostty / LazyGit / leaf / gistan / gh 設定
 - `~/.codex/AGENTS.md` -> `ai/CLAUDE.md`
 - `~/.claude/CLAUDE.md` -> `ai/CLAUDE.md`
-- `~/.claude/skills/*`, `~/.codex/skills/*` -> `ai/skills/*`
+- `~/.claude/skills/*`, `~/.codex/skills/*` -> `ai/shared/skills/*` (submodule), `ai/local/*`
 
 ## Commands
 ```sh

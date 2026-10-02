@@ -24,12 +24,13 @@ OS 設定は項目ごとに「目的 / コマンド / 戻し方 / 適用日」�
 | `gh/config.yml` | そのままコピー |
 | `vscode/settings.json` | `windows/vscode-settings.json` を上書き merge して書き出す (フォントサイズ、既定ターミナルを Git Bash、Alt でメニューを開かない設定) |
 | `vscode/keybindings.json` | mac cmd -> ctrl に読み替えて書き出す (mac ctrl はそのまま、CapsLock = Ctrl)。Windows 標準を優先したい ctrl+X (今は `f` `d` `i` `[` `]`) は mac 側の割り当てを alt+X に逃がす。`cmd+w` と `cmd+shift+i` は読み替えない。詳細は `copy-configs.sh` のコメント |
-| `ai/CLAUDE.md`, `ai/skills/{gsheet,show-me,why-me}` | `~/.claude/`, `~/.codex/` にコピー |
-| `bin/{gsheet,gsheet.cmd,pdf2png}` | `~/.local/bin/` にコピー (git bash で動く bash 製のものだけ) |
+| `ai/CLAUDE.md` | `~/.claude/`, `~/.codex/` にコピー |
+| `ai/shared/` (submodule) | `install.sh` で `~/.claude/skills/`, `~/.codex/skills/`, `~/.local/bin/` にコピー。配布先と同じ経路 |
+| `bin/pdf2png` | `~/.local/bin/` にコピー (git bash で動く bash 製のものだけ) |
 | `mise/mac.toml` | 共有しない。`mise/win.toml` に絞って別管理 |
 | `Brewfile` の codex 経路 | mac と同じく公式 installer で入れる。手順は Getting Started の 6 |
 | `lazygit/config.yml` | 持っていかない。hunk と coda 前提。default で使う |
-| `ai/skills/chrome-connect`, zsh 製の `bin/*` | 持っていかない。zsh 前提 |
+| `ai/local/chrome-connect`, zsh 製の `bin/*` | 持っていかない。zsh 前提 |
 | `zsh/`, `Brewfile`, `macos/`, `ghostty/`, `coda/`, `leaf/`, `gistan/` | 持っていかない |
 
 ## Getting Started
@@ -43,6 +44,7 @@ winget install Microsoft.VisualStudioCode
 # 2. clone (gitconfig の include がこの path 前提)
 git clone https://github.com/yano3nora/dotfiles.git ~/git/yano3nora/dotfiles
 cd ~/git/yano3nora/dotfiles
+git submodule update --init ai/shared   # zsh plugin は要らないので全部は取らない
 # 3. 設定ファイルをコピー (既存は .bak.YYYYMMDDHHMMSS に退避)
 ./windows/copy-configs.sh
 # 4. CLI
@@ -59,7 +61,7 @@ powershell -c "irm https://chatgpt.com/codex/install.ps1 | iex"
 - `~/.local/bin` が PATH に無ければ通す (`gsheet.cmd` を PowerShell から呼ぶため、Windows のユーザー環境変数 PATH にも入れる)。
 - repo 側を更新したら `./windows/copy-configs.sh` をもう一度流す。中身が同じファイルは触らない。
 - Windows 側でコピー先を直接編集しても repo には戻らない。残したい変更は repo 側に書いてから流す。
-- gsheet / pdf2png の追加セットアップは [`bin/README.md`](../bin/README.md) の「on Windows」節。
+- gsheet の追加セットアップ (鍵 JSON、PATH) は `ai/shared/skills/gsheet/README.md`。pdf2png は [`bin/README.md`](../bin/README.md) の「on Windows」節。
 - VSCode のターミナルフォント `MesloLGS NF` は入れていなければ default に fallback する。
 
 OS 設定は下記 Settings をそのままコピペし、エクスプローラーを再起動して反映する (開いているエクスプローラーのウィンドウは閉じる)。
