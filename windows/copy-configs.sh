@@ -96,8 +96,8 @@ place_path "$generated_dir/keybindings.json" "$APPDATA_DIR/Code/User/keybindings
 
 copy_path ai/CLAUDE.md "$HOME/.claude/CLAUDE.md"
 copy_path ai/CLAUDE.md "$HOME/.codex/AGENTS.md"
-# チーム配布用の skills (gsheet / show-me / why-me) は submodule の install.sh に任せる。配布先と同じ経路で入れる。
-# chrome-connect は zsh 製の bin/chrome-devtools に依存するので載せない。
+# チーム配布用の skills は submodule の install.sh に任せる。配布先と同じ経路で入れる。
+# chrome-connect も入る。CLI は SKILL.md の mise exec 経由で起動するので bin/chrome-devtools は要らない。
 [[ -x "$DOTFILES_ROOT/ai/skills/yano3nora/install.sh" ]] || die "skills submodule not found (run: git submodule update --init ai/skills/yano3nora)"
 "$DOTFILES_ROOT/ai/skills/yano3nora/install.sh"
 
