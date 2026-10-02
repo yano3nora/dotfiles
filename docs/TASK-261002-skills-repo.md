@@ -12,12 +12,11 @@
 
 ## tobe
 
-- 汎用 skill は public repo `yano3nora/skills` に置く。dotfiles は `ai/shared` の git submodule で持つ
+- 汎用 skill は public repo `yano3nora/skills` に置く。dotfiles は `ai/skills/yano3nora` の git submodule で持つ
 - skill は Agent Skills の標準レイアウト (`SKILL.md` + `scripts/` + `README.md`) で自己完結させる
 - 配布先の手順は `git clone` → `./install.sh` → 鍵 JSON を置く、の 3 つ
-- chrome-connect は `ai/local/` に移す。理由: 名前の衝突を避ける。submodule は `ai/shared` に置く
+- chrome-connect も submodule に置く。CLI の導入は SKILL.md が `mise exec` での起動を案内する
 - dotfiles 側の正は submodule だけ。`bin/gsheet` と `ai/skills/{gsheet,show-me,why-me}` は消す
-- chrome-connect は dotfiles に残す。理由は notes
 
 ## 設計
 
@@ -40,8 +39,8 @@
     - `scripts/` 配下は `~/.local/bin` にコピーする。理由: Agent は PATH 上のコマンド名で呼ぶ方が安定する。mac の `excludedCommands: ["gsheet *"]` もコマンド名の前方一致
 - Claude Code の plugin / marketplace は使わない。理由: Codex が読まない、PATH に script を置けない、sandbox 設定を同梱できない。後から同じ `skills/` を指す marketplace を足すことはできる
 - dotfiles 側
-    - `bin/dots` の `link_all` は `ai/shared/skills/*` を glob で張り、`skills/*/scripts/*` の executable を `~/.local/bin` に張る
-    - `windows/copy-configs.sh` は skill と gsheet のコピーを `ai/shared/install.sh` に委譲する
+    - `bin/dots` の `link_all` は `ai/skills/*/skills/*` を glob で張り、`skills/*/scripts/*` の executable を `~/.local/bin` に張る
+    - `windows/copy-configs.sh` は skill と gsheet のコピーを `ai/skills/yano3nora/install.sh` に委譲する
     - 配布先と同じ手順を自分でも踏まない。理由: 自分の環境は symlink で submodule に追従させたい
 - 鍵の運用は 1 人 1 鍵。理由: 1 鍵を全員に配ると、1 人の漏洩で全員分の権限が漏れ、個別に失効できない
 - mac の `excludedCommands` は `~/.claude/settings.json` の個人設定なので同梱できない。skill の README に手動ステップとして書く
@@ -51,7 +50,7 @@
 - [x] `~/git/yano3nora/skills` を作る (install.sh / README.md / skills/*)
 - [x] gsheet の SKILL.md / scripts / README を配布先の読者向けに書き直す (dotfiles への参照を消す)
 - [x] 人間: GitHub に `yano3nora/skills` (public) を作って push する
-- [x] dotfiles に `ai/shared` を submodule 追加する
+- [x] dotfiles に `ai/skills/yano3nora` を submodule 追加する
 - [x] `bin/dots` の `link_all` を submodule 参照に切り替える
 - [x] `windows/copy-configs.sh` を `install.sh` 委譲に切り替える
 - [x] `bin/gsheet`, `bin/gsheet.cmd`, 旧 `ai/skills/{gsheet,show-me,why-me}` を消す
@@ -72,7 +71,9 @@
 
 ## notes
 
-- 2026-10-02: Windows 実機で確認済み。配布先と同じ経路 (`git clone` → `install.sh`、旧ファイルは `.bak` 退避) と、サブ機の経路 (`git submodule update --init ai/shared` → `copy-configs.sh`) の両方が通った。git bash / PowerShell の `gsheet meta`、`@file` の日本語書き込みも OK
+- 2026-10-02: chrome-devtools-mcp 1.9.0 で `start --autoConnect` が直ったので、chrome-connect も submodule へ移し `ai/local/` を廃止した。submodule の mount は `ai/shared` から `ai/skills/yano3nora` へ変えた。`ai/skills/<owner>/` に他の人の skills repo も並べられる構造にした。規約は 3 つ。layout は `skills/<name>/SKILL.md` に限る。同名 skill は owner 名の辞書順で先勝ち。submodule を足すことがその repo を信頼する行為で、更新時は diff を見る。旧 `ai/skills/<name>` 直置きとは別物
+
+- 2026-10-02: Windows 実機で確認済み。配布先と同じ経路 (`git clone` → `install.sh`、旧ファイルは `.bak` 退避) と、サブ機の経路 (`git submodule update --init ai/skills/yano3nora` → `copy-configs.sh`) の両方が通った。git bash / PowerShell の `gsheet meta`、`@file` の日本語書き込みも OK
 
 - Codex レビュー (2026-10-02) の指摘と対応
     - P2: `core.autocrlf=true` の Windows で clone すると shell script が CRLF になる。`.gitattributes` で LF 固定にした
@@ -82,5 +83,5 @@
 
 - 2026-10-02: `~/git/yano3nora/skills` は local で `git init` + 初回 commit 済み (submodule 追加に commit が要る)。`.gitmodules` の url は GitHub を指すが、push 前なので `git submodule update` は失敗する。push 後に `git submodule sync` 不要、そのまま使える
 
-- chrome-connect は切り出さない。理由: upstream の chrome-devtools-mcp の clone、Node 24、`claude mcp add`、Chrome 側の remote debugging ON、と依存の連鎖が重い。CLI 自体も v1.7.0 の既知の罠が残る「試用中」。配布先の非エンジニアがログイン済み Chrome を Agent に開放するリスクも大きい。bash 化だけなら 1 行だが、周辺が追いついてから考える
+- (撤回済み。上の 2026-10-02 の note を参照) chrome-connect は切り出さない。理由: upstream の chrome-devtools-mcp の clone、Node 24、`claude mcp add`、Chrome 側の remote debugging ON、と依存の連鎖が重い。CLI 自体も v1.7.0 の既知の罠が残る「試用中」。配布先の非エンジニアがログイン済み Chrome を Agent に開放するリスクも大きい。bash 化だけなら 1 行だが、周辺が追いついてから考える
 - Windows の `~/.local/bin` の PATH 追加は `install.sh` ではやらない。理由: bash から `powershell -Command` を呼ぶと `$env` が bash に展開される事故が既にあった。README の PowerShell 手順に残す

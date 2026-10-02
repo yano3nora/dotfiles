@@ -7,16 +7,21 @@ AI coding agent 向けの個人用グローバル設定を管理する。
 Managed files:
 
 - `CLAUDE.md` -> `~/.claude/CLAUDE.md` (Claude Code) / `~/.codex/AGENTS.md` (Codex)
-- `shared/skills/*/` -> `~/.claude/skills/*` / `~/.codex/skills/*`。チーム配布用の skill。[yano3nora/skills](https://github.com/yano3nora/skills) の git submodule
-    - `shared/skills/*/scripts/*` -> `~/.local/bin/*`
-- `local/*/` -> `~/.claude/skills/*` / `~/.codex/skills/*`。この環境専用の skill (chrome-connect)
+- `skills/<owner>/skills/*/` -> `~/.claude/skills/*` / `~/.codex/skills/*`。skills repo の git submodule。自分のは [yano3nora/skills](https://github.com/yano3nora/skills)
+    - `skills/<owner>/skills/*/scripts/*` -> `~/.local/bin/*`
 
 ## skills (submodule)
 
-- 汎用で公開できる skill は `skills` に置く。社内文脈を含む skill は社内 repo に置き、`skills` を参照する
+`ai/skills/<owner>/` に skills repo を submodule として並べる。owner は GitHub の owner 名。
+
+- 取り込める repo は `skills/<name>/SKILL.md` の layout に限る。違う layout の repo は fork して合わせる
+- 同名の skill と同名の script は owner 名の辞書順で先勝ち。後のものは `dots link` が警告して skip する
+- submodule を足すことは、その repo の SKILL.md と scripts を信頼する行為。更新時は diff を見てから commit する
+- 汎用で公開できる skill は `yano3nora/skills` に置く。社内文脈を含む skill は社内 repo に置き、`yano3nora/skills` を参照する
 - 配布先は `git clone` → `./install.sh` → skill ごとの README。自分の環境は `dots link` の symlink で submodule に追従する
-- 更新: `git -C ai/shared pull && dots link`。submodule の commit を進めたら dotfiles 側も commit する
-- chrome-connect は載せない。理由: chrome-devtools-mcp の clone、Node 24、Chrome 側の remote debugging と依存が重く、mac 専用
+- 更新: `git submodule update --remote ai/skills/<owner> && dots link`。submodule の commit を進めたら dotfiles 側も commit する
+- 自分の repo を編集するときは `git -C ai/skills/yano3nora switch main` してから commit する。理由: submodule は通常 detached HEAD で checkout される
+- chrome-connect も `skills` に置く。CLI の起動は `mise exec node@24 npm:chrome-devtools-mcp@latest` で揃え、`bin/chrome-devtools` と同じ Node 固定にする。Windows は未検証
 
 project 固有の `AGENTS.md` / `CLAUDE.md` は `project/` テンプレートの管轄で、ここでは扱わない。
 

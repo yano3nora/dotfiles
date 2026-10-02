@@ -98,8 +98,8 @@ copy_path ai/CLAUDE.md "$HOME/.claude/CLAUDE.md"
 copy_path ai/CLAUDE.md "$HOME/.codex/AGENTS.md"
 # チーム配布用の skills (gsheet / show-me / why-me) は submodule の install.sh に任せる。配布先と同じ経路で入れる。
 # chrome-connect は zsh 製の bin/chrome-devtools に依存するので載せない。
-[[ -x "$DOTFILES_ROOT/ai/shared/install.sh" ]] || die "skills submodule not found (run: git submodule update --init ai/shared)"
-"$DOTFILES_ROOT/ai/shared/install.sh"
+[[ -x "$DOTFILES_ROOT/ai/skills/yano3nora/install.sh" ]] || die "skills submodule not found (run: git submodule update --init ai/skills/yano3nora)"
+"$DOTFILES_ROOT/ai/skills/yano3nora/install.sh"
 
 # git bash で動く bash 製のコマンドだけ。zsh 製のものは Windows に zsh が無いので載せない。
 for cmd in pdf2png; do

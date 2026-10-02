@@ -45,7 +45,7 @@ dots link
 - `ppt2png` - export pptx / pdf pages to png at a given scale via PowerPoint + poppler (macOS only)
 - `pdf2png` - export pdf pages to png at a given scale via poppler (bash, macOS / Windows git bash)
 
-`gsheet` はここには無い。submodule `ai/shared/skills/gsheet/scripts/` にあり、`dots link` が `~/.local/bin` に張る。
+`gsheet` はここには無い。submodule `ai/skills/yano3nora/skills/gsheet/scripts/` にあり、`dots link` が `~/.local/bin` に張る。
 
 ## pdf2png on Windows (git bash)
 

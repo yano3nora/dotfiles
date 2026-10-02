@@ -14,7 +14,7 @@ brew "wget"
 brew "btop"
 brew "pv"
 brew "mas"         # 下記 mas エントリ用。App Store サインイン + 入手済み履歴が前提
-# gcloud は gsheet (ai/shared) のサービスアカウントと鍵を作るときだけ使う。実行時は要らない。
+# gcloud は gsheet (ai/skills/yano3nora) のサービスアカウントと鍵を作るときだけ使う。実行時は要らない。
 # mise の gcloud plugin は動かず、Python 同梱の大きな SDK なので brew に置く。
 cask "gcloud-cli"  # gsheet の鍵作成用。旧 cask 名 "google-cloud-sdk" から改名された
 

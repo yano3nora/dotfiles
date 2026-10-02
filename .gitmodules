@@ -7,6 +7,6 @@
 [submodule "zsh/plugins/zsh-syntax-highlighting"]
 	path = zsh/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
-[submodule "ai/shared"]
-	path = ai/shared
+[submodule "ai/skills/yano3nora"]
+	path = ai/skills/yano3nora
 	url = https://github.com/yano3nora/skills.git

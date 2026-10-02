@@ -85,22 +85,41 @@ link_bin_files() {
   done
 }
 
-# チーム配布用の skills は submodule ai/shared から張る (ai/README.md 参照)。
+# チーム配布用の skills は ai/skills/<owner>/ の submodule から張る (ai/README.md 参照)。
 # 配布先と違い install.sh のコピーは使わない。理由: symlink なら submodule の更新にそのまま追従する。
+# 取り込める repo は skills/<name>/SKILL.md の layout に限る。違う layout の repo は fork して合わせる。
+# 同名の skill と同名の script は owner 名の辞書順で先勝ちにし、後のものは警告して skip する。
+# 理由: link_path は既存を .bak に退避するので、取り合うと dots link のたびに入れ替わる。
 # skills/*/scripts/ の executable は bin/* と同じく ~/.local/bin に張る。.cmd は PowerShell 用なので mac では張らない。
-SKILLS_ROOT="$DOTFILES_ROOT/ai/shared"
+SKILLS_ROOT="$DOTFILES_ROOT/ai/skills"
 
 link_agent_skills() {
-  local skill script
-  if [[ ! -d "$SKILLS_ROOT/skills" ]]; then
-    warn "skills submodule not found: $SKILLS_ROOT (run: git submodule update --init ai/shared)"
-    return 0
-  fi
-  for skill in "$SKILLS_ROOT"/skills/*(N/); do
-    link_path "$skill" "$HOME/.claude/skills/${skill:t}"
-    link_path "$skill" "$HOME/.codex/skills/${skill:t}"
-    for script in "$skill"/scripts/*(N.x); do
-      link_path "$script" "$HOME/.local/bin/${script:t}"
+  local repo skill script name
+  local -A linked linked_scripts
+  for repo in "$SKILLS_ROOT"/*(N/); do
+    if [[ ! -d "$repo/skills" ]]; then
+      warn "skills submodule not initialized: $repo (run: git submodule update --init ${repo#$DOTFILES_ROOT/})"
+      continue
+    fi
+    for skill in "$repo"/skills/*(N/); do
+      [[ -f "$skill/SKILL.md" ]] || continue
+      name="${skill:t}"
+      if [[ -n "${linked[$name]-}" ]]; then
+        warn "skip duplicate skill: $skill (already linked from ${linked[$name]})"
+        continue
+      fi
+      linked[$name]="$skill"
+      link_path "$skill" "$HOME/.claude/skills/$name"
+      link_path "$skill" "$HOME/.codex/skills/$name"
+      for script in "$skill"/scripts/*(N.x); do
+        name="${script:t}"
+        if [[ -n "${linked_scripts[$name]-}" ]]; then
+          warn "skip duplicate script: $script (already linked from ${linked_scripts[$name]})"
+          continue
+        fi
+        linked_scripts[$name]="$script"
+        link_path "$script" "$HOME/.local/bin/$name"
+      done
     done
   done
 }
@@ -149,8 +168,6 @@ link_all() {
   link_path "$DOTFILES_ROOT/gh/config.yml" "$HOME/.config/gh/config.yml"
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.codex/AGENTS.md"
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-  link_path "$DOTFILES_ROOT/ai/local/chrome-connect" "$HOME/.claude/skills/chrome-connect"
-  link_path "$DOTFILES_ROOT/ai/local/chrome-connect" "$HOME/.codex/skills/chrome-connect"
   link_agent_skills
   link_chrome_devtools_skills
   link_bin_files
