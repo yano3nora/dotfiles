@@ -58,7 +58,10 @@ Chrome を DevTools protocol 経由で Claude Code から操作・デバッグ�
 構成: **plugin は使わない**。MCP server は user scope、CLI は `bin/chrome-devtools`、skills は local clone からの symlink で入れる。
 
 - MCP server も CLI も `mise exec node@24 npm:chrome-devtools-mcp@latest --` で起動し、Node を project に委ねない。理由: plugin 内蔵の server 定義 (`npx chrome-devtools-mcp`) と mise の npm shim は PATH の node で動くため、`.node-version` が 18 以下の project では SyntaxError で即死する (1.9.0 は Node 20.19+ 必須)。plugin は server 定義を差し替えられない ([#1232](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/1232)) ので plugin ごとやめた
-- `npm:chrome-devtools-mcp` は mise の global config に載せない。載せると shim が PATH の先頭に出て `bin/chrome-devtools` を隠す。初回は `mise exec` が自動 install する。更新は自動ではない
+- 本体 `npm:chrome-devtools-mcp` は初回の `mise exec` が自動 install する。更新は自動ではない
+- 本体も `chrome-devtools` という同名コマンドを持つ。mise は installed な tool に shim を作り、`mise activate` は shims を PATH に残す。そのまま同名 shim があると `bin/chrome-devtools` より先に拾われる
+- 対策は `mise/mac.toml` の `shims.exclude = ["chrome-devtools"]`。この名前だけ shim を作らせない。設定を変えたら `mise reshim` で既存 shim が消える。確認は `which -a chrome-devtools` が `~/.local/bin` だけになること
+- 本体を mise の config (global / project) で active にもしない。理由: active な tool の実 bin dir は `~/.local/bin` より前に出るので、exclude しても `bin/chrome-devtools` が負ける
 - skills は upstream の clone (`~/git/ChromeDevTools/chrome-devtools-mcp/skills/*`) を `dots link` で `~/.claude/skills` に張る。clone 側の skill 増減に追従する。`chrome-devtools-cli` skill が叩く `chrome-devtools` は `bin/chrome-devtools` に解決される
 - clone は `--depth 1` で submodule なし (~16MB)。upstream が `devtools-frontend` を submodule 化しており、marketplace 経由の clone は 120s で timeout する ([#2829](https://github.com/ChromeDevTools/chrome-devtools-mcp/issues/2829))
     - #2829 は closed だが未解決。修正 PR [#2835](https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/2835) は `npm run prepare` の sparse checkout 化と `.gitmodules` の `fetchRecurseSubmodules = false` のみ

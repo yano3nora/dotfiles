@@ -20,8 +20,6 @@ powershell-core = "latest"
 "github:yano3nora/rubylize" = "0.2.0"
 "github:yano3nora/jsonalize" = "0.1.0"
 marp-cli = "latest"
-# npm:chrome-devtools-mcp は意図的に載せていない。bin/chrome-devtools が Node 24 固定で mise exec する (ai/README.md 参照)。
-# ここに載せると shim が PATH の先頭に出て、project の .node-version (18 以下) で起動できなくなる。
 gh = "latest"
 bat = "latest"
 direnv = "latest"
@@ -38,5 +36,10 @@ uv = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node", "python"]
+# chrome-devtools の入口は bin/chrome-devtools に固定する (ai/README.md 参照)。
+# 理由: 本体 npm:chrome-devtools-mcp も同名コマンドを持ち、mise activate は shims を PATH に残す。
+# shim があると bin/chrome-devtools より先に拾われるので、この名前だけ shim を作らせない。
+# 本体を [tools] にも載せない。active な tool の実 bin dir は ~/.local/bin より前に出る。
+shims.exclude = ["chrome-devtools"]
 
 [settings.status]
