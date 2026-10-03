@@ -21,7 +21,7 @@ Managed files:
 - 配布先は `git clone` → `./install.sh` → skill ごとの README。自分の環境は `dots link` の symlink で submodule に追従する
 - 更新: `git submodule update --remote ai/skills/<owner> && dots link`。submodule の commit を進めたら dotfiles 側も commit する
 - 自分の repo を編集するときは `git -C ai/skills/yano3nora switch main` してから commit する。理由: submodule は通常 detached HEAD で checkout される
-- chrome-connect も `skills` に置く。CLI の起動は `mise exec node@24 npm:chrome-devtools-mcp@latest` で揃え、`bin/chrome-devtools` と同じ Node 固定にする。Windows は未検証
+- chrome-connect も `skills` に置く。CLI の起動は `mise exec node@24 npm:chrome-devtools-mcp@latest` で揃え、`bin/chrome-devtools` と同じ Node 固定にする
 
 project 固有の `AGENTS.md` / `CLAUDE.md` は `project/` テンプレートの管轄で、ここでは扱わない。
 
