@@ -1,0 +1,5 @@
+# git bash 用の bashrc。~/.bashrc から source する。
+alias reload="exec $SHELL -l"
+
+# Ctrl+T / Ctrl+R / Alt+C を fzf にする。mise install 前でも起動を壊さない。
+command -v fzf >/dev/null && eval "$(fzf --bash)"

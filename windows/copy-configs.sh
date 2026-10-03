@@ -93,6 +93,9 @@ vscode_settings_for_windows > "$generated_dir/settings.json"
 place_path "$generated_dir/settings.json" "$APPDATA_DIR/Code/User/settings.json"
 vscode_keybindings_for_windows > "$generated_dir/keybindings.json"
 place_path "$generated_dir/keybindings.json" "$APPDATA_DIR/Code/User/keybindings.json"
+# ~/.bashrc は source 行だけ置く。repo の windows/bashrc を編集すれば、再コピーせずに反映される。
+printf 'source "%s/windows/bashrc"\n' "$DOTFILES_ROOT" > "$generated_dir/bashrc"
+place_path "$generated_dir/bashrc" "$HOME/.bashrc"
 
 copy_path ai/CLAUDE.md "$HOME/.claude/CLAUDE.md"
 copy_path ai/CLAUDE.md "$HOME/.codex/AGENTS.md"
