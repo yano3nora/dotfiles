@@ -12,7 +12,7 @@
 [init]
   defaultBranch = main
 [alias]
-  fch = fetch --prune --all
+  fh = fetch --prune --all
   st = status
   co = checkout
   ad = add -A
