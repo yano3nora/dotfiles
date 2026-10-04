@@ -23,6 +23,7 @@
 - [x] `mise/win.toml` に `gitleaks` を足し、`windows/copy-configs.sh` で hook をコピーする
 - [x] README / `git/README.md` / `windows/README.md` を更新する
 - [x] `dots link` で実機に hook を張る
+- [x] `project/` の template も gitleaks に寄せる。`project/mise.toml` の例に tools と pre-commit を足し、`project/typescript` に一度入れた secretlint は外す
 - [x] Codex レビュー。worktree 対応で hook の置き場を `git rev-parse --git-path` に変えた
 - [ ] Windows サブ機で `mise install` と `copy-configs.sh` を流す (人間)
 
