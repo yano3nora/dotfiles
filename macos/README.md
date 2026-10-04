@@ -42,6 +42,8 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticInlinePredictionEnabled -bool false
+# キーボードナビゲーション on (Tab でダイアログのボタンやコントロールへフォーカス移動)
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 2
 # トラックパッド / マウス (トラックパッド速度は default のまま)
 defaults write NSGlobalDomain com.apple.mouse.scaling -float 2
 defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool false
