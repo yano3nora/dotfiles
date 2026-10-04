@@ -8,9 +8,8 @@ os:
 gui:
   mouseEvents: true
 git:
-  autoRefresh: false
   autoFetch: false
-  autoDetectExternalChanges: false
-  fetchAll: false
+  # autoRefresh: false
+  # autoDetectExternalChanges: false
   diffRenderers:
     - command: hunk pager --transparent-bg
