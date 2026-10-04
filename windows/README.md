@@ -23,6 +23,7 @@ OS 設定は項目ごとに「目的 / コマンド / 戻し方 / 適用日」�
 |---|---|
 | `git/gitconfig`, `git/gitignore_global` | `windows/gitconfig` から include。`core.pager` の hunk だけ less に上書き (hunk は Windows で入らない) |
 | `gh/config.yml` | そのままコピー |
+| `git/hooks/pre-commit` | この repo の `.git/hooks/` にコピー。gitleaks は `mise/win.toml` で入る |
 | `vscode/settings.json` | `windows/vscode-settings.json` を上書き merge して書き出す (フォントサイズ、既定ターミナルを Git Bash、Alt でメニューを開かない設定) |
 | `vscode/keybindings.json` | mac cmd -> ctrl に読み替えて書き出す (mac ctrl はそのまま、CapsLock = Ctrl)。Windows 標準を優先したい ctrl+X (今は `f` `d` `i` `[` `]`) は mac 側の割り当てを alt+X に逃がす。`cmd+w` と `cmd+shift+i` は読み替えない。詳細は `copy-configs.sh` のコメント |
 | `ai/CLAUDE.md` | `~/.claude/`, `~/.codex/` にコピー |

@@ -1,0 +1,5 @@
+#!/bin/sh
+# 公開 repo なので、commit 前に secret の混入を gitleaks で止める。
+# 作業ツリーではなく index を見る。理由: commit されるのは index の内容。
+# gitleaks が無ければ exit 127 で commit は止まる。入れ方は mise/mac.toml と mise/win.toml。
+exec gitleaks git --pre-commit --staged --redact --verbose --no-banner --log-level warn
