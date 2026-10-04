@@ -59,6 +59,7 @@ reload
 - `~/.config/dotfiles` -> this repository
 - `git/gitconfig` -> `~/.gitconfig`
 - `git/gitignore_global` -> `~/.gitignore_global`
+- `git/hooks/pre-commit` -> この repo の `.git/hooks/pre-commit` (gitleaks)
 - `~/.zshrc` -> `zsh/zshrc`
 - `~/.p10k.zsh` -> `zsh/p10k.zsh`
 - `~/.config/mise/config.toml` -> `mise/mac.toml`

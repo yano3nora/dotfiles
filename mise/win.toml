@@ -14,6 +14,7 @@ fzf = "latest"
 bat = "latest"
 "ubi:sharkdp/fd" = "latest"
 uv = "latest"
+gitleaks = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node", "python"]

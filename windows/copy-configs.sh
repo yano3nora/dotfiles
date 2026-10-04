@@ -86,6 +86,8 @@ info "dotfiles root: $DOTFILES_ROOT"
 copy_path windows/gitconfig "$HOME/.gitconfig"
 copy_path git/gitignore_global "$HOME/.gitignore_global"
 copy_path mise/win.toml "$HOME/.config/mise/config.toml"
+# この repo 自身の pre-commit (gitleaks)。HOME ではなく repo の hooks dir に置く。置き場は git に聞く (worktree 対応)。
+copy_path git/hooks/pre-commit "$(git -C "$DOTFILES_ROOT" rev-parse --path-format=absolute --git-path hooks)/pre-commit"
 copy_path gh/config.yml "$APPDATA_DIR/GitHub CLI/config.yml"
 generated_dir="$(mktemp -d)"
 trap 'rm -rf "$generated_dir"' EXIT

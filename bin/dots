@@ -153,6 +153,10 @@ link_all() {
   link_path "$DOTFILES_ROOT" "$DOTFILES_CONFIG_LINK"
   link_path "$DOTFILES_ROOT/git/gitconfig" "$HOME/.gitconfig"
   link_path "$DOTFILES_ROOT/git/gitignore_global" "$HOME/.gitignore_global"
+  # この repo 自身の pre-commit。HOME ではなく repo の hooks dir に張る。
+  # 置き場は git に聞く。理由: worktree では .git がファイルで、hooks は共通 dir にある。
+  # dir までを聞く。理由: file まで聞くと既存 symlink の実体に解決され、自己参照 link になる。
+  link_path "$DOTFILES_ROOT/git/hooks/pre-commit" "$(git -C "$DOTFILES_ROOT" rev-parse --path-format=absolute --git-path hooks)/pre-commit"
   link_path "$DOTFILES_ROOT/zsh/zshrc" "$HOME/.zshrc"
   link_path "$DOTFILES_ROOT/zsh/p10k.zsh" "$HOME/.p10k.zsh"
   link_path "$DOTFILES_ROOT/mise/mac.toml" "$HOME/.config/mise/config.toml"
@@ -198,6 +202,7 @@ doctor() {
     fd
     fzf
     lazygit
+    gitleaks
   )
 
   info "checking commands"
