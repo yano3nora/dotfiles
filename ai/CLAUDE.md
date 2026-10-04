@@ -45,6 +45,7 @@
     - `< /dev/null` は付けない。Bash tool の stdin は即 EOF なのでデッドロックしない
     - `-o` には実在する絶対パスを渡す。進捗と結果は --json の stdout を tool 結果から読む
     - セッションを毎回新規起動せず --json イベントの thread.started (thread_id) を `codex exec -s read-only --json -o <出力> resume <thread_id> "<プロンプト>"` のように指定して再利用すること
+    - プロンプト文字列に `` ` ``  と `$(` を入れない。理由: Bash tool がコマンド置換とみなし `codex *` の除外に一致しなくなる
 
 # 禁止事項
 - 本番環境へのリリース・変更操作、GitHub や NPM などホスティングサービスへの公開 (push, publish) は人間が判断するため **指示を受けても絶対に行わないこと**
