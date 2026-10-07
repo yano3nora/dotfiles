@@ -27,6 +27,8 @@
 
 [push]
   default = current
+  # submodule の commit を先に push する。理由: 親が参照する hash を clone 先で取れるようにする。
+  recurseSubmodules = on-demand
 [core]
   pager = hunk pager --no-transparent-bg
 [merge]

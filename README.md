@@ -109,6 +109,23 @@ dots project --typescript --react
 2. `bin/dots` の `link_all` に symlink を追加する
 3. `dots link` を実行する
 
+### submodule (ai/skills/yano3nora) を変更する
+順番は「submodule を commit → dotfiles を commit → push」。
+`git push` は submodule を先に push する。理由: `git/gitconfig` の `push.recurseSubmodules = on-demand` で、dotfiles が参照する submodule の commit を先に送る。
+
+```sh
+# 事前確認: main であること。空なら detached HEAD なので git -C ai/skills/yano3nora switch main
+git -C ai/skills/yano3nora branch --show-current
+
+# submodule commit → dotfiles commit → 両方 push
+git -C ai/skills/yano3nora add -A && git -C ai/skills/yano3nora commit -m "fix: ..."
+git add ai/skills/yano3nora && git commit -m "fix: skills submodule を更新 (...)"
+git push
+```
+
+他の端末で取り込むときは `git pull && git submodule update --init`。
+submodule 側だけ最新にしたいときは `git submodule update --remote ai/skills/yano3nora` の後に dotfiles 側を commit / push する。
+
 # MacBook Tuning
 symlink やコマンドで管理できない macOS 側の設定 (defaults / ショートカット / Spotlight 停止 / 症状が出たら入れる対処) は [`macos/README.md`](macos/README.md) にまとめる。
 新しい Mac に移るときはそこを上から順に適用する。
