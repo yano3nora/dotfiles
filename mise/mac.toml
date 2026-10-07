@@ -23,8 +23,6 @@ marp-cli = "latest"
 gh = "latest"
 bat = "latest"
 direnv = "latest"
-# aqua の fd は darwin/amd64 未対応のため、GitHub Release から直接取る ubi を使う。
-"ubi:sharkdp/fd" = "latest"
 fzf = "latest"
 lazygit = "latest"
 peco = "latest"
@@ -33,6 +31,8 @@ yazi = "latest"
 uv = "latest"
 "pipx:pdm" = "latest"
 firebase = "latest"
+"github:dalance/procs" = "latest"
+"github:sharkdp/fd" = "latest"
 # php@8.1 is still managed by Homebrew for now. mise php requires build dependencies such as autoconf.
 
 [settings]
