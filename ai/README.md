@@ -125,18 +125,18 @@ dots mcp off    # 全部 off
 
 ## Claude Code Sandbox 除外 (`excludedCommands`)
 
-Claude Code の sandbox は `googleapis.com` への通信を拒否する。`gsheet` は token の取得と Sheets API の呼び出しで落ちる。
+`codex` は Claude Code の sandbox 内では起動に失敗する。
 `~/.claude/settings.json` は repo 管理しないので、次を手動で維持する:
 
 ```json
 {
   "sandbox": {
-    "excludedCommands": ["codex *", "gsheet *"]
+    "excludedCommands": ["codex *"]
   }
 }
 ```
 
-- 一致はコマンド文字列全体が `gsheet …` のときだけ。`cd` / パイプ / `&&` / リダイレクトで包むと sandbox 内で起動して失敗する
+- 一致はコマンド文字列全体が `codex …` のときだけ。`cd` / パイプ / `&&` / リダイレクトで包むと sandbox 内で起動して失敗する
 - `dangerouslyDisableSandbox` は採らない。理由: auto mode の classifier に止められる
 
 ## Trouble Shooting

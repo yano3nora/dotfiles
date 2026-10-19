@@ -60,10 +60,10 @@ powershell -c "irm https://chatgpt.com/codex/install.ps1 | iex"
 - codex は mise に載せない。理由: mise (aqua) は `codex.exe` 単体しか入れず、補助 exe が無いので起動できない。
 - 以前 mise で入れていた場合は、先に `mise uninstall aqua:openai/codex` で消す。理由: mise の shim が installer 版より PATH で優先されることがある。
 
-- `~/.local/bin` が PATH に無ければ通す (`gsheet.cmd` を PowerShell から呼ぶため、Windows のユーザー環境変数 PATH にも入れる)。
+- `~/.local/bin` が PATH に無ければ通す。
 - repo 側を更新したら `./windows/copy-configs.sh` をもう一度流す。中身が同じファイルは触らない。
 - Windows 側でコピー先を直接編集しても repo には戻らない。残したい変更は repo 側に書いてから流す。
-- gsheet の追加セットアップ (鍵 JSON、PATH) は `ai/skills/yano3nora/skills/gsheet/README.md`。pdf2png は [`bin/README.md`](../bin/README.md) の「on Windows」節。
+- pdf2png の追加セットアップは [`bin/README.md`](../bin/README.md) の「on Windows」節。
 - VSCode のターミナルフォント `MesloLGS NF` は入れていなければ default に fallback する。
 
 OS 設定は下記 Settings をそのままコピペし、エクスプローラーを再起動して反映する (開いているエクスプローラーのウィンドウは閉じる)。
