@@ -14,7 +14,7 @@ goreleaser = "latest"
 "github:yano3nora/coda" = "0.8.3"
 aws-sam-cli = { version = "1.163.0", symlink_bins = "true" }
 yq = "latest"
-"github:yano3nora/excel2json" = "latest"
+"github:yano3nora/excel2json" = "0.2.0"
 "github:yano3nora/kawsay" = "0.1.1"
 powershell-core = "latest"
 "github:yano3nora/rubylize" = "0.2.0"
