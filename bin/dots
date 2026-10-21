@@ -147,6 +147,25 @@ link_chrome_devtools_skills() {
   done
 }
 
+# hunk 同梱の hunk-review skill を張る。agent が hunk session のコメントを読む手順が書いてある。
+# `hunk skill path` は version 付き dir を返す。そのまま張ると hunk 更新で link が切れる。
+# mise は installs/hunk/latest -> <version> を持つので、mise 管理なら latest 経由に差し替える。
+link_hunk_skills() {
+  local skill rel mise_dir stable
+  if ! skill="$(hunk skill path 2>/dev/null)"; then
+    warn "hunk not found (see mise/mac.toml)"
+    return 0
+  fi
+  skill="${skill:h}"
+  if mise_dir="$(mise where hunk 2>/dev/null)"; then
+    rel="${skill#$mise_dir/}"
+    stable="${mise_dir:h}/latest/$rel"
+    [[ -d "$stable" ]] && skill="$stable"
+  fi
+  link_path "$skill" "$HOME/.claude/skills/${skill:t}"
+  link_path "$skill" "$HOME/.codex/skills/${skill:t}"
+}
+
 link_all() {
   info "dotfiles root: $DOTFILES_ROOT"
 
@@ -174,6 +193,7 @@ link_all() {
   link_path "$DOTFILES_ROOT/ai/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
   link_agent_skills
   link_chrome_devtools_skills
+  link_hunk_skills
   link_bin_files
 }
 
@@ -202,6 +222,7 @@ doctor() {
     fd
     fzf
     lazygit
+    hunk
     gitleaks
   )
 

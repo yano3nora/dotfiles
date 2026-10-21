@@ -13,3 +13,16 @@ git:
   # autoDetectExternalChanges: false
   diffRenderers:
     - command: hunk pager --transparent-bg
+# diffRenderers は描画専用で hunk の TUI は動かない。
+# コメントや session を使いたいときは H で hunk 本体を起動する。
+customCommands:
+  - key: 'H'
+    context: 'files'
+    description: 'Open in hunk'
+    command: 'hunk diff -- {{.SelectedFile.Name | quote}}'
+    output: terminal
+  - key: 'H'
+    context: 'commits'
+    description: 'Open in hunk'
+    command: 'hunk show {{.SelectedCommit.Hash}}'
+    output: terminal

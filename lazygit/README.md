@@ -28,6 +28,8 @@ Current config uses:
 
 - `coda` as editor (custom `os.edit`, vim-compatible `+N` line jump)
 - `hunk` as diff renderer (`git.diffRenderers`)
+- `H` opens the selected file or commit in `hunk` itself (`customCommands`)
+    - `diffRenderers` only renders text, so hunk comments need this
 
 ## Important Commands
 

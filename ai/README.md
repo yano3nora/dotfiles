@@ -7,6 +7,7 @@ AI coding agent 向けの個人用グローバル設定を管理する。
 Managed files:
 
 - `CLAUDE.md` -> `~/.claude/CLAUDE.md` (Claude Code) / `~/.codex/AGENTS.md` (Codex)
+- `hunk` 同梱の `hunk-review` skill -> `~/.claude/skills/hunk-review` / `~/.codex/skills/hunk-review`。`hunk skill path` を mise の `latest` 経由で張る
 - `skills/<owner>/skills/*/` -> `~/.claude/skills/*` / `~/.codex/skills/*`。skills repo の git submodule。自分のは [yano3nora/skills](https://github.com/yano3nora/skills)
     - `skills/<owner>/skills/*/scripts/*` -> `~/.local/bin/*`
 
