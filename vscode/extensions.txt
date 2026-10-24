@@ -1,7 +1,6 @@
 adpyke.codesnap
 albymor.increment-selection
 alefragnani.project-manager
-anthropic.claude-code
 artdiniz.quitcontrol-vscode
 biscrat.kagex-vscode
 dbaeumer.vscode-eslint

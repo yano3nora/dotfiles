@@ -42,6 +42,11 @@ export DOCKER_HOST="unix://$HOME/.docker/run/docker.sock"
 # https://github.com/docker/for-win/issues/14021
 export COMPOSE_MENU=0
 
+# Claude Code
+# CLI の更新ごとに VSCode 拡張が再インストールされる。VSCode からは使わないので止める。
+# 理由: /config の Auto-install IDE extension は ~/.claude.json に保存されず効かなかった。
+export CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL=1
+
 # direnv
 # 意図: direnv の `direnv: loading ...` ログは初回 precmd で出力されるため、
 # p10k instant prompt (00-initial.zsh) に console 出力として検知され WARNING になる。
