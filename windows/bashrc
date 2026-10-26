@@ -1,5 +1,8 @@
 # git bash 用の bashrc。~/.bashrc から source する。
 alias reload="exec $SHELL -l"
 
+# fzf などの mise 管理 CLI より先に読む。
+command -v mise >/dev/null && eval "$(mise activate bash)"
+
 # Ctrl+T / Ctrl+R / Alt+C を fzf にする。mise install 前でも起動を壊さない。
 command -v fzf >/dev/null && eval "$(fzf --bash)"
