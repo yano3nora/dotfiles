@@ -176,6 +176,7 @@ link_all() {
   # 置き場は git に聞く。理由: worktree では .git がファイルで、hooks は共通 dir にある。
   # dir までを聞く。理由: file まで聞くと既存 symlink の実体に解決され、自己参照 link になる。
   link_path "$DOTFILES_ROOT/git/hooks/pre-commit" "$(git -C "$DOTFILES_ROOT" rev-parse --path-format=absolute --git-path hooks)/pre-commit"
+  link_path "$DOTFILES_ROOT/zsh/zprofile" "$HOME/.zprofile"
   link_path "$DOTFILES_ROOT/zsh/zshrc" "$HOME/.zshrc"
   link_path "$DOTFILES_ROOT/zsh/p10k.zsh" "$HOME/.p10k.zsh"
   link_path "$DOTFILES_ROOT/mise/mac.toml" "$HOME/.config/mise/config.toml"

@@ -1,0 +1,12 @@
+# ログインシェル向けの PATH 設定。zshrc を読まない IDE や `zsh -lc` 経由でも mise のツールを使えるようにする。
+# 対話シェルでは、この後に読む zshrc の mise activate が PATH を上書きする。
+# https://mise.jdx.dev/dev-tools/shims.html
+
+# user-local commands managed by this dotfiles repository and other tools
+export PATH="$HOME/.local/bin:$PATH"
+
+# mise
+eval "$(mise activate zsh --shims)"
+
+# Docker Desktop
+export PATH="$PATH:$HOME/.docker/bin"

@@ -7,9 +7,14 @@ Zsh configuration is split into a small loader and focused files under `zshrc.d/
 `dots link` links:
 
 ```txt
+~/.zprofile -> zsh/zprofile
 ~/.zshrc -> zsh/zshrc
 ~/.p10k.zsh -> zsh/p10k.zsh
 ```
+
+`zprofile` puts mise shims on PATH for login shells, such as IDEs and `zsh -lc`.
+GUI apps started by launchd do not read it. Set an absolute shim path in the app instead.
+Installers may append to `~/.zprofile`. That edits the repo file through the symlink, so review it in `git diff`.
 
 ## Getting Started
 
