@@ -4,7 +4,7 @@
 # codex は載せない。公式 installer で入れる。手順は windows/README.md の Getting Started。
 # 理由: mise (aqua) は codex.exe 単体しか入れず、補助 exe が無いので起動できない。
 [tools]
-node = "24.19.0"
+node = "24.22.1"
 python = "3.13.7"
 jq = "latest"
 ripgrep = "latest"
