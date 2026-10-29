@@ -140,6 +140,45 @@ dots mcp off    # 全部 off
 - 一致はコマンド文字列全体が `codex …` のときだけ。`cd` / パイプ / `&&` / リダイレクトで包むと sandbox 内で起動して失敗する
 - `dangerouslyDisableSandbox` は採らない。理由: auto mode の classifier に止められる
 
+## Claude Code 待ち状態の通知音 (`hooks`)
+
+Claude が入力待ちになったら macOS のシステム音を鳴らす。対象は応答完了 (`Stop`) と権限・質問待ち (`Notification`)。
+`~/.claude/settings.json` は repo 管理しないので、次を手動で維持する:
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Purr.aiff &"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Purr.aiff &"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+- Ghostty の bell は使わない。理由: bell は他コマンドでも鳴り、Claude の待ち状態だけを狙えない
+- 末尾の `&` で afplay を待たない。hook は同期実行なので、無いと次の処理が音の分だけ遅れる
+- `Notification` の matcher で `idle_prompt` は外す。理由: `Stop` の 60 秒後に二重で鳴る
+- 音は `/System/Library/Sounds/*.aiff` から選ぶ。確認は `afplay /System/Library/Sounds/Glass.aiff`
+- 反映には Claude Code の再起動が要る
+
 ## Trouble Shooting
 
 反映されない場合は symlink を確認する:
