@@ -1,3 +1,7 @@
+# The following lines were added by Docker Desktop to add commands to your PATH.
+export PATH="$PATH:/Users/y3n/.docker/bin"
+# End of Docker Desktop section.
+
 # ログインシェル向けの PATH 設定。zshrc を読まない IDE や `zsh -lc` 経由でも mise のツールを使えるようにする。
 # 対話シェルでは、この後に読む zshrc の mise activate が PATH を上書きする。
 # https://mise.jdx.dev/dev-tools/shims.html
