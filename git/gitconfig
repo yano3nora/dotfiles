@@ -27,6 +27,8 @@
 
 [push]
   default = current
+  # 初回 push で upstream を自動で設定する。理由: -u を忘れると git ff の @{u} が解決できない。
+  autoSetupRemote = true
   # submodule の commit を先に push する。理由: 親が参照する hash を clone 先で取れるようにする。
   recurseSubmodules = on-demand
 [core]
