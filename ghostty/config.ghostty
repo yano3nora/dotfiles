@@ -3,6 +3,7 @@ theme = tokyonight
 
 # フォント
 font-family = "JetBrains Mono"
+font-family = "BIZ UDGothic Bold"
 font-size = 13
 font-thicken = true
 
